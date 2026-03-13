@@ -4,43 +4,50 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\TrainingPlan;
-use Illuminate\Http\Request;
+use App\Http\Requests\CreateTrainingPlanRequest;
+use App\Http\Requests\UpdateTrainingPlanRequest;
+use App\Http\Resources\TrainingPlanResource;
+use App\Repositories\Logic\TrainingPlanLogicRepository;
+use Illuminate\Http\JsonResponse;
 
 class TrainingPlanController extends Controller
 {
+    public function __construct(
+        private readonly TrainingPlanLogicRepository $logic
+    ) {}
+
     public function index()
     {
-        return TrainingPlan::all();
+        return TrainingPlanResource::collection(
+            $this->logic->getAll()
+        );
     }
 
-    public function show(int $id)
+    public function show(int $id): TrainingPlanResource
     {
-        return TrainingPlan::findOrFail($id);
+        return new TrainingPlanResource(
+            $this->logic->getById($id)
+        );
     }
 
-    public function store(Request $request)
+    public function store(CreateTrainingPlanRequest $request): TrainingPlanResource
     {
-        $trainingPlan = TrainingPlan::create($request->all());
+        $plan = $this->logic->create($request->validated());
 
-        return response()->json($trainingPlan, 201);
+        return new TrainingPlanResource($plan);
     }
 
-    public function update(Request $request, int $id)
+    public function update(UpdateTrainingPlanRequest $request, int $id): TrainingPlanResource
     {
-        $trainingPlan = TrainingPlan::findOrFail($id);
+        $plan = $this->logic->update($id, $request->validated());
 
-        $trainingPlan->update($request->all());
-
-        return response()->json($trainingPlan);
+        return new TrainingPlanResource($plan);
     }
 
-    public function destroy(int $id)
+    public function destroy(int $id): JsonResponse
     {
-        $trainingPlan = TrainingPlan::findOrFail($id);
+        $this->logic->delete($id);
 
-        $trainingPlan->delete();
-
-        return response()->json(null, 204);
+        return response()->json([], 204);
     }
 }

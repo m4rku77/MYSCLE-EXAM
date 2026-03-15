@@ -1,9 +1,7 @@
-version: "3.8"
-
 services:
-  app:
+  laravel.test:
     build: .
-    container_name: laravel_app
+    container_name: laravel.test
     ports:
       - "8000:8000"
     volumes:

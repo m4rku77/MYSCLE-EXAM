@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;
 
+use Illuminate\Support\Facades\Hash;
 use App\Data\Auth\UpdatePasswordData;
 use App\Data\User\CreateUserData;
 use App\Http\Controllers\Controller;
@@ -36,26 +37,24 @@ final class AuthController extends Controller
     /**
      * @throws ValidationException
      */
-    public function login(Request $request)
+  public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $request->validate([
             'email' => 'required|email',
-            'password' => 'required',
+            'password' => 'required'
         ]);
 
-        if (! Auth::attempt($credentials)) {
-            return response()->json([
-                'message' => 'Invalid credentials',
-            ], 401);
-        }
+        $user = User::where('email', $request->email)->first();
 
-        $user = Auth::user();
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
+        }
 
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
             'token' => $token,
-            'user' => $user,
+            'user' => $user
         ]);
     }
 

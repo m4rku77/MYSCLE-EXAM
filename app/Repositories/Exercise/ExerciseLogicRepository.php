@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Repositories\Logic;
+namespace App\Repositories\Exercise;
 
 use App\Repositories\Exercise\ExerciseDbRepository;
 

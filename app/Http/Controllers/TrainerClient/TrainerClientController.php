@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\TrainerClient;
 
 use App\Http\Requests\CreateTrainerClientRequest;
 use App\Http\Requests\UpdateTrainerClientRequest;
@@ -10,7 +10,7 @@ use App\Http\Resources\TrainerClientResource;
 use App\Repositories\Logic\TrainerClientLogicRepository;
 use Illuminate\Http\JsonResponse;
 
-class TrainerClientController extends Controller
+class TrainerClientController 
 {
     public function __construct(
         private readonly TrainerClientLogicRepository $logic

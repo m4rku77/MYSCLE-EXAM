@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Repositories\Db;
+namespace App\Repositories\Exercise;
 
 use App\Models\Exercise;
 

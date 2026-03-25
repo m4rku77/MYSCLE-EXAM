@@ -2,40 +2,65 @@
 
 declare(strict_types=1);
 
-namespace App\Repositories\Db;
+namespace App\Repositories\TrainingPlan;
 
-use App\Models\Exercise;
+use App\Repositories\TrainingPlan\TrainingPlanDbRepository;
+use App\Models\TrainingPlan;
 
-class ExerciseDbRepository
+class TrainingPlanLogicRepository
 {
+    private TrainingPlanDbRepository $db;
+
+    public function __construct(TrainingPlanDbRepository $db)
+    {
+        $this->db = $db;
+    }
+    
     public function getAll()
     {
-        return Exercise::all();
+        return $this->db->getAll();
     }
 
-    public function getById(int $id): Exercise
+    public function getById(int $id): TrainingPlan
     {
-        return Exercise::findOrFail($id);
+        return $this->db->getById($id);
     }
 
-    public function create(array $data): Exercise
+    public function create(array $data): TrainingPlan
     {
-        return Exercise::create($data);
+
+        if (empty($data['name'])) {
+            throw new \InvalidArgumentException('Training plan name is required.');
+        }
+
+        return $this->db->create($data);
     }
 
-    public function update(int $id, array $data): Exercise
+
+    public function update(int $id, array $data): TrainingPlan
     {
-        $exercise = Exercise::findOrFail($id);
+        $existing = $this->db->getById($id);
 
-        $exercise->update($data);
+        if (!$existing) {
+            throw new \Exception('Training plan not found.');
+        }
 
-        return $exercise;
+        if (isset($data['name']) && empty($data['name'])) {
+            throw new \InvalidArgumentException('Name cannot be empty.');
+        }
+
+        return $this->db->update($id, $data);
     }
+
 
     public function delete(int $id): void
     {
-        $exercise = Exercise::findOrFail($id);
+        $existing = $this->db->getById($id);
 
-        $exercise->delete();
+        if (!$existing) {
+            throw new \Exception('Training plan not found.');
+        }
+
+        $this->db->delete($id);
     }
 }

@@ -11,7 +11,7 @@ use App\Http\Resources\TrainingArchive\TrainingArchiveResource;
 use App\Repositories\TrainingArchive\TrainingArchiveLogicRepository;
 use Illuminate\Http\JsonResponse;
 
-class TrainingArchiveController extends Controller
+class TrainingArchiveController
 {
     public function __construct(
         private readonly TrainingArchiveLogicRepository $logic

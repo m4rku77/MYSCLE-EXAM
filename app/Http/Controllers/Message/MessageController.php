@@ -11,7 +11,7 @@ use App\Http\Resources\Message\MessageResource;
 use App\Repositories\Message\MessageLogicRepository;
 use Illuminate\Http\JsonResponse;
 
-class MessageController extends Controller
+class MessageController 
 {
     public function __construct(
         private readonly MessageLogicRepository $logic

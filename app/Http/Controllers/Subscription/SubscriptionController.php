@@ -11,7 +11,7 @@ use App\Http\Resources\Subscription\SubscriptionResource;
 use App\Repositories\Subscription\SubscriptionLogicRepository;
 use Illuminate\Http\JsonResponse;
 
-class SubscriptionController extends Controller
+class SubscriptionController 
 {
     public function __construct(
         private readonly SubscriptionLogicRepository $logic

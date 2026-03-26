@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Message;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Message\CreateMessageRequest;
 use App\Http\Requests\Message\UpdateMessageRequest;
 use App\Http\Resources\Message\MessageResource;
 use App\Repositories\Message\MessageLogicRepository;
 use Illuminate\Http\JsonResponse;
 
-class MessageController 
+class MessageController
 {
     public function __construct(
         private readonly MessageLogicRepository $logic

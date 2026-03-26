@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\TrainingPlan;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Models\TrainingPlan;
+use Illuminate\Foundation\Http\FormRequest;
 
 class CreateTrainingPlanRequest extends FormRequest
 {

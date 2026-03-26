@@ -25,7 +25,7 @@ class UserLogicRepository
     {
         $user = $this->db->findByEmail($data['email']);
 
-        if (!$user || !Hash::check($data['password'], $user->password)) {
+        if (! $user || ! Hash::check($data['password'], $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['Invalid credentials'],
             ]);

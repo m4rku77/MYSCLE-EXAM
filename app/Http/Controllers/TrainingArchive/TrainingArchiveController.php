@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\TrainingArchive;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\TrainingArchive\CreateTrainingArchiveRequest;
 use App\Http\Requests\TrainingArchive\UpdateTrainingArchiveRequest;
 use App\Http\Resources\TrainingArchive\TrainingArchiveResource;

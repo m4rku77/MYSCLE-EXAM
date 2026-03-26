@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Subscription;
 
+use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\Subscription;
 
 class SubscriptionResource extends JsonResource
 {

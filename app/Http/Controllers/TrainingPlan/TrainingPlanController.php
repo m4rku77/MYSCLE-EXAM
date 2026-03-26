@@ -10,7 +10,7 @@ use App\Http\Resources\TrainingPlanResource;
 use App\Repositories\Logic\TrainingPlanLogicRepository;
 use Illuminate\Http\JsonResponse;
 
-class TrainingPlanController 
+class TrainingPlanController
 {
     public function __construct(
         private readonly TrainingPlanLogicRepository $logic

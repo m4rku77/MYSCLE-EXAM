@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Subscription;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Subscription\CreateSubscriptionRequest;
 use App\Http\Requests\Subscription\UpdateSubscriptionRequest;
 use App\Http\Resources\Subscription\SubscriptionResource;
 use App\Repositories\Subscription\SubscriptionLogicRepository;
 use Illuminate\Http\JsonResponse;
 
-class SubscriptionController 
+class SubscriptionController
 {
     public function __construct(
         private readonly SubscriptionLogicRepository $logic

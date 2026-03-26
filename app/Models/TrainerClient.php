@@ -12,10 +12,15 @@ class TrainerClient extends Model
     public const TABLE = 'trainer_clients';
 
     public const ID = 'id';
+
     public const TRAINER_ID = 'trainer_id';
+
     public const ATHLETE_ID = 'athlete_id';
+
     public const STATUS = 'status';
+
     public const CREATED_AT = 'created_at';
+
     public const UPDATED_AT = 'updated_at';
 
     protected $table = self::TABLE;

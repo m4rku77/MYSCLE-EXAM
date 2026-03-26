@@ -10,7 +10,7 @@ use App\Http\Resources\TrainerClientResource;
 use App\Repositories\Logic\TrainerClientLogicRepository;
 use Illuminate\Http\JsonResponse;
 
-class TrainerClientController 
+class TrainerClientController
 {
     public function __construct(
         private readonly TrainerClientLogicRepository $logic

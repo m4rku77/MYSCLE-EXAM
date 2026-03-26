@@ -10,7 +10,7 @@ use App\Http\Resources\ExerciseResource;
 use App\Repositories\Logic\ExerciseLogicRepository;
 use Illuminate\Http\JsonResponse;
 
-class ExerciseController 
+class ExerciseController
 {
     public function __construct(
         private readonly ExerciseLogicRepository $logic

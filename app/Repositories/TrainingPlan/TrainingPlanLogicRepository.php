@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Repositories\TrainingPlan;
 
-use App\Repositories\TrainingPlan\TrainingPlanDbRepository;
 use App\Models\TrainingPlan;
 
 class TrainingPlanLogicRepository
@@ -15,7 +14,7 @@ class TrainingPlanLogicRepository
     {
         $this->db = $db;
     }
-    
+
     public function getAll()
     {
         return $this->db->getAll();
@@ -36,12 +35,11 @@ class TrainingPlanLogicRepository
         return $this->db->create($data);
     }
 
-
     public function update(int $id, array $data): TrainingPlan
     {
         $existing = $this->db->getById($id);
 
-        if (!$existing) {
+        if (! $existing) {
             throw new \Exception('Training plan not found.');
         }
 
@@ -52,12 +50,11 @@ class TrainingPlanLogicRepository
         return $this->db->update($id, $data);
     }
 
-
     public function delete(int $id): void
     {
         $existing = $this->db->getById($id);
 
-        if (!$existing) {
+        if (! $existing) {
             throw new \Exception('Training plan not found.');
         }
 

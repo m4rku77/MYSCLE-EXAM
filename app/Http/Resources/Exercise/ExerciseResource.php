@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Exercise;
 
+use App\Models\Exercise;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\Exercise;
 
 class ExerciseResource extends JsonResource
 {

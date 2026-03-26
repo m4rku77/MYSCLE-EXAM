@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Repositories\Db;
+namespace App\Repositories\TrainingPlan;
 
 use App\Models\TrainingPlan;
 

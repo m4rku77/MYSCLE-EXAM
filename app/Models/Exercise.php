@@ -15,13 +15,21 @@ class Exercise extends Model
     public const TABLE = 'exercises';
 
     public const ID = 'id';
+
     public const TRAINING_PLAN_ID = 'training_plan_id';
+
     public const NAME = 'name';
+
     public const SETS = 'sets';
+
     public const REPS = 'reps';
+
     public const WEIGHT = 'weight';
+
     public const NOTES = 'notes';
+
     public const CREATED_AT = 'created_at';
+
     public const UPDATED_AT = 'updated_at';
 
     protected $table = self::TABLE;

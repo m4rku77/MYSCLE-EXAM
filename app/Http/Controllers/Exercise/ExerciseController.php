@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Exercise;
 
 use App\Http\Requests\CreateExerciseRequest;
 use App\Http\Requests\UpdateExerciseRequest;
@@ -10,7 +10,7 @@ use App\Http\Resources\ExerciseResource;
 use App\Repositories\Logic\ExerciseLogicRepository;
 use Illuminate\Http\JsonResponse;
 
-class ExerciseController extends Controller
+class ExerciseController
 {
     public function __construct(
         private readonly ExerciseLogicRepository $logic

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Subscription;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Subscription;
+use Illuminate\Foundation\Http\FormRequest;
 
 class CreateSubscriptionRequest extends FormRequest
 {

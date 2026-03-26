@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\TrainerClient;
 
+use App\Models\TrainerClient;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\TrainerClient;
 
 class TrainerClientResource extends JsonResource
 {

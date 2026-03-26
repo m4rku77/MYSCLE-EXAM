@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\TrainingArchive;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\TrainingArchive\CreateTrainingArchiveRequest;
 use App\Http\Requests\TrainingArchive\UpdateTrainingArchiveRequest;
 use App\Http\Resources\TrainingArchive\TrainingArchiveResource;
 use App\Repositories\TrainingArchive\TrainingArchiveLogicRepository;
 use Illuminate\Http\JsonResponse;
 
-class TrainingArchiveController extends Controller
+class TrainingArchiveController
 {
     public function __construct(
         private readonly TrainingArchiveLogicRepository $logic

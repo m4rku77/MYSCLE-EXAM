@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\TrainerClient;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Models\TrainerClient;
+use Illuminate\Foundation\Http\FormRequest;
 
 class CreateTrainerClientRequest extends FormRequest
 {

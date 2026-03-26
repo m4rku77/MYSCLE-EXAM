@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Message;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Message;
+use Illuminate\Foundation\Http\FormRequest;
 
 class CreateMessageRequest extends FormRequest
 {

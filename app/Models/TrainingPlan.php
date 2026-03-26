@@ -15,10 +15,15 @@ class TrainingPlan extends Model
     public const TABLE = 'training_plans';
 
     public const ID = 'id';
+
     public const USER_ID = 'user_id';
+
     public const NAME = 'name';
+
     public const IS_FAVORITE = 'is_favorite';
+
     public const CREATED_AT = 'created_at';
+
     public const UPDATED_AT = 'updated_at';
 
     protected $table = self::TABLE;

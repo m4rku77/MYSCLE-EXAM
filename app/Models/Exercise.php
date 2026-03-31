@@ -51,4 +51,9 @@ class Exercise extends Model
             TrainingPlan::ID
         );
     }
+
+    public function sets()
+    {
+        return $this->hasMany(ExerciseSet::class, 'exercise_id');
+    }
 }

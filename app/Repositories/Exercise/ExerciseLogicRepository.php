@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repositories\Exercise;
 
+use App\Models\Exercise;
+
 class ExerciseLogicRepository
 {
     public function __construct(
@@ -25,9 +27,35 @@ class ExerciseLogicRepository
         return $this->dbRepository->create($data);
     }
 
-    public function update(int $id, array $data)
+    public function updateExercise($id, $data)
     {
-        return $this->dbRepository->update($id, $data);
+        $exercise = Exercise::findOrFail($id);
+
+        if (isset($data['name'])) {
+            $exercise->name = $data['name'];
+        }
+
+        $exercise->save();
+
+        if (isset($data['sets_data'])) {
+
+            $exercise->sets()->delete();
+
+            foreach ($data['sets_data'] as $index => $set) {
+
+                if (! isset($set['reps']) || ! isset($set['weight'])) {
+                    continue;
+                }
+
+                $exercise->sets()->create([
+                    'set_number' => $index + 1,
+                    'reps' => (int) $set['reps'],
+                    'weight' => (float) $set['weight'],
+                ]);
+            }
+        }
+
+        return $exercise->load('sets');
     }
 
     public function delete(int $id): void

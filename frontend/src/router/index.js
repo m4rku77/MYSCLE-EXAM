@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from "vue-router"
 import LoginView from "../views/LoginView.vue"
 import HomeView from '../views/HomeView.vue'
 import UserDashboardView from "../views/UserDashboardView.vue"
+import WorkoutView from "../views/WorkoutView.vue"
+import WorkoutTrackView from "../views/WorkoutTrackView.vue"
 
 
 const routes = [
@@ -17,6 +19,14 @@ const routes = [
   {
     path: "/dashboard",
     component: UserDashboardView
+  },
+  {
+    path: "/workout/:id",
+    component: WorkoutView
+  },
+  {
+  path: "/workout/:id/track",
+  component: WorkoutTrackView
   },
 ]
 

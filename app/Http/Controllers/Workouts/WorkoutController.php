@@ -21,6 +21,7 @@ class WorkoutController extends Controller
                 $totalReps = 0;
 
                 foreach ($plan->exercises as $ex) {
+
                     $totalSets += $ex->sets->count();
 
                     foreach ($ex->sets as $set) {
@@ -31,9 +32,9 @@ class WorkoutController extends Controller
                 return [
                     'id' => $plan->id,
                     'name' => $plan->name,
-                    'exercises' => $plan->exercises->count(),
                     'sets' => $totalSets,
                     'reps' => $totalReps,
+                    'created_at' => $plan->created_at
                 ];
             });
     }

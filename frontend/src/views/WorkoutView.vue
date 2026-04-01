@@ -2,6 +2,7 @@
 import { useRoute, useRouter } from "vue-router"
 import { ref, onMounted } from "vue"
 import axios from "axios"
+import BottomNav from "../components/BottomNav.vue" 
 
 const route = useRoute()
 const router = useRouter()
@@ -35,7 +36,7 @@ onMounted(async () => {
 })
 
 const goToTrack = () => {
-  router.push(`/workout/${woarkoutId}/track`)
+  router.push(`/workout/${workoutId}/track`)
 }
 </script>
 
@@ -59,13 +60,14 @@ const goToTrack = () => {
       </button>
     </div>
 
-    <div class="flex-1 p-6 overflow-y-auto">
+    <div class="flex-1 overflow-y-auto min-h-0 p-6">
 
       <div v-if="loading" class="text-gray-400">
         Loading workout...
       </div>
 
       <div v-else-if="workout" class="space-y-6">
+
         <div class="bg-white/5 border border-white/10 rounded-xl p-4">
           <h2 class="text-lg font-semibold mb-3">Workout Overview</h2>
 
@@ -144,5 +146,9 @@ const goToTrack = () => {
 
       </div>
     </div>
+
+
+    <BottomNav />
+
   </div>
 </template>

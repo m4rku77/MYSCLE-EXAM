@@ -43,6 +43,22 @@ const toggleEdit = () => {
 const openWorkout = (w) => {
   router.push(`/workout/${w.id}`)
 }
+
+const goToTab = (tab) => {
+  activeTab.value = tab
+
+  if (tab === 'statistics') {
+    router.push('/statistics')
+  }
+
+  if (tab === 'workouts') {
+    router.push('/')
+  }
+
+  if (tab === 'logs') {
+    router.push('/logs')
+  }
+}
 </script>
 
 <template>
@@ -58,7 +74,7 @@ const openWorkout = (w) => {
         <button
           v-for="tab in ['workouts','exercises','logs','explore','settings']"
           :key="tab"
-          @click="activeTab = tab"
+          @click="goToTab(tab)"
           class="w-full text-left px-4 py-3 rounded-lg transition"
           :class="activeTab === tab
             ? 'bg-[#7ED957] text-black font-semibold'
@@ -139,9 +155,9 @@ const openWorkout = (w) => {
 
       <div class="md:hidden h-20 bg-[#0f0f0f] border-t border-gray-800 flex justify-around items-center text-xs">
         <button
-          v-for="tab in ['workouts','exercises','logs','explore','settings']"
+          v-for="tab in ['workouts','exercises','logs','statistics','settings']"
           :key="tab"
-          @click="activeTab = tab"
+          @click="goToTab(tab)"
           class="flex flex-col items-center"
           :class="activeTab === tab ? 'text-[#7ED957]' : 'text-gray-500'"
         >
@@ -151,7 +167,7 @@ const openWorkout = (w) => {
               tab === 'workouts' ? 'fas fa-clipboard-list' :
               tab === 'exercises' ? 'fas fa-dumbbell' :
               tab === 'logs' ? 'fas fa-book' :
-              tab === 'explore' ? 'fas fa-chart-line' :
+              tab === 'statistics' ? 'fas fa-chart-line' :
               'fas fa-cog'
             ]"
           ></i>

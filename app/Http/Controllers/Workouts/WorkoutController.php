@@ -34,7 +34,7 @@ class WorkoutController extends Controller
                     'name' => $plan->name,
                     'sets' => $totalSets,
                     'reps' => $totalReps,
-                    'created_at' => $plan->created_at
+                    'created_at' => $plan->created_at,
                 ];
             });
     }

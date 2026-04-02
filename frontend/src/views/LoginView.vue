@@ -63,7 +63,7 @@ const register = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-[#0f0f0f] relative overflow-hidden">
+  <div class="min-h-screen flex items-center justify-center bg-[#0f0f0f] relative overflow-hidden px-4 sm:px-0">
 
     <div class="absolute inset-0 bg-gradient-to-b from-[#1a1a1a] via-[#0f0f0f] to-black"></div>
 

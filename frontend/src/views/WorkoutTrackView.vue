@@ -2,7 +2,7 @@
 import { useRoute, useRouter } from "vue-router"
 import { ref, onMounted } from "vue"
 import axios from "axios"
-import BottomNav from "../components/BottomNav.vue" // adjust path if needed
+import BottomNav from "../components/BottomNav.vue"
 
 const route = useRoute()
 const router = useRouter()

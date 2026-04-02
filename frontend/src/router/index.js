@@ -10,37 +10,55 @@ import Statistics from "../views/Statistics.vue"
 const routes = [
   {
     path: '/',
-    component: MainLayout, 
+    component: MainLayout,
+    meta: { requiresAuth: true }, 
     children: [
       {
         path: '',
+        redirect: '/dashboard'
+      },
+      {
+        path: 'dashboard',
         component: Dashboard
       },
       {
-        path: '/workout/:id',
+        path: 'workout/:id',
         component: WorkoutView
       },
       {
-        path: '/workout/:id/track',
+        path: 'workout/:id/track',
         component: WorkoutTrackView
       },
       {
-        path: '/statistics',
+        path: 'statistics',
         component: Statistics
       }
     ]
   },
-
- 
   {
     path: '/login',
-    component: () => import('../views/LoginView.vue')
+    component: () => import('../views/LoginView.vue'),
+    meta: { guest: true } 
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+router.beforeEach((to) => {
+  const token = localStorage.getItem("token")
+
+  if (to.meta.requiresAuth && !token) {
+    return "/login"
+  }
+
+  if (to.path === "/login" && token) {
+    return "/dashboard"
+  }
+
+  return true
 })
 
 export default router

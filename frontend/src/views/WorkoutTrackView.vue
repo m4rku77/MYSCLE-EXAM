@@ -13,6 +13,8 @@ const workout = ref(null)
 const exercises = ref([])
 const loading = ref(true)
 
+const isEditing = ref(false)
+
 onMounted(async () => {
   try {
     const token = localStorage.getItem("token")
@@ -35,44 +37,80 @@ onMounted(async () => {
   }
 })
 
-const goToTrack = () => {
-  router.push(`/workout/${workoutId}/track`)
+/* ---------- TOGGLE EDIT ---------- */
+const toggleEdit = async () => {
+  if (isEditing.value) {
+    await saveChanges()
+  }
+  isEditing.value = !isEditing.value
+}
+
+/* ---------- SAVE ---------- */
+const saveChanges = async () => {
+  try {
+    const token = localStorage.getItem("token")
+
+    for (const ex of exercises.value) {
+      await axios.put(
+        `http://localhost:8000/api/exercises/${ex.id}`,
+        {
+          name: ex.name,
+          sets_data: ex.sets
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+    }
+
+    console.log("Saved ✅")
+  } catch (err) {
+    console.error(err)
+  }
 }
 </script>
 
 <template>
   <div class="h-screen flex flex-col bg-[#0f0f0f] text-white">
 
+    <!-- HEADER -->
     <div class="p-6 border-b border-gray-800 flex items-center justify-between">
       <div class="flex items-center gap-4">
         <button @click="router.back()" class="text-[#7ED957] text-xl">←</button>
+
         <h1 class="text-xl font-semibold">
           {{ workout?.name || "Loading..." }}
         </h1>
       </div>
 
       <button
-        @click="goToTrack"
-        class="flex items-center gap-2 bg-[#7ED957] text-black px-4 py-2 rounded-lg text-sm font-semibold hover:scale-105 transition"
+        @click="toggleEdit"
+        class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition"
+        :class="isEditing
+          ? 'bg-yellow-400 text-black'
+          : 'bg-[#7ED957] text-black'"
       >
         <i class="fas fa-pen"></i>
-        Edit
+        {{ isEditing ? "Save" : "Edit" }}
       </button>
     </div>
 
-    <div class="flex-1 overflow-y-auto min-h-0 p-6">
+    <!-- CONTENT -->
+    <div class="flex-1 overflow-y-auto p-6">
 
       <div v-if="loading" class="text-gray-400">
         Loading workout...
       </div>
 
-      <div v-else-if="workout" class="space-y-6">
+      <div v-else class="space-y-6">
 
+        <!-- OVERVIEW -->
         <div class="bg-white/5 border border-white/10 rounded-xl p-4">
           <h2 class="text-lg font-semibold mb-3">Workout Overview</h2>
 
           <div class="flex flex-wrap gap-6 text-sm text-gray-300">
-
             <div>
               <span class="text-[#7ED957] font-semibold">
                 {{ exercises.length }}
@@ -97,31 +135,30 @@ const goToTrack = () => {
               </span>
               total reps
             </div>
-
           </div>
         </div>
 
+        <!-- EXERCISES -->
         <div
           v-for="ex in exercises"
           :key="ex.id"
           class="bg-white/5 border border-white/10 rounded-xl p-4"
         >
+          <!-- NAME -->
           <div class="mb-4">
-            <h2 class="text-lg font-semibold text-[#7ED957]">
+            <input
+              v-if="isEditing"
+              v-model="ex.name"
+              class="bg-black/5 px-3 py-2 rounded w-full"
+            />
+            <h2 v-else class="text-lg font-semibold text-[#7ED957]">
               {{ ex.name }}
             </h2>
-
-            <div class="flex gap-4 mt-2 text-sm text-gray-400">
-              <span>{{ ex.sets?.length || 0 }} sets</span>
-              <span>
-                {{
-                  ex.sets?.reduce((sum, set) => sum + set.reps, 0) || 0
-                }} reps
-              </span>
-            </div>
           </div>
 
+          <!-- SETS -->
           <div class="overflow-hidden rounded-lg border border-white/10">
+
             <div class="grid grid-cols-3 bg-white/10 px-4 py-3 text-sm font-medium text-gray-300">
               <span>Set</span>
               <span>Reps</span>
@@ -131,12 +168,29 @@ const goToTrack = () => {
             <div
               v-for="(set, index) in ex.sets"
               :key="set.id"
-              class="grid grid-cols-3 px-4 py-3 text-sm border-t border-white/5 text-gray-200"
+              class="grid grid-cols-3 px-4 py-3 text-sm border-t border-white/5 items-center"
             >
               <span>{{ index + 1 }}</span>
-              <span>{{ set.reps }}</span>
-              <span>{{ set.weight }} kg</span>
+
+              <!-- REPS -->
+              <input
+                v-if="isEditing"
+                v-model="set.reps"
+                type="number"
+                class="bg-transparent border border-white/10 rounded px-2 py-1 text-center"
+              />
+              <span v-else>{{ set.reps }}</span>
+
+              <!-- WEIGHT -->
+              <input
+                v-if="isEditing"
+                v-model="set.weight"
+                type="number"
+                class="bg-transparent border border-white/10 rounded px-2 py-1 text-center"
+              />
+              <span v-else>{{ set.weight }} kg</span>
             </div>
+
           </div>
         </div>
 
@@ -148,6 +202,5 @@ const goToTrack = () => {
     </div>
 
     <BottomNav />
-
   </div>
 </template>

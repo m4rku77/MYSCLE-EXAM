@@ -1,38 +1,52 @@
 <script setup>
-import { ref } from "vue"
+import { ref, onMounted } from "vue"
 import { useRouter } from "vue-router"
+import axios from "axios"
 
 const router = useRouter()
 
 const isEditing = ref(false)
 const activeTab = ref("workouts")
-const selectedWorkout = ref(null)
-
-import { onMounted } from "vue"
-import axios from "axios"
-
 const workouts = ref([])
+
+const createWorkout = () => {
+  router.push('/create-workout')
+}
 
 onMounted(async () => {
   try {
     const token = localStorage.getItem("token")
 
+    if (!token) {
+      console.error("No token found")
+      return
+    }
+
     const res = await axios.get("http://localhost:8000/api/workouts", {
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json"
       }
     })
 
-    workouts.value = res.data.map(w => ({
+    const data = res.data.data ?? res.data
+
+    workouts.value = data.map(w => ({
       id: w.id,
       name: w.name,
-      exercises: w.exercises_count,
-      sets: w.sets ?? 0,
-      reps: w.reps ?? 0
+      exercises: w.exercises?.length || 0,
+
+      sets: w.exercises?.reduce((sum, ex) =>
+        sum + (ex.sets?.length || 0), 0
+      ) || 0,
+
+      reps: w.exercises?.reduce((sum, ex) =>
+        sum + (ex.sets?.reduce((s, set) => s + (set.reps || 0), 0) || 0),
+      0) || 0
     }))
 
   } catch (err) {
-    console.error(err)
+    console.error("API ERROR:", err.response?.data || err.message)
   }
 })
 
@@ -47,17 +61,9 @@ const openWorkout = (w) => {
 const goToTab = (tab) => {
   activeTab.value = tab
 
-  if (tab === 'statistics') {
-    router.push('/statistics')
-  }
-
-  if (tab === 'workouts') {
-    router.push('/')
-  }
-
-  if (tab === 'logs') {
-    router.push('/logs')
-  }
+  if (tab === 'statistics') router.push('/statistics')
+  if (tab === 'workouts') router.push('/dashboard')
+  if (tab === 'logs') router.push('/logs')
 }
 </script>
 
@@ -83,6 +89,8 @@ const goToTab = (tab) => {
           {{ tab }}
         </button>
       </nav>
+
+      
     </aside>
 
     <div class="flex-1 flex flex-col relative">
@@ -109,6 +117,7 @@ const goToTab = (tab) => {
         />
       </div>
 
+        
       <div class="flex-1 overflow-y-auto px-5 md:px-10 pt-6 pb-24 space-y-6 max-w-4xl mx-auto w-full">
 
         <div
@@ -120,6 +129,7 @@ const goToTab = (tab) => {
           <input
             v-model="w.name"
             :disabled="!isEditing"
+            @click.stop
             class="text-lg font-semibold bg-transparent outline-none w-full text-white group-hover:text-[#7ED957] transition"
           />
 
@@ -173,8 +183,15 @@ const goToTab = (tab) => {
           ></i>
           <span class="capitalize">{{ tab }}</span>
         </button>
+
       </div>
 
     </div>
+    <button
+      @click="createWorkout"
+      class="fixed bottom-24 right-6 w-16 h-16 bg-[#7ED957] text-black rounded-full grid place-items-center shadow-lg hover:scale-110 transition-all duration-300 z-50"
+    >
+      <i class="fas fa-plus text-xl"></i>
+    </button>
   </div>
 </template>

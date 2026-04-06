@@ -26,7 +26,8 @@ onMounted(async () => {
       }
     })
 
-    workouts.value = res.data
+    const data = res.data.data ?? res.data
+    workouts.value = data
 
     updateStats()
     await nextTick()
@@ -57,9 +58,9 @@ const updateStats = () => {
   let reps = 0
 
   filtered.forEach(w => {
-    sets += w.sets
-    reps += w.reps
-  })
+    sets += Number(w.sets) || 0
+    reps += Number(w.reps) || 0
+})
 
   totalSets.value = sets
   totalReps.value = reps

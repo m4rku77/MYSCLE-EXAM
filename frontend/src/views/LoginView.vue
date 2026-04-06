@@ -34,7 +34,7 @@ const login = async () => {
 
     localStorage.setItem("token", response.data.token)
     router.push("/dashboard")
-
+      
   } catch (e) {
     error.value = "Invalid credentials"
   }
@@ -55,6 +55,7 @@ const register = async () => {
 
     localStorage.setItem("token", response.data.token)
     router.push("/dashboard")
+
 
   } catch (e) {
     error.value = "Registration failed"

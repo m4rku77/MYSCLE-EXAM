@@ -21,12 +21,21 @@ const isActive = (type) => {
     return route.path === "/statistics"
   }
 
+  if (type === "friends") {
+    return route.path === "/friends"
+  }
+
+  if (type === "profile") {
+    return route.path === "/profile"
+  }
+
   return false
 }
 </script>
 
 <template>
   <div class="h-20 bg-[#0f0f0f] border-t border-gray-800 flex justify-around items-center text-xs">
+
     <button
       @click="go('/dashboard')"
       class="flex flex-col items-center"
@@ -45,9 +54,23 @@ const isActive = (type) => {
       <span>Statistics</span>
     </button>
 
-    <button class="flex flex-col items-center text-gray-500">
-      <i class="fas fa-cog text-lg"></i>
-      <span>Settings</span>
+    <button
+      @click="go('/friends')"
+      class="flex flex-col items-center"
+      :class="isActive('friends') ? 'text-[#7ED957]' : 'text-gray-500'"
+    >
+      <i class="fas fa-user-friends text-lg"></i>
+      <span>Friends</span>
     </button>
+
+    <button
+      @click="go('/profile')"
+      class="flex flex-col items-center"
+      :class="isActive('profile') ? 'text-[#7ED957]' : 'text-gray-500'"
+    >
+      <i class="fas fa-user text-lg"></i>
+      <span>Profile</span>
+    </button>
+
   </div>
 </template>

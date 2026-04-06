@@ -39,6 +39,8 @@ class ExerciseController
 
     public function update(Request $request, $id)
     {
+        $id = (int) $id; 
+
         $this->logic->updateExercise($id, [
             'name' => $request->name,
             'sets_data' => $request->sets_data,
@@ -56,20 +58,5 @@ class ExerciseController
         return response()->json([], 204);
     }
 
-    public function toArray($request)
-    {
-        return [
-            'id' => $this->id,
-            'name' => $this->name,
-
-            'sets' => $this->sets->map(function ($set) {
-                return [
-                    'id' => $set->id,
-                    'set_number' => $set->set_number,
-                    'reps' => $set->reps,
-                    'weight' => $set->weight,
-                ];
-            }),
-        ];
-    }
+    
 }

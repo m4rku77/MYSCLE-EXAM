@@ -27,35 +27,34 @@ class ExerciseLogicRepository
         return $this->dbRepository->create($data);
     }
 
-    public function updateExercise($id, $data)
+   public function updateExercise(int $id, array $data)
     {
-        $exercise = Exercise::findOrFail($id);
+        $exercise = $this->dbRepository->getById($id);
 
-        if (isset($data['name'])) {
-            $exercise->name = $data['name'];
+        if (!$exercise) {
+            throw new \Exception("Exercise not found");
         }
 
-        $exercise->save();
+        $exercise->update([
+            'name' => $data['name'] ?? $exercise->name
+        ]);
 
-        if (isset($data['sets_data'])) {
+        if (!empty($data['sets_data']) && is_array($data['sets_data'])) {
 
-            $exercise->sets()->delete();
+            $exercise->exerciseSets()->delete();
 
             foreach ($data['sets_data'] as $index => $set) {
 
-                if (! isset($set['reps']) || ! isset($set['weight'])) {
-                    continue;
-                }
-
-                $exercise->sets()->create([
+                $exercise->exerciseSets()->create([
+                    'exercise_id' => $exercise->id,
                     'set_number' => $index + 1,
-                    'reps' => (int) $set['reps'],
-                    'weight' => (float) $set['weight'],
+                    'reps' => $set['reps'] ?? 0,
+                    'weight' => $set['weight'] ?? 0,
                 ]);
             }
         }
 
-        return $exercise->load('sets');
+        return $exercise->load('exerciseSets');
     }
 
     public function delete(int $id): void

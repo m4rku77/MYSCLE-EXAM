@@ -52,7 +52,7 @@ class Exercise extends Model
         );
     }
 
-    public function sets()
+    public function exerciseSets()
     {
         return $this->hasMany(ExerciseSet::class, 'exercise_id');
     }

@@ -10,18 +10,21 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ExerciseResource extends JsonResource
 {
-    public function toArray(Request $request): array
-    {
-        return [
-            Exercise::ID => $this->resource->getAttribute(Exercise::ID),
-            Exercise::TRAINING_PLAN_ID => $this->resource->getAttribute(Exercise::TRAINING_PLAN_ID),
-            Exercise::NAME => $this->resource->getAttribute(Exercise::NAME),
-            Exercise::SETS => $this->resource->getAttribute(Exercise::SETS),
-            Exercise::REPS => $this->resource->getAttribute(Exercise::REPS),
-            Exercise::WEIGHT => $this->resource->getAttribute(Exercise::WEIGHT),
-            Exercise::NOTES => $this->resource->getAttribute(Exercise::NOTES),
-            Exercise::CREATED_AT => $this->resource->getAttribute(Exercise::CREATED_AT),
-            Exercise::UPDATED_AT => $this->resource->getAttribute(Exercise::UPDATED_AT),
-        ];
-    }
+    public function toArray($request)
+{
+    return [
+        'id' => $this->id,
+        'name' => $this->name,
+
+      
+        'sets' => $this->exerciseSets->map(function ($set) {
+            return [
+                'id' => $set->id,
+                'reps' => $set->reps,
+                'weight' => $set->weight,
+            ];
+        }),
+            
+    ];
+}
 }

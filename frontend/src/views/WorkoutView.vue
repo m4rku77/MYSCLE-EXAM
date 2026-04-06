@@ -21,15 +21,19 @@ onMounted(async () => {
       `http://localhost:8000/api/workouts/${workoutId}`,
       {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json"
         }
       }
     )
 
-    workout.value = res.data
-    exercises.value = res.data.exercises ?? []
+    const data = res.data.data ?? res.data
+
+    workout.value = data
+    exercises.value = data.exercises ?? []
+
   } catch (err) {
-    console.error(err)
+    console.log("ERROR:", err.response?.data)
   } finally {
     loading.value = false
   }
@@ -82,7 +86,9 @@ const goToTrack = () => {
 
             <div>
               <span class="text-[#7ED957] font-semibold">
-                {{ exercises.reduce((sum, ex) => sum + (ex.sets?.length || 0), 0) }}
+                {{
+                  exercises.reduce((sum, ex) => sum + (ex.sets?.length || 0), 0)
+                }}
               </span>
               total sets
             </div>
@@ -91,7 +97,7 @@ const goToTrack = () => {
               <span class="text-[#7ED957] font-semibold">
                 {{
                   exercises.reduce((sum, ex) =>
-                    sum + (ex.sets?.reduce((s, set) => s + set.reps, 0) || 0),
+                    sum + (ex.sets?.reduce((s, set) => s + (set.reps || 0), 0) || 0),
                   0)
                 }}
               </span>
@@ -104,25 +110,21 @@ const goToTrack = () => {
         <div
           v-for="ex in exercises"
           :key="ex.id"
-          class="bg-white/5 border border-white/10 rounded-xl p-4"
+          class="bg-white/5 border border-white/10 rounded-xl p-5 transition hover:bg-white/10"
         >
-          <div class="mb-4">
+          <div class="flex justify-between items-center mb-3">
             <h2 class="text-lg font-semibold text-[#7ED957]">
               {{ ex.name }}
             </h2>
 
-            <div class="flex gap-4 mt-2 text-sm text-gray-400">
-              <span>{{ ex.sets?.length || 0 }} sets</span>
-              <span>
-                {{
-                  ex.sets?.reduce((sum, set) => sum + set.reps, 0) || 0
-                }} reps
-              </span>
-            </div>
+            <span class="text-xs text-gray-500">
+              {{ ex.sets?.length || 0 }} sets
+            </span>
           </div>
 
           <div class="overflow-hidden rounded-lg border border-white/10">
-            <div class="grid grid-cols-3 bg-white/10 px-4 py-3 text-sm font-medium text-gray-300">
+
+            <div class="grid grid-cols-3 bg-white/10 px-4 py-2 text-sm font-medium text-gray-300">
               <span>Set</span>
               <span>Reps</span>
               <span>Weight</span>
@@ -130,13 +132,14 @@ const goToTrack = () => {
 
             <div
               v-for="(set, index) in ex.sets"
-              :key="set.id"
-              class="grid grid-cols-3 px-4 py-3 text-sm border-t border-white/5 text-gray-200"
+              :key="set.id || index"
+              class="grid grid-cols-3 px-4 py-2 text-sm border-t border-white/5 text-gray-200"
             >
               <span>{{ index + 1 }}</span>
               <span>{{ set.reps }}</span>
               <span>{{ set.weight }} kg</span>
             </div>
+
           </div>
         </div>
 
@@ -147,8 +150,6 @@ const goToTrack = () => {
       </div>
     </div>
 
-
     <BottomNav />
-
   </div>
 </template>

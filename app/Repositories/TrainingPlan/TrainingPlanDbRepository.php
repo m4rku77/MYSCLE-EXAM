@@ -10,12 +10,17 @@ class TrainingPlanDbRepository
 {
     public function getAll()
     {
-        return TrainingPlan::all();
+        return TrainingPlan::with('exercises.exerciseSets')
+        ->where('user_id', auth()->id())
+        ->get();
     }
 
     public function getById(int $id): TrainingPlan
     {
-        return TrainingPlan::findOrFail($id);
+        return TrainingPlan::with('exercises.exerciseSets')
+        ->where('id', $id)
+        ->where('user_id', auth()->id())
+        ->firstOrFail();
     }
 
     public function create(array $data): TrainingPlan

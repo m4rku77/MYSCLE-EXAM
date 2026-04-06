@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ExerciseSet extends Model
 {
+    protected $table = 'exercise_sets'; 
     protected $fillable = [
         'exercise_id',
         'set_number',

@@ -6,6 +6,7 @@ import Dashboard from "../views/UserDashboardView.vue"
 import WorkoutView from "../views/WorkoutView.vue"
 import WorkoutTrackView from "../views/WorkoutTrackView.vue"
 import Statistics from "../views/Statistics.vue"
+import FriendsView from "../views/FriendsView.vue"
 
 const routes = [
   {
@@ -28,6 +29,10 @@ const routes = [
       {
         path: 'workout/:id/track',
         component: WorkoutTrackView
+      },
+      {
+        path: 'friends',
+        component: FriendsView
       },
       {
         path: 'statistics',

@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\TrainingPlan;
 
-use App\Models\TrainingPlan;
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\Exercise\ExerciseResource;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class TrainingPlanResource extends JsonResource
 {
@@ -23,7 +21,7 @@ class TrainingPlanResource extends JsonResource
             'exercises' => ExerciseResource::collection($this->exercises),
 
             'sets' => $this->exercises->sum('sets'),
-            'reps' => $this->exercises->sum(fn($ex) => $ex->sets * $ex->reps),
+            'reps' => $this->exercises->sum(fn ($ex) => $ex->sets * $ex->reps),
         ];
     }
 }

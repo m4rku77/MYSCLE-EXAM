@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Repositories\Exercise;
 
-use App\Models\Exercise;
-
 class ExerciseLogicRepository
 {
     public function __construct(
@@ -27,19 +25,19 @@ class ExerciseLogicRepository
         return $this->dbRepository->create($data);
     }
 
-   public function updateExercise(int $id, array $data)
+    public function updateExercise(int $id, array $data)
     {
         $exercise = $this->dbRepository->getById($id);
 
-        if (!$exercise) {
-            throw new \Exception("Exercise not found");
+        if (! $exercise) {
+            throw new \Exception('Exercise not found');
         }
 
         $exercise->update([
-            'name' => $data['name'] ?? $exercise->name
+            'name' => $data['name'] ?? $exercise->name,
         ]);
 
-        if (!empty($data['sets_data']) && is_array($data['sets_data'])) {
+        if (! empty($data['sets_data']) && is_array($data['sets_data'])) {
 
             $exercise->exerciseSets()->delete();
 

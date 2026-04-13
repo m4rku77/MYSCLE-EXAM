@@ -39,7 +39,7 @@ class ExerciseController
 
     public function update(Request $request, $id)
     {
-        $id = (int) $id; 
+        $id = (int) $id;
 
         $this->logic->updateExercise($id, [
             'name' => $request->name,
@@ -57,6 +57,4 @@ class ExerciseController
 
         return response()->json([], 204);
     }
-
-    
 }

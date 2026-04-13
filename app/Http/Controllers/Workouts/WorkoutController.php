@@ -9,32 +9,32 @@ use Illuminate\Http\Request;
 class WorkoutController extends Controller
 {
     public function index()
-{
-    $workouts = TrainingPlan::with('exercises.sets')
-        ->where('user_id', auth()->id())
-        ->get();
+    {
+        $workouts = TrainingPlan::with('exercises.sets')
+            ->where('user_id', auth()->id())
+            ->get();
 
-    return $workouts->map(function ($w) {
+        return $workouts->map(function ($w) {
 
-        $sets = 0;
-        $reps = 0;
+            $sets = 0;
+            $reps = 0;
 
-        foreach ($w->exercises as $ex) {
-            foreach ($ex->sets as $set) {
-                $sets++;
-                $reps += $set->reps;
+            foreach ($w->exercises as $ex) {
+                foreach ($ex->sets as $set) {
+                    $sets++;
+                    $reps += $set->reps;
+                }
             }
-        }
 
-        return [
-            'id' => $w->id,
-            'name' => $w->name,
-            'exercises_count' => $w->exercises->count(),
-            'sets' => $sets,
-            'reps' => $reps,
-        ];
-    });
-}
+            return [
+                'id' => $w->id,
+                'name' => $w->name,
+                'exercises_count' => $w->exercises->count(),
+                'sets' => $sets,
+                'reps' => $reps,
+            ];
+        });
+    }
 
     public function show(Request $request, $id)
     {

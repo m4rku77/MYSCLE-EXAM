@@ -8,6 +8,7 @@ const users = ref([])
 const search = ref("")
 const loading = ref(true)
 
+/* ---------- FETCH FRIENDS ---------- */
 const fetchFriends = async () => {
   try {
     const token = localStorage.getItem("token")
@@ -27,7 +28,8 @@ const fetchFriends = async () => {
     friends.value = data.map(u => ({
       id: u.id,
       name: u.name,
-      workouts: u.workouts_count ?? 0
+      workouts: u.workouts_count ?? 0,
+      profile_photo: u.profile_photo
     }))
 
   } catch (err) {
@@ -35,6 +37,7 @@ const fetchFriends = async () => {
   }
 }
 
+/* ---------- SEARCH USERS ---------- */
 const searchUsers = async () => {
   if (!search.value.trim()) {
     users.value = []
@@ -45,7 +48,7 @@ const searchUsers = async () => {
     const token = localStorage.getItem("token")
 
     const res = await axios.get(
-      `http://localhost:8000/api/users?search=${search.value}`,
+      `http://localhost:8000/api/users?search=${encodeURIComponent(search.value)}`,
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -53,12 +56,18 @@ const searchUsers = async () => {
       }
     )
 
-    users.value = res.data
+    users.value = res.data.map(u => ({
+      id: u.id,
+      name: u.name,
+      profile_photo: u.profile_photo
+    }))
+
   } catch (err) {
     console.error(err)
   }
 }
 
+/* ---------- ADD FRIEND ---------- */
 const addFriend = async (id) => {
   try {
     const token = localStorage.getItem("token")
@@ -81,11 +90,13 @@ const addFriend = async (id) => {
   }
 }
 
+/* ---------- INIT ---------- */
 onMounted(async () => {
   await fetchFriends()
   loading.value = false
 })
 
+/* ---------- FILTER FRIENDS ---------- */
 const filteredFriends = () => {
   return friends.value.filter(f =>
     f.name.toLowerCase().includes(search.value.toLowerCase())
@@ -120,7 +131,15 @@ const filteredFriends = () => {
         :key="user.id"
         class="bg-[#1f1f1f] border border-gray-800 rounded-xl p-3 flex justify-between items-center"
       >
-        <span>{{ user.name }}</span>
+        <div class="flex items-center gap-3">
+          <img
+            :src="user.profile_photo 
+              ? user.profile_photo 
+              : `https://ui-avatars.com/api/?name=${user.name}`"
+            class="w-8 h-8 rounded-full object-cover"
+          />
+          <span>{{ user.name }}</span>
+        </div>
 
         <button
           @click="addFriend(user.id)"
@@ -143,11 +162,20 @@ const filteredFriends = () => {
         :key="friend.id"
         class="bg-[#1f1f1f] border border-gray-800 rounded-xl p-4 flex justify-between items-center hover:scale-[1.02] transition"
       >
-        <div>
-          <p class="font-semibold">{{ friend.name }}</p>
-          <p class="text-sm text-gray-400">
-            {{ friend.workouts }} workouts
-          </p>
+        <div class="flex items-center gap-3">
+          <img
+            :src="friend.profile_photo 
+              ? friend.profile_photo 
+              : `https://ui-avatars.com/api/?name=${friend.name}`"
+            class="w-10 h-10 rounded-full object-cover"
+          />
+
+          <div>
+            <p class="font-semibold">{{ friend.name }}</p>
+            <p class="text-sm text-gray-400">
+              {{ friend.workouts }} workouts
+            </p>
+          </div>
         </div>
 
         <button

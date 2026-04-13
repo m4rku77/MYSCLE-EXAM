@@ -2,22 +2,28 @@ import { createRouter, createWebHistory } from "vue-router"
 
 import MainLayout from "../layouts/MainLayout.vue"
 
+import HomeView from "../views/HomeView.vue"
 import Dashboard from "../views/UserDashboardView.vue"
 import WorkoutView from "../views/WorkoutView.vue"
 import WorkoutTrackView from "../views/WorkoutTrackView.vue"
 import Statistics from "../views/Statistics.vue"
 import FriendsView from "../views/FriendsView.vue"
+import Profile from "../views/Profile.vue"
 
 const routes = [
+
+  // 🔥 PUBLIC HOME PAGE
+  {
+    path: '/',
+    component: HomeView
+  },
+
+  // 🔐 APP (AUTH REQUIRED)
   {
     path: '/',
     component: MainLayout,
-    meta: { requiresAuth: true }, 
+    meta: { requiresAuth: true },
     children: [
-      {
-        path: '',
-        redirect: '/dashboard'
-      },
       {
         path: 'dashboard',
         component: Dashboard
@@ -37,13 +43,18 @@ const routes = [
       {
         path: 'statistics',
         component: Statistics
+      },
+      {
+        path: 'profile',
+        component: Profile
       }
     ]
   },
+
   {
     path: '/login',
     component: () => import('../views/LoginView.vue'),
-    meta: { guest: true } 
+    meta: { guest: true }
   }
 ]
 
@@ -55,11 +66,13 @@ const router = createRouter({
 router.beforeEach((to) => {
   const token = localStorage.getItem("token")
 
+  // protect dashboard routes
   if (to.meta.requiresAuth && !token) {
     return "/login"
   }
 
-  if (to.path === "/login" && token) {
+  // if logged in and tries to go home → send to dashboard
+  if (to.path === "/" && token) {
     return "/dashboard"
   }
 

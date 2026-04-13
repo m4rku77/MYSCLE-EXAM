@@ -1,9 +1,32 @@
 <script setup>
 import { useRouter, useRoute } from "vue-router"
+import { ref, onMounted } from "vue"
+import axios from "axios"
 
 const router = useRouter()
 const route = useRoute()
 
+const user = ref(null)
+
+/* ---------- FETCH USER ---------- */
+const fetchUser = async () => {
+  try {
+    const token = localStorage.getItem("token")
+
+    const res = await axios.get("http://localhost:8000/api/me", {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+
+    user.value = res.data
+
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+onMounted(fetchUser)
+
+/* ---------- NAV ---------- */
 const go = (path) => {
   router.push(path)
 }
@@ -68,7 +91,12 @@ const isActive = (type) => {
       class="flex flex-col items-center"
       :class="isActive('profile') ? 'text-[#7ED957]' : 'text-gray-500'"
     >
-      <i class="fas fa-user text-lg"></i>
+      <img
+        :src="user?.profile_photo 
+          ? 'http://localhost:8000/storage/' + user.profile_photo 
+          : `https://ui-avatars.com/api/?name=${user?.name || 'User'}`"
+        class="w-6 h-6 rounded-full object-cover"
+      />
       <span>Profile</span>
     </button>
 

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unique(['user_id', 'friend_id']);
         });
     }
+
     /**
      * Reverse the migrations.
      */

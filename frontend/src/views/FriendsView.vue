@@ -2,7 +2,9 @@
 import { ref, onMounted } from "vue"
 import axios from "axios"
 import BottomNav from "../components/BottomNav.vue"
+import { useRouter } from "vue-router"
 
+const router = useRouter()
 const friends = ref([])
 const users = ref([])
 const search = ref("")
@@ -85,6 +87,10 @@ const addFriend = async (id) => {
   } catch (err) {
     console.error(err.response?.data || err.message)
   }
+}
+
+const goToUser = (id) => {
+  router.push(`/user/${id}`) 
 }
 
 onMounted(async () => {
@@ -173,11 +179,12 @@ const filteredFriends = () => {
           </div>
         </div>
 
-        <button
-          class="text-sm px-3 py-1 bg-[#7ED957] text-black rounded-lg font-semibold hover:scale-105 transition"
-        >
-          View
-        </button>
+ <button 
+  @click="goToUser(friend.id)"
+  class="px-4 py-2 bg-[#7ED957] text-black rounded-lg text-sm font-semibold hover:scale-105 hover:bg-[#6fd44a] transition"
+>
+  View
+</button>
       </div>
 
       <div v-else-if="!loading && !search" class="text-gray-500 text-center mt-6">

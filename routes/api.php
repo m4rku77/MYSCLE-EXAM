@@ -5,6 +5,7 @@ use App\Http\Controllers\Exercise\ExerciseController;
 use App\Http\Controllers\Friends\FriendController;
 use App\Http\Controllers\Stats\StatsController;
 use App\Http\Controllers\TrainingPlan\TrainingPlanController;
+use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Workouts\WorkoutController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // users search
     Route::get('/users', [FriendController::class, 'search']);
+
+    Route::get('/users/{id}', [UserController::class, 'show']);
 
     // friends
     Route::get('/friends', [FriendController::class, 'index']);

@@ -10,6 +10,7 @@ import Statistics from "../views/Statistics.vue"
 import FriendsView from "../views/FriendsView.vue"
 import Profile from "../views/Profile.vue"
 import CreateWorkout from "../views/CreateWorkout.vue"
+import UserProfile from "../views/UserProfile.vue"
 
 const routes = [
 
@@ -50,6 +51,11 @@ const routes = [
       {
         path: '/create-workout',
         component: CreateWorkout
+      },
+      {
+        path: "/user/:id",
+        name: "UserProfile",
+        component: UserProfile
       }
     ]
   },

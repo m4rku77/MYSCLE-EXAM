@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Exercise;
 use App\Models\ExerciseSet;
 use App\Models\TrainingPlan;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class WorkoutController extends Controller
@@ -84,5 +85,10 @@ class WorkoutController extends Controller
             ->where('id', $id)
             ->where('user_id', $request->user()->id)
             ->firstOrFail();
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

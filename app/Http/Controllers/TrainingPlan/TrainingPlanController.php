@@ -6,8 +6,8 @@ namespace App\Http\Controllers\TrainingPlan;
 
 use App\Http\Requests\CreateTrainingPlanRequest;
 use App\Http\Requests\UpdateTrainingPlanRequest;
-use App\Http\Resources\TrainingPlanResource;
-use App\Repositories\Logic\TrainingPlanLogicRepository;
+use App\Http\Resources\TrainingPlan\TrainingPlanResource;
+use App\Repositories\TrainingPlan\TrainingPlanLogicRepository;
 use Illuminate\Http\JsonResponse;
 
 class TrainingPlanController

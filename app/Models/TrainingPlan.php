@@ -46,4 +46,9 @@ class TrainingPlan extends Model
             User::ID
         );
     }
+
+    public function exercises()
+    {
+        return $this->hasMany(Exercise::class);
+    }
 }

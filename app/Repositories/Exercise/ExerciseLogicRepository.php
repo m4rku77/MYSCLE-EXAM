@@ -25,9 +25,34 @@ class ExerciseLogicRepository
         return $this->dbRepository->create($data);
     }
 
-    public function update(int $id, array $data)
+    public function updateExercise(int $id, array $data)
     {
-        return $this->dbRepository->update($id, $data);
+        $exercise = $this->dbRepository->getById($id);
+
+        if (! $exercise) {
+            throw new \Exception('Exercise not found');
+        }
+
+        $exercise->update([
+            'name' => $data['name'] ?? $exercise->name,
+        ]);
+
+        if (! empty($data['sets_data']) && is_array($data['sets_data'])) {
+
+            $exercise->exerciseSets()->delete();
+
+            foreach ($data['sets_data'] as $index => $set) {
+
+                $exercise->exerciseSets()->create([
+                    'exercise_id' => $exercise->id,
+                    'set_number' => $index + 1,
+                    'reps' => $set['reps'] ?? 0,
+                    'weight' => $set['weight'] ?? 0,
+                ]);
+            }
+        }
+
+        return $exercise->load('exerciseSets');
     }
 
     public function delete(int $id): void

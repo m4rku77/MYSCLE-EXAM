@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Exercise;
 
 use App\Http\Requests\CreateExerciseRequest;
-use App\Http\Requests\UpdateExerciseRequest;
 use App\Http\Resources\ExerciseResource;
-use App\Repositories\Logic\ExerciseLogicRepository;
+use App\Repositories\Exercise\ExerciseLogicRepository;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ExerciseController
 {
@@ -37,11 +37,18 @@ class ExerciseController
         return new ExerciseResource($exercise);
     }
 
-    public function update(UpdateExerciseRequest $request, int $id): ExerciseResource
+    public function update(Request $request, $id)
     {
-        $exercise = $this->logic->update($id, $request->validated());
+        $id = (int) $id;
 
-        return new ExerciseResource($exercise);
+        $this->logic->updateExercise($id, [
+            'name' => $request->name,
+            'sets_data' => $request->sets_data,
+        ]);
+
+        return response()->json([
+            'message' => 'Saved successfully',
+        ]);
     }
 
     public function destroy(int $id): JsonResponse

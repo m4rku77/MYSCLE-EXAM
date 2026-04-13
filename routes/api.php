@@ -7,6 +7,7 @@ use App\Http\Controllers\Stats\StatsController;
 use App\Http\Controllers\TrainingPlan\TrainingPlanController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Workouts\WorkoutController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -50,4 +51,13 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
+});
+
+// admin
+Route::middleware(['auth:sanctum'])->get('/admin/users', function () {
+    if (auth()->user()->role !== 'admin') {
+        return response()->json(['error' => 'Unauthorized'], 403);
+    }
+
+    return User::all();
 });

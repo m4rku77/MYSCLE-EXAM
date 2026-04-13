@@ -162,7 +162,6 @@ onMounted(async () => {
         'Advanced Exercise Charts',
         'Personal Records',
         'Calculate One Rep Max',
-        'High Quality Exercise Videos',
         'Custom Exercises',
         'Exercise History'
       ]" :key="item" class="flex items-center gap-3">
@@ -195,7 +194,6 @@ onMounted(async () => {
       <li v-for="item in [
         'Custom Workout Builder',
         'Exercise Library',
-        'Smart Suggestions',
         'Supersets & Dropsets',
         'Rest Timer',
         'Track Every Set'
@@ -220,11 +218,9 @@ onMounted(async () => {
     <ul class="space-y-3">
       <li v-for="item in [
         'Daily Tracking',
-        'Progress Reminders',
         'Goal System',
         'Streak Tracking',
         'Performance Insights',
-        'Motivation Tools'
       ]" :key="item" class="flex items-center gap-3">
         <span class="w-5 h-5 bg-[#7ED957] rounded-full flex items-center justify-center text-black text-xs">✓</span>
         <span class="text-gray-300">{{ item }}</span>

@@ -41,13 +41,10 @@ class User extends Authenticatable
     protected $table = self::TABLE;
 
     protected $fillable = [
-        self::USERNAME,
-        self::FIRST_NAME,
-        self::LAST_NAME,
+        'name',
         self::EMAIL,
         self::PASSWORD,
         self::ROLE,
-        self::STATUS,
         self::PROFILE_IMAGE,
     ];
 
@@ -111,11 +108,6 @@ class User extends Authenticatable
             TrainerClient::ATHLETE_ID,
             self::ID
         );
-    }
-
-    public function getFullNameAttribute(): string
-    {
-        return $this->first_name.' '.$this->last_name;
     }
 
     public function workouts()

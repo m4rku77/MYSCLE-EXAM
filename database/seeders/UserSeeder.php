@@ -2,18 +2,130 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class UserSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        User::create([
-            'name' => 'Test User',
-            'email' => 'test@test.com',
-            'password' => Hash::make('password'),
+        DB::table('users')->insert([
+            [
+                'id' => 1,
+                'name' => 'Dejuan Cummerata',
+                'email' => 'liliana24@example.com',
+                'role' => 'user',
+                'profile_photo' => 'https://preview.redd.it/anyone-do-i-need-a-new-pfp-v0-lpbobx55hphe1.jpeg?width=640&crop=smart&auto=webp&s=9cab5096ad9ac8f924657aa659c3870a3bcfadc9',
+                'password' => '$2y$12$ihIIRydrb4U.9GvXkXKHQ.pkK/XMXd7mkSuZcjpmcLM8jRljI6Ruy',
+                'remember_token' => 'Cve9tk2zFw',
+                'created_at' => '2026-04-02 06:31:15',
+                'updated_at' => '2026-04-02 06:31:15',
+            ],
+            [
+                'id' => 2,
+                'name' => 'Katharina Wiegand',
+                'email' => 'raquel.stanton@example.net',
+                'role' => 'user',
+                'profile_photo' => 'https://static.vecteezy.com/system/resources/thumbnails/060/843/811/small/close-up-of-raindrops-on-leaves-hd-background-luxury-hd-wallpaper-image-trendy-background-illustration-free-photo.jpg',
+                'password' => '$2y$12$43ho/UdRMH7zcKt01HOvuO0bI3nZMmPrPYNsiRiAa4WNFuTTEweXC',
+                'remember_token' => 'mVTrS63xk8',
+                'created_at' => '2026-04-02 06:31:15',
+                'updated_at' => '2026-04-02 06:31:15',
+            ],
+            [
+                'id' => 3,
+                'name' => "Mr. Milford O'Kon",
+                'email' => 'garnet.farrell@example.com',
+                'role' => 'user',
+                'profile_photo' => '',
+                'password' => '$2y$12$T1p1EN6XNjikdoTx1VtzcehjNeuUowBTWfp0JJGSh5L..CfejWAT6',
+                'remember_token' => 'H8unTVP844',
+                'created_at' => '2026-04-02 06:31:15',
+                'updated_at' => '2026-04-02 06:31:15',
+            ],
+            [
+                'id' => 4,
+                'name' => 'mark',
+                'email' => 'mark@gmail.com',
+                'role' => 'user',
+                'profile_photo' => 'profiles/s1ZYbgOOoncUsALW8Ju2fdrhjZCpRIHmh4hnzOr7.jpg',
+                'password' => '$2y$12$sB6MpASg9ZfGvFYDIW00peBEUurlLjNfIhCGfbxcihAjpn/RquO62',
+                'created_at' => '2026-03-05 11:54:09',
+                'updated_at' => '2026-04-07 09:23:43',
+            ],
+            [
+                'id' => 5,
+                'name' => 'leons',
+                'email' => 'leons@gmail.com',
+                'role' => 'admin',
+                'profile_photo' => null,
+                'password' => '$2y$12$cgMq4WFtmiPvJ4twQuWomObe/a0XoK4LxTfVLQdOVRzXQKP03Ceka',
+                'created_at' => '2026-03-04 11:54:24',
+                'updated_at' => '2026-04-13 07:01:45',
+            ],
+            [
+                'id' => 6,
+                'name' => 'Markuss Jansons',
+                'email' => 'jjansonsmarkuss@gmail.com',
+                'role' => 'user',
+                'password' => '$2y$12$Y9qjvFZNRAmQzLzDlbeDr.sfs1tQWNaHrT/AJprrwdLlhSSgPiDvu',
+                'created_at' => '2026-04-13 08:29:06',
+                'updated_at' => '2026-04-13 08:29:06',
+            ],
+            [
+                'id' => 7,
+                'name' => 'cezars jekabsons',
+                'email' => 'cezarsjekabs@gmail.com',
+                'role' => 'user',
+                'password' => '$2y$12$sAd.K2h1lkRdnFlmLOyEBOqemhzcZ5KNP6cXEBh17R/BjMNxMYz32',
+                'created_at' => '2026-04-13 08:31:38',
+                'updated_at' => '2026-04-13 08:31:38',
+            ],
+            [
+                'id' => 8,
+                'name' => 'lote ulmane',
+                'email' => 'lote@gmail.com',
+                'role' => 'user',
+                'password' => '$2y$12$dV89UAGkRSCE8NIxtJIHsu57YciP9VNw7j7v7S/WRwkr8LU1ty..K',
+                'created_at' => '2026-04-13 08:31:58',
+                'updated_at' => '2026-04-13 08:31:58',
+            ],
+            [
+                'id' => 9,
+                'name' => 'martins sesks',
+                'email' => 'sesks@gmail.com',
+                'role' => 'user',
+                'password' => '$2y$12$7sBQP51t5jmEGisF4s5xdOfdg7gk/4tZcx6LriHCqaST6HBBb6AOi',
+                'created_at' => '2026-04-13 08:33:49',
+                'updated_at' => '2026-04-13 08:33:49',
+            ],
+            [
+                'id' => 10,
+                'name' => 'Roberts Jaunzems',
+                'email' => 'robis@gmail.com',
+                'role' => 'user',
+                'password' => '$2y$12$Pqaz5QK4VcEYkyLDGSY8gu6PVgWINPJ4gJt.iUzwpaLOLeVNc6BoK',
+                'created_at' => '2026-04-13 08:37:00',
+                'updated_at' => '2026-04-13 08:46:12',
+            ],
+            [
+                'id' => 11,
+                'name' => 'a a',
+                'email' => 'a@com.lv',
+                'role' => 'user',
+                'password' => '$2y$12$CHiRVvu.j2tpmPQwUsGiVOvxc6rT3IYlPvS94RMHRjOEUMnloOzym',
+                'created_at' => '2026-04-13 08:52:46',
+                'updated_at' => '2026-04-13 08:52:46',
+            ],
+            [
+                'id' => 12,
+                'name' => 'raimonds kristovskis',
+                'email' => 'kristovskis@gmail.com',
+                'role' => 'user',
+                'password' => '$2y$10$IH.Ak1FuXx4ewTwQ.8mx3.H9sC26YtmoHDO/v73q8G/tph8LkP60S',
+                'created_at' => '2026-04-13 12:15:20',
+                'updated_at' => '2026-04-13 12:15:20',
+            ],
         ]);
     }
 }

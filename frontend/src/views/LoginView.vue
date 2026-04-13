@@ -1,28 +1,74 @@
 <script setup>
 import { ref, onMounted } from "vue"
 import axios from "axios"
-import { useRouter } from "vue-router"
+import { useRouter, useRoute } from "vue-router"
 
 const router = useRouter()
+const route = useRoute()
 
 const isRegister = ref(false)
 
-const username = ref("")
 const firstName = ref("")
 const lastName = ref("")
 const email = ref("")
 const password = ref("")
+const password_confirmation = ref("")
+
 const error = ref("")
+const success = ref("")
 
 const visible = ref(false)
 
 onMounted(() => {
+  if (route.query.register === "true") {
+    isRegister.value = true
+  }
+
   setTimeout(() => {
     visible.value = true
   }, 100)
 })
 
+const validateEmail = (email) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
+const validate = () => {
+  error.value = ""
+
+  if (!email.value || !password.value) {
+    error.value = "Please fill in all required fields"
+    return false
+  }
+
+  if (!validateEmail(email.value)) {
+    error.value = "Invalid email format"
+    return false
+  }
+
+  if (password.value.length < 6) {
+    error.value = "Password must be at least 6 characters"
+    return false
+  }
+
+  if (isRegister.value) {
+    if (!firstName.value || !lastName.value) {
+      error.value = "Please enter your name"
+      return false
+    }
+
+    if (password.value !== password_confirmation.value) {
+      error.value = "Passwords do not match"
+      return false
+    }
+  }
+
+  return true
+}
+
 const login = async () => {
+  if (!validate()) return
+
   try {
     const response = await axios.post(
       "http://127.0.0.1:8000/api/login",
@@ -33,32 +79,51 @@ const login = async () => {
     )
 
     localStorage.setItem("token", response.data.token)
-    router.push("/dashboard")
-      
+    localStorage.setItem("role", response.data.user.role)
+
+    if (response.data.user.role === "admin") {
+      router.push("/admin")
+    } else {
+      router.push("/dashboard")
+    }
+
   } catch (e) {
-    error.value = "Invalid credentials"
+    error.value = e.response?.data?.message || "Invalid credentials"
   }
 }
 
 const register = async () => {
+  if (!validate()) return
+
   try {
     const response = await axios.post(
       "http://127.0.0.1:8000/api/register",
       {
-        username: username.value,
         first_name: firstName.value,
         last_name: lastName.value,
         email: email.value,
-        password: password.value
+        password: password.value,
+        password_confirmation: password_confirmation.value
       }
     )
 
     localStorage.setItem("token", response.data.token)
-    router.push("/dashboard")
+    localStorage.setItem("role", response.data.user.role)
 
+    success.value = "Account created successfully"
+
+    setTimeout(() => {
+      router.push("/dashboard")
+    }, 1000)
 
   } catch (e) {
-    error.value = "Registration failed"
+    const backendErrors = e.response?.data?.errors
+
+    if (backendErrors) {
+      error.value = Object.values(backendErrors).flat().join(", ")
+    } else {
+      error.value = e.response?.data?.message || "Registration failed"
+    }
   }
 }
 </script>
@@ -77,8 +142,13 @@ const register = async () => {
     >
 
       <div class="flex justify-center mb-6">
-        <img src="/logo.png" class="h-14 object-contain" />
-      </div>
+  <router-link to="/" class="flex justify-center">
+    <img 
+      src="/logo.png" 
+      class="h-14 object-contain cursor-pointer hover:scale-105 transition"
+    />
+  </router-link>
+</div>
 
       <div class="text-center mb-8">
         <h1 class="text-3xl font-bold tracking-wide">MYSCLE</h1>
@@ -92,12 +162,7 @@ const register = async () => {
         class="space-y-4"
       >
 
-        <div v-if="isRegister">
-          <label class="text-sm text-gray-400">Username</label>
-          <input v-model="username" type="text"
-            class="mt-1 w-full px-4 py-3 rounded-lg bg-[#2a2a2a] border border-gray-700
-                   focus:ring-2 focus:ring-[#7ED957] outline-none transition" />
-        </div>
+        
 
         <div v-if="isRegister">
           <label class="text-sm text-gray-400">First Name</label>
@@ -126,7 +191,12 @@ const register = async () => {
             class="mt-1 w-full px-4 py-3 rounded-lg bg-[#2a2a2a] border border-gray-700
                    focus:ring-2 focus:ring-[#7ED957] outline-none transition" />
         </div>
-
+        <div v-if="isRegister">
+        <label class="text-sm text-gray-400">Confirm Password</label>
+        <input v-model="password_confirmation" type="password"
+          class="mt-1 w-full px-4 py-3 rounded-lg bg-[#2a2a2a] border border-gray-700
+                focus:ring-2 focus:ring-[#7ED957] outline-none transition" />
+      </div>
         <button
           type="submit"
           class="w-full py-3 rounded-lg font-semibold text-black bg-[#7ED957]

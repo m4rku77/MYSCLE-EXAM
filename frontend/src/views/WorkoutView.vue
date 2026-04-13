@@ -71,7 +71,6 @@ const goToTrack = () => {
       </div>
 
       <div v-else-if="workout" class="space-y-6">
-
         <div class="bg-white/5 border border-white/10 rounded-xl p-4">
           <h2 class="text-lg font-semibold mb-3">Workout Overview</h2>
 

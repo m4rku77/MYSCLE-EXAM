@@ -5,6 +5,7 @@ use App\Http\Controllers\Exercise\ExerciseController;
 use App\Http\Controllers\Friends\FriendController;
 use App\Http\Controllers\Stats\StatsController;
 use App\Http\Controllers\TrainingPlan\TrainingPlanController;
+use App\Http\Controllers\Workouts\WorkoutController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +21,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/workouts', [TrainingPlanController::class, 'index']);
     Route::get('/workouts/{id}', [TrainingPlanController::class, 'show']);
     Route::put('/exercises/{id}', [ExerciseController::class, 'update']);
+
+    Route::post('/workouts', [WorkoutController::class, 'store']);
 
     // users search
     Route::get('/users', [FriendController::class, 'search']);
@@ -38,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/friends/accept/{id}', [FriendController::class, 'accept']);
     Route::delete('/friends/decline/{id}', [FriendController::class, 'decline']);
     Route::put('/me/password', [FriendController::class, 'updatePassword']);
+
     // auth user
     Route::get('/user', function (Request $request) {
         return $request->user();

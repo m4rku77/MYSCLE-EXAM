@@ -7,8 +7,6 @@ const router = useRouter()
 const route = useRoute()
 
 const user = ref(null)
-
-/* ---------- FETCH USER ---------- */
 const fetchUser = async () => {
   try {
     const token = localStorage.getItem("token")
@@ -26,7 +24,6 @@ const fetchUser = async () => {
 
 onMounted(fetchUser)
 
-/* ---------- NAV ---------- */
 const go = (path) => {
   router.push(path)
 }

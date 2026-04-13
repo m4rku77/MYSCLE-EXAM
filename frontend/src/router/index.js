@@ -9,16 +9,15 @@ import WorkoutTrackView from "../views/WorkoutTrackView.vue"
 import Statistics from "../views/Statistics.vue"
 import FriendsView from "../views/FriendsView.vue"
 import Profile from "../views/Profile.vue"
+import CreateWorkout from "../views/CreateWorkout.vue"
 
 const routes = [
 
-  // 🔥 PUBLIC HOME PAGE
   {
     path: '/',
     component: HomeView
   },
 
-  // 🔐 APP (AUTH REQUIRED)
   {
     path: '/',
     component: MainLayout,
@@ -47,6 +46,10 @@ const routes = [
       {
         path: 'profile',
         component: Profile
+      },
+      {
+        path: '/create-workout',
+        component: CreateWorkout
       }
     ]
   },
@@ -66,12 +69,10 @@ const router = createRouter({
 router.beforeEach((to) => {
   const token = localStorage.getItem("token")
 
-  // protect dashboard routes
   if (to.meta.requiresAuth && !token) {
     return "/login"
   }
 
-  // if logged in and tries to go home → send to dashboard
   if (to.path === "/" && token) {
     return "/dashboard"
   }

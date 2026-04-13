@@ -8,7 +8,6 @@ const users = ref([])
 const search = ref("")
 const loading = ref(true)
 
-/* ---------- FETCH FRIENDS ---------- */
 const fetchFriends = async () => {
   try {
     const token = localStorage.getItem("token")
@@ -37,7 +36,6 @@ const fetchFriends = async () => {
   }
 }
 
-/* ---------- SEARCH USERS ---------- */
 const searchUsers = async () => {
   if (!search.value.trim()) {
     users.value = []
@@ -67,7 +65,6 @@ const searchUsers = async () => {
   }
 }
 
-/* ---------- ADD FRIEND ---------- */
 const addFriend = async (id) => {
   try {
     const token = localStorage.getItem("token")
@@ -90,13 +87,11 @@ const addFriend = async (id) => {
   }
 }
 
-/* ---------- INIT ---------- */
 onMounted(async () => {
   await fetchFriends()
   loading.value = false
 })
 
-/* ---------- FILTER FRIENDS ---------- */
 const filteredFriends = () => {
   return friends.value.filter(f =>
     f.name.toLowerCase().includes(search.value.toLowerCase())

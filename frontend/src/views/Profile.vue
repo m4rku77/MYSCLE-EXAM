@@ -19,7 +19,6 @@ const newPassword = ref("")
 const confirmPassword = ref("")
 const passwordError = ref("")
 
-/* ---------- FETCH PROFILE ---------- */
 const fetchProfile = async () => {
   try {
     const token = localStorage.getItem("token")
@@ -39,7 +38,6 @@ const fetchProfile = async () => {
   }
 }
 
-/* ---------- FETCH REQUESTS ---------- */
 const fetchRequests = async () => {
   try {
     const token = localStorage.getItem("token")
@@ -56,7 +54,6 @@ const fetchRequests = async () => {
   }
 }
 
-/* ---------- SAVE PROFILE ---------- */
 const saveProfile = async () => {
   try {
     const token = localStorage.getItem("token")
@@ -89,7 +86,6 @@ const saveProfile = async () => {
   }
 }
 
-/* ---------- PASSWORD ---------- */
 const updatePassword = async () => {
   if (newPassword.value !== confirmPassword.value) {
     passwordError.value = "Passwords do not match ❌"
@@ -117,13 +113,11 @@ const updatePassword = async () => {
   }
 }
 
-/* ---------- FILE ---------- */
 const handleFile = (e) => {
   file.value = e.target.files[0]
   preview.value = URL.createObjectURL(file.value)
 }
 
-/* ---------- REQUEST ACTIONS ---------- */
 const accept = async (id) => {
   const token = localStorage.getItem("token")
   await axios.post(`http://localhost:8000/api/friends/accept/${id}`, {}, {
@@ -140,7 +134,6 @@ const decline = async (id) => {
   fetchRequests()
 }
 
-/* ---------- LOGOUT ---------- */
 const logout = () => {
   localStorage.removeItem("token")
   window.location.href = "/login"

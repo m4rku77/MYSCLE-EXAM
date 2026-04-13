@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Workouts;
 
 use App\Http\Controllers\Controller;
+use App\Models\Exercise;
+use App\Models\ExerciseSet;
 use App\Models\TrainingPlan;
 use Illuminate\Http\Request;
 
@@ -34,6 +36,38 @@ class WorkoutController extends Controller
                 'reps' => $reps,
             ];
         });
+    }
+
+    public function store(Request $request)
+    {
+        $user = $request->user();
+
+        $workout = TrainingPlan::create([
+            'user_id' => $user->id,
+            'name' => $request->name,
+        ]);
+
+        foreach ($request->exercises as $exerciseData) {
+
+            $exercise = Exercise::create([
+                'training_plan_id' => $workout->id,
+                'name' => $exerciseData['name'],
+                'weight' => 0,
+            ]);
+
+            foreach ($exerciseData['sets'] as $setData) {
+                ExerciseSet::create([
+                    'exercise_id' => $exercise->id,
+                    'set_number' => $setData['set_number'],
+                    'reps' => $setData['reps'],
+                    'weight' => $setData['weight'],
+                ]);
+            }
+        }
+
+        return response()->json([
+            'message' => 'Workout created successfully',
+        ]);
     }
 
     public function show(Request $request, $id)

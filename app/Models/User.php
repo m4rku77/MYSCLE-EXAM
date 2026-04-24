@@ -17,15 +17,25 @@ class User extends Authenticatable
     public const TABLE = 'users';
 
     public const ID = 'id';
+
     public const USERNAME = 'username';
+
     public const FIRST_NAME = 'first_name';
+
     public const LAST_NAME = 'last_name';
+
     public const EMAIL = 'email';
+
     public const PASSWORD = 'password';
+
     public const ROLE = 'role';
+
     public const STATUS = 'status';
+
     public const PROFILE_IMAGE = 'profile_image';
+
     public const CREATED_AT = 'created_at';
+
     public const UPDATED_AT = 'updated_at';
 
     protected $table = self::TABLE;
@@ -105,6 +115,11 @@ class User extends Authenticatable
 
     public function getFullNameAttribute(): string
     {
-        return $this->first_name . ' ' . $this->last_name;
+        return $this->first_name.' '.$this->last_name;
+    }
+
+    public function workouts()
+    {
+        return $this->hasMany(Workout::class);
     }
 }

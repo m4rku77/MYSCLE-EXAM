@@ -12,12 +12,19 @@ class Subscription extends Model
     public const TABLE = 'subscriptions';
 
     public const ID = 'id';
+
     public const USER_ID = 'user_id';
+
     public const TYPE = 'type';
+
     public const START_DATE = 'start_date';
+
     public const END_DATE = 'end_date';
+
     public const STATUS = 'status';
+
     public const CREATED_AT = 'created_at';
+
     public const UPDATED_AT = 'updated_at';
 
     protected $table = self::TABLE;

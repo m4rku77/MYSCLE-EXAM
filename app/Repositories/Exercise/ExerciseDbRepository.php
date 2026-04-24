@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Repositories\Db;
+namespace App\Repositories\Exercise;
 
 use App\Models\Exercise;
 
@@ -10,12 +10,12 @@ class ExerciseDbRepository
 {
     public function getAll()
     {
-        return Exercise::all();
+        return Exercise::with('exerciseSets')->get();
     }
 
     public function getById(int $id): Exercise
     {
-        return Exercise::findOrFail($id);
+        return Exercise::with('exerciseSets')->findOrFail($id);
     }
 
     public function create(array $data): Exercise
@@ -26,7 +26,6 @@ class ExerciseDbRepository
     public function update(int $id, array $data): Exercise
     {
         $exercise = Exercise::findOrFail($id);
-
         $exercise->update($data);
 
         return $exercise;
@@ -35,7 +34,6 @@ class ExerciseDbRepository
     public function delete(int $id): void
     {
         $exercise = Exercise::findOrFail($id);
-
         $exercise->delete();
     }
 }

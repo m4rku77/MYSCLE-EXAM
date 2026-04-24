@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Exercise;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\Exercise;
 
 class ExerciseResource extends JsonResource
 {
-    public function toArray(Request $request): array
+    public function toArray($request)
     {
         return [
-            Exercise::ID => $this->resource->getAttribute(Exercise::ID),
-            Exercise::TRAINING_PLAN_ID => $this->resource->getAttribute(Exercise::TRAINING_PLAN_ID),
-            Exercise::NAME => $this->resource->getAttribute(Exercise::NAME),
-            Exercise::SETS => $this->resource->getAttribute(Exercise::SETS),
-            Exercise::REPS => $this->resource->getAttribute(Exercise::REPS),
-            Exercise::WEIGHT => $this->resource->getAttribute(Exercise::WEIGHT),
-            Exercise::NOTES => $this->resource->getAttribute(Exercise::NOTES),
-            Exercise::CREATED_AT => $this->resource->getAttribute(Exercise::CREATED_AT),
-            Exercise::UPDATED_AT => $this->resource->getAttribute(Exercise::UPDATED_AT),
+            'id' => $this->id,
+            'name' => $this->name,
+
+            'sets' => $this->exerciseSets->map(function ($set) {
+                return [
+                    'id' => $set->id,
+                    'reps' => $set->reps,
+                    'weight' => $set->weight,
+                ];
+            }),
+
         ];
     }
 }

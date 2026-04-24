@@ -1,31 +1,31 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import AdminSidebar from "../../components/admin/AdminSidebar.vue";
+
+const users = ref([]);
+const loading = ref(true);
+
+const showModal = ref(false);
+const selectedUserId = ref(null);
+
 const showEditModal = ref(false);
+const selectedFile = ref(null);
+
+const showToast = ref(false);
+const toastMessage = ref("");
+const toastType = ref("success");
+
+const search = ref("");
+const roleFilter = ref("all");
+
 const editUser = ref({
     id: null,
     name: "",
     email: "",
     role: "",
 });
-const openEditModal = (user) => {
-    editUser.value = { ...user };
-    showEditModal.value = true;
-};
 
-const selectedFile = ref(null);
-
-const handleFileChange = (e) => {
-    selectedFile.value = e.target.files[0];
-};
-const users = ref([]);
-const loading = ref(true);
-const showModal = ref(false);
-const selectedUserId = ref(null);
-const showToast = ref(false);
-const toastMessage = ref("");
-const toastType = ref("success");
 const fetchUsers = async () => {
     try {
         const token = localStorage.getItem("token");
@@ -42,6 +42,15 @@ const fetchUsers = async () => {
     } finally {
         loading.value = false;
     }
+};
+
+const openEditModal = (user) => {
+    editUser.value = { ...user };
+    showEditModal.value = true;
+};
+
+const handleFileChange = (e) => {
+    selectedFile.value = e.target.files[0];
 };
 
 const updateUser = async () => {
@@ -124,15 +133,28 @@ const confirmDelete = async () => {
         showToast.value = true;
     }
 
-    setTimeout(() => {
-        showToast.value = false;
-    }, 2500);
+    setTimeout(() => (showToast.value = false), 2500);
 };
 
 const cancelDelete = () => {
     showModal.value = false;
     selectedUserId.value = null;
 };
+
+const filteredUsers = computed(() => {
+    const searchValue = search.value.toLowerCase();
+
+    return users.value.filter((user) => {
+        const matchesSearch =
+            user.name.toLowerCase().includes(searchValue) ||
+            user.email.toLowerCase().includes(searchValue);
+
+        const matchesRole =
+            roleFilter.value === "all" || user.role === roleFilter.value;
+
+        return matchesSearch && matchesRole;
+    });
+});
 
 onMounted(fetchUsers);
 </script>
@@ -161,6 +183,25 @@ onMounted(fetchUsers);
                 </div>
 
                 <div v-else class="overflow-x-auto">
+                    <div
+                        class="p-4 flex flex-col md:flex-row gap-3 justify-between"
+                    >
+                        <input
+                            v-model="search"
+                            type="text"
+                            placeholder="Search users..."
+                            class="px-4 py-2 bg-[#111] border border-gray-700 rounded-lg text-white w-full md:w-1/3"
+                        />
+
+                        <select
+                            v-model="roleFilter"
+                            class="px-4 py-2 bg-[#111] border border-gray-700 rounded-lg text-white w-full md:w-40"
+                        >
+                            <option value="all">All</option>
+                            <option value="admin">Admin</option>
+                            <option value="user">User</option>
+                        </select>
+                    </div>
                     <table class="w-full text-sm">
                         <thead
                             class="bg-[#151515] text-gray-400 text-xs uppercase"
@@ -186,7 +227,7 @@ onMounted(fetchUsers);
                             </tr>
 
                             <tr
-                                v-for="user in users"
+                                v-for="user in filteredUsers"
                                 :key="user.id"
                                 class="border-t border-gray-800 hover:bg-[#181818] transition align-middle"
                             >

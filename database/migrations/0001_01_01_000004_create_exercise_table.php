@@ -20,7 +20,6 @@ return new class extends Migration
 
             $table->string(Exercise::NAME, 100);
 
-
             $table->decimal(Exercise::WEIGHT, 6, 2)
                 ->nullable();
 

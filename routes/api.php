@@ -51,6 +51,10 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::delete('/admin/users/{id}', [UserController::class, 'destroy']);
+    });
+
 });
 
 // admin

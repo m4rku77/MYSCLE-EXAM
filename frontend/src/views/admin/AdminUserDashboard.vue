@@ -2,7 +2,23 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import AdminSidebar from "../../components/admin/AdminSidebar.vue";
+const showEditModal = ref(false);
+const editUser = ref({
+    id: null,
+    name: "",
+    email: "",
+    role: "",
+});
+const openEditModal = (user) => {
+    editUser.value = { ...user };
+    showEditModal.value = true;
+};
 
+const selectedFile = ref(null);
+
+const handleFileChange = (e) => {
+    selectedFile.value = e.target.files[0];
+};
 const users = ref([]);
 const loading = ref(true);
 const showModal = ref(false);
@@ -26,6 +42,52 @@ const fetchUsers = async () => {
     } finally {
         loading.value = false;
     }
+};
+
+const updateUser = async () => {
+    try {
+        const token = localStorage.getItem("token");
+
+        const formData = new FormData();
+        formData.append("name", editUser.value.name);
+        formData.append("email", editUser.value.email);
+        formData.append("role", editUser.value.role);
+
+        if (selectedFile.value) {
+            formData.append("profile_photo", selectedFile.value);
+        }
+
+        formData.append("_method", "PUT");
+
+        const res = await axios.post(
+            `http://localhost:8000/api/admin/users/${editUser.value.id}`,
+            formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            },
+        );
+
+        const index = users.value.findIndex((u) => u.id === editUser.value.id);
+        if (index !== -1) {
+            users.value[index] = res.data;
+        }
+
+        showEditModal.value = false;
+
+        toastMessage.value = "User updated successfully";
+        toastType.value = "success";
+        showToast.value = true;
+    } catch (err) {
+        console.error(err);
+
+        toastMessage.value = "Failed to update user";
+        toastType.value = "error";
+        showToast.value = true;
+    }
+
+    setTimeout(() => (showToast.value = false), 2500);
 };
 
 const openDeleteModal = (id) => {
@@ -189,11 +251,7 @@ onMounted(fetchUsers);
                                         class="flex items-center justify-end gap-2"
                                     >
                                         <button
-                                            @click="
-                                                $router.push(
-                                                    `/admin/users/${user.id}`,
-                                                )
-                                            "
+                                            @click="openEditModal(user)"
                                             class="w-9 h-9 flex items-center justify-center bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500 hover:text-white transition"
                                         >
                                             <i class="fas fa-pen"></i>
@@ -256,6 +314,86 @@ onMounted(fetchUsers);
             :class="toastType === 'success' ? 'bg-green-500' : 'bg-red-500'"
         >
             {{ toastMessage }}
+        </div>
+    </div>
+    <div
+        v-if="showEditModal"
+        class="fixed inset-0 flex items-center justify-center bg-black/60 z-50"
+    >
+        <div
+            class="bg-[#1a1a1a] rounded-2xl p-6 w-[400px] border border-gray-800 shadow-xl"
+        >
+            <div class="flex flex-col items-center mb-4">
+                <img
+                    :src="
+                        editUser.profile_photo
+                            ? editUser.profile_photo.startsWith('http')
+                                ? editUser.profile_photo
+                                : 'http://localhost:8000/storage/' +
+                                  editUser.profile_photo
+                            : `https://ui-avatars.com/api/?name=${editUser.name}`
+                    "
+                    class="w-20 h-20 rounded-full object-cover mb-3 border border-gray-700"
+                />
+
+                <h3 class="text-lg font-semibold text-white">Edit User</h3>
+                <div class="flex flex-col items-center gap-2">
+                    <label
+                        class="cursor-pointer bg-[#7ED957] text-black px-4 py-2 rounded-lg font-semibold hover:bg-green-400 transition"
+                    >
+                        Upload Photo
+                        <input
+                            type="file"
+                            @change="handleFileChange"
+                            class="hidden"
+                        />
+                    </label>
+
+                    <span class="text-xs text-gray-500">
+                        JPG or PNG, max 2MB
+                    </span>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <input
+                    v-model="editUser.name"
+                    type="text"
+                    placeholder="Name"
+                    class="w-full px-4 py-2 bg-[#111] border border-gray-700 rounded-lg text-white"
+                />
+
+                <input
+                    v-model="editUser.email"
+                    type="email"
+                    placeholder="Email"
+                    class="w-full px-4 py-2 bg-[#111] border border-gray-700 rounded-lg text-white"
+                />
+
+                <select
+                    v-model="editUser.role"
+                    class="w-full px-4 py-2 bg-[#111] border border-gray-700 rounded-lg text-white"
+                >
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6">
+                <button
+                    @click="showEditModal = false"
+                    class="px-4 py-2 bg-gray-700 rounded-lg hover:bg-gray-600"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    @click="updateUser"
+                    class="px-4 py-2 bg-green-500 text-black rounded-lg hover:bg-green-600"
+                >
+                    Save
+                </button>
+            </div>
         </div>
     </div>
 </template>

@@ -10,6 +10,7 @@ use App\Http\Controllers\Workouts\WorkoutController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminUser\AdminUserController;
 
 Route::get('/home', [StatsController::class, 'home']);
 
@@ -56,7 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 });
-
+    Route::put('/admin/users/{id}', [AdminUserController::class, 'update']);
 // admin
 Route::middleware(['auth:sanctum'])->get('/admin/users', function () {
     if (auth()->user()->role !== 'admin') {

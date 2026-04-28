@@ -9,6 +9,7 @@ use App\Http\Resources\ExerciseResource;
 use App\Repositories\Exercise\ExerciseLogicRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\Exercise;
 
 class ExerciseController
 {
@@ -30,13 +31,16 @@ class ExerciseController
         );
     }
 
-    public function store(CreateExerciseRequest $request): ExerciseResource
+    public function store(Request $request)
     {
-        $exercise = $this->logic->create($request->validated());
+        $exercise = Exercise::create([
+            'training_plan_id' => $request->workout_id,
+            'name' => $request->name,
+        ]);
 
-        return new ExerciseResource($exercise);
+
+        return response()->json($exercise);
     }
-
     public function update(Request $request, $id)
     {
         $id = (int) $id;

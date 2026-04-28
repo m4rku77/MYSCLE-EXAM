@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             ExerciseSeeder::class,
             ExerciseSetSeeder::class,
             FriendSeeder::class,
+            ExerciseLibrarySeeder::class,
         ]);
     }
 }

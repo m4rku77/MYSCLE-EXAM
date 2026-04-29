@@ -339,7 +339,7 @@ const triggerSuccess = () => {
                 class="relative bg-[#1a1a1a] border border-[#7ED957]/30 px-8 py-6 rounded-2xl shadow-xl text-center"
             >
                 <p class="text-[#7ED957] text-lg font-semibold">
-                    ✅ Saved successfully
+                    Saved successfully
                 </p>
             </div>
         </div>

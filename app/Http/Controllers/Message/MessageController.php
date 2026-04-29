@@ -32,7 +32,11 @@ class MessageController
 
     public function store(CreateMessageRequest $request): MessageResource
     {
-        $message = $this->logic->create($request->validated());
+        $data = $request->validated();
+
+        $data['sender_id'] = auth()->id();
+
+        $message = $this->logic->create($data);
 
         return new MessageResource($message);
     }
@@ -49,5 +53,23 @@ class MessageController
         $this->logic->delete($id);
 
         return response()->json([], 204);
+    }
+
+    public function getMessages(int $userId)
+    {
+        return MessageResource::collection(
+            $this->logic->getConversation(auth()->id(), $userId)
+        );
+    }
+
+    public function sendMessage(CreateMessageRequest $request): MessageResource
+    {
+        $message = $this->logic->send(
+            auth()->id(),
+            $request->receiver_id,
+            $request->text
+        );
+
+        return new MessageResource($message);
     }
 }

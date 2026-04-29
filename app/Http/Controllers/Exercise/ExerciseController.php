@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Exercise;
 
-use App\Http\Requests\CreateExerciseRequest;
 use App\Http\Resources\ExerciseResource;
+use App\Models\Exercise;
 use App\Repositories\Exercise\ExerciseLogicRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Models\Exercise;
 
 class ExerciseController
 {
@@ -38,9 +37,9 @@ class ExerciseController
             'name' => $request->name,
         ]);
 
-
         return response()->json($exercise);
     }
+
     public function update(Request $request, $id)
     {
         $id = (int) $id;

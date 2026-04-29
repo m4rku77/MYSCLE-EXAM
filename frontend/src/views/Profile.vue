@@ -285,7 +285,6 @@ onMounted(() => {
                 </div>
             </div>
 
-            <!-- ACTIONS -->
             <div
                 class="fixed bottom-16 left-0 w-full p-4 bg-[#0f0f0f] border-t border-gray-800 md:static md:border-0"
             >

@@ -1,16 +1,17 @@
 <?php
 
+use App\Http\Controllers\AdminUser\AdminUserController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Exercise\ExerciseController;
+use App\Http\Controllers\ExerciseLibrary\ExerciseLibraryController;
 use App\Http\Controllers\Friends\FriendController;
+use App\Http\Controllers\Message\MessageController;
 use App\Http\Controllers\Stats\StatsController;
 use App\Http\Controllers\TrainingPlan\TrainingPlanController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Workouts\WorkoutController;
-use App\Http\Controllers\AdminUser\AdminUserController;
-use App\Http\Controllers\ExerciseLibrary\ExerciseLibraryController;
-use App\Models\User;
 use App\Models\ExerciseLibrary;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +21,9 @@ Route::get('/home', [StatsController::class, 'home']);
 Route::get('/stats', [StatsController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('/messages/{userId}', [MessageController::class, 'getMessages']);
+    Route::post('/messages', [MessageController::class, 'store']);
 
     Route::get('/workouts', [TrainingPlanController::class, 'index']);
     Route::get('/workouts/{id}', [TrainingPlanController::class, 'show']);

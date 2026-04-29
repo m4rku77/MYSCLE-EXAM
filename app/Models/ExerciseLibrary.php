@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +10,6 @@ class ExerciseLibrary extends Model
 
     protected $fillable = [
         'name',
-        'muscle_group'
+        'muscle_group',
     ];
 }
-?>

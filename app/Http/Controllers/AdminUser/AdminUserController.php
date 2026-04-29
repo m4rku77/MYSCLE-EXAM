@@ -1,12 +1,12 @@
 <?php
 
 namespace App\Http\Controllers\AdminUser;
-use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\Controller;
+
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
-class AdminUserController 
+class AdminUserController
 {
     public function index()
     {
@@ -14,25 +14,25 @@ class AdminUserController
     }
 
     public function update(Request $request, int $id)
-{
-    $user = User::findOrFail($id);
+    {
+        $user = User::findOrFail($id);
 
-    $user->name = $request->name;
-    $user->email = $request->email;
-    $user->role = $request->role;
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->role = $request->role;
 
-    if ($request->hasFile('profile_photo')) {
+        if ($request->hasFile('profile_photo')) {
 
-        if ($user->profile_photo) {
-            Storage::disk('public')->delete($user->profile_photo);
+            if ($user->profile_photo) {
+                Storage::disk('public')->delete($user->profile_photo);
+            }
+
+            $path = $request->file('profile_photo')->store('profiles', 'public');
+            $user->profile_photo = $path;
         }
 
-        $path = $request->file('profile_photo')->store('profiles', 'public');
-        $user->profile_photo = $path;
+        $user->save();
+
+        return response()->json($user);
     }
-
-    $user->save();
-
-    return response()->json($user);
-}
 }

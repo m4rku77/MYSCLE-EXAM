@@ -78,8 +78,12 @@ const login = async () => {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("role", response.data.user.role);
 
-        if (response.data.user.role === "admin") {
+        const role = response.data.user.role;
+
+        if (role === "admin") {
             router.push("/admin");
+        } else if (role === "trainer") {
+            router.push("/choose-mode");
         } else {
             router.push("/dashboard");
         }

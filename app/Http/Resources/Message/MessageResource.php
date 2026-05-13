@@ -18,6 +18,7 @@ class MessageResource extends JsonResource
             Message::RECEIVER_ID => $this->resource->getAttribute(Message::RECEIVER_ID),
             Message::MESSAGE => $this->resource->getAttribute(Message::MESSAGE),
             Message::CREATED_AT => $this->resource->getAttribute(Message::CREATED_AT),
+            Message::READ_AT => $this->resource->getAttribute(Message::READ_AT),
         ];
     }
 }

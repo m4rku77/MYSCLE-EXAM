@@ -22,8 +22,9 @@ import TrainerDashboard from "../views/trainer/TrainerDashboardView.vue";
 import AdminDashboard from "../views/admin/AdminDashboard.vue";
 import AdminUserDashboard from "../views/admin/AdminUserDashboard.vue";
 
+import TrainerClient from "../views/trainer/TrainerClient.vue";
+
 const routes = [
-    // PUBLIC
     { path: "/", component: HomeView },
 
     {
@@ -36,6 +37,23 @@ const routes = [
         path: "/choose-mode",
         component: ChooseModeView,
         meta: { requiresAuth: true },
+    },
+
+    // standalone chat routes — no layout, no bottom nav
+    {
+        path: "/messages/:id",
+        component: MessagesChatView,
+        meta: { requiresAuth: true, role: "user" },
+    },
+    {
+        path: "/trainer/messages/:id",
+        component: MessagesChatView,
+        meta: { requiresAuth: true, role: "trainer" },
+    },
+    {
+        path: "/admin/messages/:id",
+        component: MessagesChatView,
+        meta: { requiresAuth: true, requiresAdmin: true },
     },
 
     // USER
@@ -52,9 +70,7 @@ const routes = [
             { path: "profile", component: Profile },
             { path: "create-workout", component: CreateWorkout },
             { path: "user/:id", component: UserProfile },
-
             { path: "messages", component: Messages },
-            { path: "messages/:id", component: MessagesChatView },
         ],
     },
 
@@ -66,10 +82,9 @@ const routes = [
         children: [
             { path: "", component: TrainerDashboard },
             { path: "messages", component: Messages },
-            { path: "messages/:id", component: MessagesChatView },
             { path: "profile", component: Profile },
-
             { path: "user/:id", component: UserProfile },
+            { path: "client/:id", component: TrainerClient },
         ],
     },
 
@@ -81,6 +96,10 @@ const routes = [
         children: [
             { path: "", component: AdminDashboard },
             { path: "users", component: AdminUserDashboard },
+            { path: "profile", component: Profile },
+            { path: "messages", component: Messages },
+            { path: "statistics", component: Statistics },
+            { path: "friends", component: FriendsView },
         ],
     },
 
@@ -96,22 +115,27 @@ router.beforeEach((to) => {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
 
-    if (to.meta.requiresAuth && !token) return "/login";
+    if (to.meta.requiresAuth && !token) {
+        return "/login";
+    }
 
-    if (to.meta.requiresAdmin && role !== "admin") return "/dashboard";
+    if (to.meta.requiresAdmin && role !== "admin") {
+        if (role === "trainer") return "/trainer";
+        return "/dashboard";
+    }
 
     const requiredRole = to.matched.find((r) => r.meta.role)?.meta.role;
 
     if (requiredRole && requiredRole !== role) {
-        return role === "trainer" ? "/trainer" : "/dashboard";
+        if (role === "admin") return "/admin";
+        if (role === "trainer") return "/trainer";
+        return "/dashboard";
     }
 
     if (token && to.meta.guest) {
-        return role === "admin"
-            ? "/admin"
-            : role === "trainer"
-              ? "/trainer"
-              : "/dashboard";
+        if (role === "admin") return "/admin";
+        if (role === "trainer") return "/trainer";
+        return "/dashboard";
     }
 
     return true;

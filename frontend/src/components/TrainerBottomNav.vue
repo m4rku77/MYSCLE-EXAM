@@ -31,7 +31,7 @@ const isActive = (type) => {
 
 <template>
     <div
-        class="h-20 bg-[#0f0f0f] border-t border-gray-800 flex justify-around items-center text-xs"
+        class="fixed bottom-0 left-0 w-full h-20 bg-[#0f0f0f] border-t border-gray-800 flex justify-around items-center text-xs z-50"
     >
         <button
             @click="go('/trainer')"

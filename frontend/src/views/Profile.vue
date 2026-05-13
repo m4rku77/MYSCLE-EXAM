@@ -12,7 +12,7 @@ const file = ref(null);
 const preview = ref(null);
 
 const requests = ref([]);
-const showRequests = ref(false);
+const trainerRequests = ref([]);
 
 const success = ref("");
 
@@ -24,6 +24,9 @@ const passwordError = ref("");
 
 const unit = ref(localStorage.getItem("unit") || "kg");
 
+const token = localStorage.getItem("token");
+const headers = { Authorization: `Bearer ${token}` };
+
 const setUnit = (value) => {
     unit.value = value;
     localStorage.setItem("unit", value);
@@ -31,12 +34,9 @@ const setUnit = (value) => {
 
 const fetchProfile = async () => {
     try {
-        const token = localStorage.getItem("token");
-
         const res = await axios.get("http://localhost:8000/api/me", {
-            headers: { Authorization: `Bearer ${token}` },
+            headers,
         });
-
         user.value = res.data;
         name.value = res.data.name;
         email.value = res.data.email;
@@ -49,14 +49,23 @@ const fetchProfile = async () => {
 
 const fetchRequests = async () => {
     try {
-        const token = localStorage.getItem("token");
-
         const res = await axios.get(
             "http://localhost:8000/api/friends/requests",
-            { headers: { Authorization: `Bearer ${token}` } },
+            { headers },
         );
-
         requests.value = res.data;
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+const fetchTrainerRequests = async () => {
+    try {
+        const res = await axios.get(
+            "http://localhost:8000/api/my/trainer-requests",
+            { headers },
+        );
+        trainerRequests.value = res.data;
     } catch (err) {
         console.error(err);
     }
@@ -64,12 +73,10 @@ const fetchRequests = async () => {
 
 const saveProfile = async () => {
     try {
-        const token = localStorage.getItem("token");
-
         await axios.put(
             "http://localhost:8000/api/me",
             { name: name.value },
-            { headers: { Authorization: `Bearer ${token}` } },
+            { headers },
         );
 
         if (file.value) {
@@ -79,7 +86,7 @@ const saveProfile = async () => {
             const res = await axios.post(
                 "http://localhost:8000/api/me/photo",
                 formData,
-                { headers: { Authorization: `Bearer ${token}` } },
+                { headers },
             );
 
             user.value.profile_photo = res.data.photo;
@@ -95,20 +102,18 @@ const saveProfile = async () => {
 
 const updatePassword = async () => {
     if (newPassword.value !== confirmPassword.value) {
-        passwordError.value = "Passwords do not match ❌";
+        passwordError.value = "Passwords do not match";
         return;
     }
 
     try {
-        const token = localStorage.getItem("token");
-
         await axios.put(
             "http://localhost:8000/api/me/password",
             {
                 current_password: currentPassword.value,
                 new_password: newPassword.value,
             },
-            { headers: { Authorization: `Bearer ${token}` } },
+            { headers },
         );
 
         success.value = "Password updated";
@@ -125,23 +130,36 @@ const handleFile = (e) => {
 };
 
 const accept = async (id) => {
-    const token = localStorage.getItem("token");
     await axios.post(
         `http://localhost:8000/api/friends/accept/${id}`,
         {},
-        {
-            headers: { Authorization: `Bearer ${token}` },
-        },
+        { headers },
     );
     fetchRequests();
 };
 
 const decline = async (id) => {
-    const token = localStorage.getItem("token");
     await axios.delete(`http://localhost:8000/api/friends/decline/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers,
     });
     fetchRequests();
+};
+
+const acceptTrainer = async (id) => {
+    await axios.post(
+        `http://localhost:8000/api/my/trainer-requests/accept/${id}`,
+        {},
+        { headers },
+    );
+    fetchTrainerRequests();
+};
+
+const declineTrainer = async (id) => {
+    await axios.delete(
+        `http://localhost:8000/api/my/trainer-requests/decline/${id}`,
+        { headers },
+    );
+    fetchTrainerRequests();
 };
 
 const logout = () => {
@@ -152,6 +170,7 @@ const logout = () => {
 onMounted(() => {
     fetchProfile();
     fetchRequests();
+    fetchTrainerRequests();
 });
 </script>
 
@@ -193,6 +212,54 @@ onMounted(() => {
                     Change Photo
                     <input type="file" @change="handleFile" class="hidden" />
                 </label>
+            </div>
+
+            <div
+                v-if="trainerRequests.length > 0"
+                class="bg-[#1a1a1a] rounded-2xl p-5 space-y-4 border border-white/5"
+            >
+                <h3 class="text-xs text-gray-400 uppercase">
+                    Trainer Requests
+                </h3>
+
+                <div
+                    v-for="trainer in trainerRequests"
+                    :key="trainer.id"
+                    class="flex items-center gap-4 bg-[#0f0f0f] rounded-xl p-4 border border-white/5"
+                >
+                    <img
+                        :src="
+                            trainer.profile_photo
+                                ? 'http://localhost:8000/storage/' +
+                                  trainer.profile_photo
+                                : `https://ui-avatars.com/api/?name=${trainer.name}`
+                        "
+                        class="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                    />
+
+                    <div class="flex-1 min-w-0">
+                        <p class="font-semibold truncate">{{ trainer.name }}</p>
+                        <p class="text-xs text-gray-400">
+                            Wants to add you as a client
+                        </p>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button
+                            @click="acceptTrainer(trainer.id)"
+                            class="bg-[#7ED957] text-black px-3 py-1.5 rounded-lg text-xs font-semibold"
+                        >
+                            Accept
+                        </button>
+
+                        <button
+                            @click="declineTrainer(trainer.id)"
+                            class="bg-white/10 text-white px-3 py-1.5 rounded-lg text-xs font-semibold"
+                        >
+                            Decline
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <div

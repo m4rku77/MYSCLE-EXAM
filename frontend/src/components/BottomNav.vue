@@ -1,6 +1,6 @@
 <script setup>
 import { useRouter, useRoute } from "vue-router";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 
 const router = useRouter();
@@ -25,7 +25,18 @@ const fetchUser = async () => {
 
 onMounted(fetchUser);
 
+const role = computed(() => {
+    return localStorage.getItem("role");
+});
+
 const go = (path) => {
+    if (role.value === "admin") {
+        if (path === "/profile") path = "/admin/profile";
+        if (path === "/messages") path = "/admin/messages";
+        if (path === "/statistics") path = "/admin/statistics";
+        if (path === "/friends") path = "/admin/friends";
+    }
+
     router.push(path);
 };
 

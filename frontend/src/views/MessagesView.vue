@@ -10,6 +10,9 @@ const loading = ref(true);
 const activeTab = ref("chats");
 const me = ref(null);
 
+const token = localStorage.getItem("token");
+const headers = { Authorization: `Bearer ${token}` };
+
 const getImage = (path, name) => {
     if (!path)
         return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`;
@@ -23,48 +26,79 @@ const formatTime = (date) => {
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 };
 
+const getLastMessage = async (userId) => {
+    try {
+        const res = await axios.get(
+            `http://localhost:8000/api/messages/${userId}/last`,
+            { headers },
+        );
+        if (!res.data)
+            return {
+                last_message: null,
+                time: null,
+                sender_id: null,
+                read_at: null,
+            };
+        return {
+            last_message: res.data.message,
+            time: res.data.created_at,
+            sender_id: res.data.sender_id,
+            read_at: res.data.read_at,
+        };
+    } catch {
+        return {
+            last_message: null,
+            time: null,
+            sender_id: null,
+            read_at: null,
+        };
+    }
+};
+
 onMounted(async () => {
     try {
-        const token = localStorage.getItem("token");
-
         const meRes = await axios.get("http://localhost:8000/api/user", {
-            headers: { Authorization: `Bearer ${token}` },
+            headers,
         });
         me.value = meRes.data;
 
-        const res = await axios.get("http://localhost:8000/api/friends", {
-            headers: { Authorization: `Bearer ${token}` },
-        });
+        let contacts = [];
 
-        const friends = res.data;
+        if (me.value.role === "trainer") {
+            const clientsRes = await axios.get(
+                "http://localhost:8000/api/trainer/clients",
+                { headers },
+            );
+            contacts = clientsRes.data.data ?? clientsRes.data;
+        } else {
+            const friendsRes = await axios.get(
+                "http://localhost:8000/api/friends",
+                { headers },
+            );
+            contacts = friendsRes.data;
+
+            try {
+                const trainerRes = await axios.get(
+                    "http://localhost:8000/api/my/trainer",
+                    { headers },
+                );
+                if (trainerRes.data) {
+                    const alreadyIn = contacts.some(
+                        (c) => c.id === trainerRes.data.id,
+                    );
+                    if (!alreadyIn) {
+                        contacts.push({ ...trainerRes.data, isTrainer: true });
+                    }
+                }
+            } catch {
+                // no trainer
+            }
+        }
 
         const chatData = await Promise.all(
-            friends.map(async (user) => {
-                try {
-                    const msgRes = await axios.get(
-                        `http://localhost:8000/api/messages/${user.id}`,
-                        {
-                            headers: { Authorization: `Bearer ${token}` },
-                        },
-                    );
-
-                    const messages = msgRes.data.data ?? msgRes.data;
-                    const last = messages[messages.length - 1];
-
-                    return {
-                        ...user,
-                        last_message: last?.message || null,
-                        time: last?.created_at || null,
-                        sender_id: last?.sender_id || null,
-                    };
-                } catch {
-                    return {
-                        ...user,
-                        last_message: null,
-                        time: null,
-                        sender_id: null,
-                    };
-                }
+            contacts.map(async (user) => {
+                const msgData = await getLastMessage(user.id);
+                return { ...user, ...msgData };
             }),
         );
 
@@ -80,12 +114,21 @@ onMounted(async () => {
     }
 });
 
+const isUnread = (chat) => {
+    return (
+        chat.last_message && chat.sender_id !== me.value?.id && !chat.read_at
+    );
+};
+
 const goToChat = (id) => {
-    router.push(`/messages/${id}`);
+    if (me.value?.role === "trainer") {
+        router.push(`/trainer/messages/${id}`);
+    } else {
+        router.push(`/messages/${id}`);
+    }
 };
 
 const activeChats = computed(() => chats.value.filter((c) => c.last_message));
-
 const newChats = computed(() => chats.value.filter((c) => !c.last_message));
 </script>
 
@@ -143,37 +186,64 @@ const newChats = computed(() => chats.value.filter((c) => !c.last_message));
                     @click="goToChat(chat.id)"
                     class="flex items-center gap-4 p-4 hover:bg-[#1a1a1a] cursor-pointer transition"
                 >
-                    <img
-                        :src="getImage(chat.profile_photo, chat.name)"
-                        class="w-12 h-12 rounded-full object-cover"
-                    />
+                    <div class="relative shrink-0">
+                        <img
+                            :src="getImage(chat.profile_photo, chat.name)"
+                            class="w-12 h-12 rounded-full object-cover"
+                        />
+                        <span
+                            v-if="isUnread(chat)"
+                            class="absolute top-0 right-0 w-3 h-3 bg-[#7ED957] rounded-full border-2 border-[#0f0f0f]"
+                        ></span>
+                    </div>
 
                     <div class="flex-1 min-w-0">
-                        <p class="font-semibold truncate">
-                            {{ chat.name }}
-                        </p>
+                        <div class="flex items-center gap-2">
+                            <p
+                                class="font-semibold truncate"
+                                :class="
+                                    isUnread(chat)
+                                        ? 'text-white'
+                                        : 'text-gray-200'
+                                "
+                            >
+                                {{ chat.name }}
+                            </p>
+                            <span
+                                v-if="chat.isTrainer"
+                                class="text-xs bg-[#7ED957]/20 text-[#7ED957] px-2 py-0.5 rounded-full shrink-0"
+                            >
+                                Trainer
+                            </span>
+                        </div>
 
                         <p
                             class="text-sm truncate"
                             :class="
-                                chat.last_message
-                                    ? 'text-gray-400'
-                                    : 'text-[#7ED957]'
+                                isUnread(chat)
+                                    ? 'text-white font-medium'
+                                    : 'text-gray-500'
                             "
                         >
-                            <span v-if="chat.last_message">
-                                {{ chat.sender_id === me?.id ? "You: " : "" }}
+                            <span
+                                v-if="
+                                    chat.last_message &&
+                                    chat.sender_id === me?.id
+                                "
+                            >
+                                You:&nbsp;
                             </span>
-
                             {{
                                 chat.last_message || "Tap to start chatting 💬"
                             }}
                         </p>
                     </div>
 
-                    <span v-if="chat.time" class="text-xs text-gray-500">
-                        {{ formatTime(chat.time) }}
-                    </span>
+                    <div class="flex flex-col items-end gap-1.5 shrink-0">
+                        <span v-if="chat.time" class="text-xs text-gray-500">
+                            {{ formatTime(chat.time) }}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>

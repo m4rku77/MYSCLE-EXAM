@@ -23,12 +23,15 @@ class Message extends Model
 
     public const UPDATED_AT = 'updated_at';
 
+    public const READ_AT = 'read_at';
+
     protected $table = self::TABLE;
 
     protected $fillable = [
         self::SENDER_ID,
         self::RECEIVER_ID,
         self::MESSAGE,
+        'read_at',
     ];
 
     public function sender(): BelongsTo

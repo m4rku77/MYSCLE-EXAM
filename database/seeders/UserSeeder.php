@@ -10,138 +10,283 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         DB::table('users')->insert([
+
             [
                 'id' => 1,
                 'name' => 'Dejuan Cummerata',
                 'email' => 'liliana24@example.com',
                 'role' => 'user',
+
+                'goal' => 'Muscle Gain',
+                'weight' => '82kg',
+                'height' => '182cm',
+                'age' => 23,
+                'gender' => 'Male',
+                'bio' => 'Focused on strength and hypertrophy.',
+                'completed_workouts' => 42,
+
                 'profile_photo' => 'https://preview.redd.it/anyone-do-i-need-a-new-pfp-v0-lpbobx55hphe1.jpeg?width=640&crop=smart&auto=webp&s=9cab5096ad9ac8f924657aa659c3870a3bcfadc9',
-                'password' => '$2y$12$ihIIRydrb4U.9GvXkXKHQ.pkK/XMXd7mkSuZcjpmcLM8jRljI6Ruy',
+
+                'password' => bcrypt('password'),
                 'remember_token' => 'Cve9tk2zFw',
-                'created_at' => '2026-04-02 06:31:15',
-                'updated_at' => '2026-04-02 06:31:15',
+
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
+
             [
                 'id' => 2,
                 'name' => 'Katharina Wiegand',
                 'email' => 'raquel.stanton@example.net',
                 'role' => 'user',
+
+                'goal' => 'Fat Loss',
+                'weight' => '64kg',
+                'height' => '168cm',
+                'age' => 25,
+                'gender' => 'Female',
+                'bio' => 'Improving conditioning and mobility.',
+                'completed_workouts' => 26,
+
                 'profile_photo' => 'https://static.vecteezy.com/system/resources/thumbnails/060/843/811/small/close-up-of-raindrops-on-leaves-hd-background-luxury-hd-wallpaper-image-trendy-background-illustration-free-photo.jpg',
-                'password' => '$2y$12$43ho/UdRMH7zcKt01HOvuO0bI3nZMmPrPYNsiRiAa4WNFuTTEweXC',
+
+                'password' => bcrypt('password'),
                 'remember_token' => 'mVTrS63xk8',
-                'created_at' => '2026-04-02 06:31:15',
-                'updated_at' => '2026-04-02 06:31:15',
+
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
+
             [
                 'id' => 3,
                 'name' => "Mr. Milford O'Kon",
                 'email' => 'garnet.farrell@example.com',
                 'role' => 'user',
-                'profile_photo' => '',
-                'password' => '$2y$12$T1p1EN6XNjikdoTx1VtzcehjNeuUowBTWfp0JJGSh5L..CfejWAT6',
+
+                'goal' => 'Strength',
+                'weight' => '91kg',
+                'height' => '188cm',
+                'age' => 29,
+                'gender' => 'Male',
+                'bio' => 'Powerlifting focused athlete.',
+                'completed_workouts' => 61,
+
+                'profile_photo' => null,
+
+                'password' => bcrypt('password'),
                 'remember_token' => 'H8unTVP844',
-                'created_at' => '2026-04-02 06:31:15',
-                'updated_at' => '2026-04-02 06:31:15',
+
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
+
             [
                 'id' => 4,
                 'name' => 'mark',
                 'email' => 'mark@gmail.com',
-                'role' => 'user',
+                'role' => 'trainer',
+
+                'goal' => null,
+                'weight' => null,
+                'height' => null,
+                'age' => null,
+                'gender' => null,
+                'bio' => 'Online trainer and coach.',
+                'completed_workouts' => 0,
+
                 'profile_photo' => 'profiles/s1ZYbgOOoncUsALW8Ju2fdrhjZCpRIHmh4hnzOr7.jpg',
-                'password' => '$2y$12$sB6MpASg9ZfGvFYDIW00peBEUurlLjNfIhCGfbxcihAjpn/RquO62',
+
+                'password' => bcrypt('password'),
                 'remember_token' => null,
-                'created_at' => '2026-03-05 11:54:09',
-                'updated_at' => '2026-04-07 09:23:43',
+
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
+
             [
                 'id' => 5,
                 'name' => 'leons',
                 'email' => 'leons@gmail.com',
                 'role' => 'admin',
+
+                'goal' => null,
+                'weight' => null,
+                'height' => null,
+                'age' => null,
+                'gender' => null,
+                'bio' => 'Administrator account.',
+                'completed_workouts' => 0,
+
                 'profile_photo' => null,
-                'password' => '$2y$12$cgMq4WFtmiPvJ4twQuWomObe/a0XoK4LxTfVLQdOVRzXQKP03Ceka',
+
+                'password' => bcrypt('password'),
                 'remember_token' => null,
-                'created_at' => '2026-03-04 11:54:24',
-                'updated_at' => '2026-04-13 07:01:45',
+
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
+
             [
                 'id' => 6,
                 'name' => 'Markuss Jansons',
                 'email' => 'jjansonsmarkuss@gmail.com',
                 'role' => 'user',
+
+                'goal' => 'Athletic Performance',
+                'weight' => '78kg',
+                'height' => '180cm',
+                'age' => 18,
+                'gender' => 'Male',
+                'bio' => 'Hybrid athlete focused on performance.',
+                'completed_workouts' => 58,
+
                 'profile_photo' => null,
-                'password' => '$2y$12$Y9qjvFZNRAmQzLzDlbeDr.sfs1tQWNaHrT/AJprrwdLlhSSgPiDvu',
+
+                'password' => bcrypt('password'),
                 'remember_token' => null,
-                'created_at' => '2026-04-13 08:29:06',
-                'updated_at' => '2026-04-13 08:29:06',
+
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
+
             [
                 'id' => 7,
                 'name' => 'cezars jekabsons',
                 'email' => 'cezarsjekabs@gmail.com',
                 'role' => 'user',
+
+                'goal' => 'Muscle Gain',
+                'weight' => '85kg',
+                'height' => '184cm',
+                'age' => 20,
+                'gender' => 'Male',
+                'bio' => 'Focused on aesthetics and size.',
+                'completed_workouts' => 33,
+
                 'profile_photo' => null,
-                'password' => '$2y$12$sAd.K2h1lkRdnFlmLOyEBOqemhzcZ5KNP6cXEBh17R/BjMNxMYz32',
+
+                'password' => bcrypt('password'),
                 'remember_token' => null,
-                'created_at' => '2026-04-13 08:31:38',
-                'updated_at' => '2026-04-13 08:31:38',
+
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
+
             [
                 'id' => 8,
                 'name' => 'lote ulmane',
                 'email' => 'lote@gmail.com',
                 'role' => 'user',
+
+                'goal' => 'Fat Loss',
+                'weight' => '58kg',
+                'height' => '165cm',
+                'age' => 19,
+                'gender' => 'Female',
+                'bio' => 'Working on consistency and cardio.',
+                'completed_workouts' => 19,
+
                 'profile_photo' => null,
-                'password' => '$2y$12$dV89UAGkRSCE8NIxtJIHsu57YciP9VNw7j7v7S/WRwkr8LU1ty..K',
+
+                'password' => bcrypt('password'),
                 'remember_token' => null,
-                'created_at' => '2026-04-13 08:31:58',
-                'updated_at' => '2026-04-13 08:31:58',
+
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
+
             [
                 'id' => 9,
                 'name' => 'martins sesks',
                 'email' => 'sesks@gmail.com',
                 'role' => 'user',
+
+                'goal' => 'Strength',
+                'weight' => '94kg',
+                'height' => '190cm',
+                'age' => 24,
+                'gender' => 'Male',
+                'bio' => 'Heavy compound movement athlete.',
+                'completed_workouts' => 71,
+
                 'profile_photo' => null,
-                'password' => '$2y$12$7sBQP51t5jmEGisF4s5xdOfdg7gk/4tZcx6LriHCqaST6HBBb6AOi',
+
+                'password' => bcrypt('password'),
                 'remember_token' => null,
-                'created_at' => '2026-04-13 08:33:49',
-                'updated_at' => '2026-04-13 08:33:49',
+
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
+
             [
                 'id' => 10,
                 'name' => 'Roberts Jaunzems',
                 'email' => 'robis@gmail.com',
                 'role' => 'user',
+
+                'goal' => 'Athletic Performance',
+                'weight' => '81kg',
+                'height' => '183cm',
+                'age' => 22,
+                'gender' => 'Male',
+                'bio' => 'Explosive athlete focused on performance.',
+                'completed_workouts' => 49,
+
                 'profile_photo' => null,
-                'password' => '$2y$12$Pqaz5QK4VcEYkyLDGSY8gu6PVgWINPJ4gJt.iUzwpaLOLeVNc6BoK',
+
+                'password' => bcrypt('password'),
                 'remember_token' => null,
-                'created_at' => '2026-04-13 08:37:00',
-                'updated_at' => '2026-04-13 08:46:12',
+
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
+
             [
                 'id' => 11,
                 'name' => 'a a',
                 'email' => 'a@com.lv',
                 'role' => 'user',
+
+                'goal' => 'General Fitness',
+                'weight' => '74kg',
+                'height' => '176cm',
+                'age' => 21,
+                'gender' => 'Male',
+                'bio' => 'Building healthy habits.',
+                'completed_workouts' => 12,
+
                 'profile_photo' => null,
-                'password' => '$2y$12$CHiRVvu.j2tpmPQwUsGiVOvxc6rT3IYlPvS94RMHRjOEUMnloOzym',
+
+                'password' => bcrypt('password'),
                 'remember_token' => null,
-                'created_at' => '2026-04-13 08:52:46',
-                'updated_at' => '2026-04-13 08:52:46',
+
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
+
             [
                 'id' => 12,
                 'name' => 'raimonds kristovskis',
                 'email' => 'kristovskis@gmail.com',
                 'role' => 'user',
+
+                'goal' => 'Muscle Gain',
+                'weight' => '88kg',
+                'height' => '186cm',
+                'age' => 27,
+                'gender' => 'Male',
+                'bio' => 'Bodybuilding focused athlete.',
+                'completed_workouts' => 54,
+
                 'profile_photo' => null,
-                'password' => '$2y$10$IH.Ak1FuXx4ewTwQ.8mx3.H9sC26YtmoHDO/v73q8G/tph8LkP60S',
+
+                'password' => bcrypt('password'),
                 'remember_token' => null,
-                'created_at' => '2026-04-13 12:15:20',
-                'updated_at' => '2026-04-13 12:15:20',
+
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
+
         ]);
     }
 }

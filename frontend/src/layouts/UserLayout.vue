@@ -1,24 +1,13 @@
 <script setup>
-import Sidebar from "../components/Sidebar.vue"
-import Topbar from "../components/Topbar.vue"
-
-defineProps({
-  title: String
-})
+import UserBottomNav from "../components/UserBottomNav.vue";
 </script>
 
 <template>
-  <div class="h-screen flex bg-[#0b0b0b] text-white">
+    <div class="min-h-screen flex flex-col bg-[#0f0f0f] text-white">
+        <div class="flex-1 overflow-y-auto">
+            <RouterView />
+        </div>
 
-    <Sidebar />
-
-    <div class="flex-1 flex flex-col">
-      <Topbar :title="title" />
-
-      <main class="flex-1 p-8">
-        <slot />
-      </main>
+        <UserBottomNav />
     </div>
-
-  </div>
 </template>

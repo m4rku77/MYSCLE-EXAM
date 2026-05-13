@@ -114,4 +114,24 @@ class User extends Authenticatable
     {
         return $this->hasMany(Workout::class);
     }
+
+    public function clients()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'trainer_clients',
+            'trainer_id',
+            'client_id'
+        );
+    }
+
+    public function trainers()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'trainer_clients',
+            'client_id',
+            'trainer_id'
+        );
+    }
 }

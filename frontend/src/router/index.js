@@ -23,6 +23,8 @@ import AdminDashboard from "../views/admin/AdminDashboard.vue";
 import AdminUserDashboard from "../views/admin/AdminUserDashboard.vue";
 
 import TrainerClient from "../views/trainer/TrainerClient.vue";
+import TrainerClientWorkouts from "../views/trainer/TrainerClientWorkouts.vue";
+import TrainerClientWorkoutDetail from "../views/trainer/TrainerClientWorkoutDetail.vue";
 
 const routes = [
     { path: "/", component: HomeView },
@@ -85,6 +87,11 @@ const routes = [
             { path: "profile", component: Profile },
             { path: "user/:id", component: UserProfile },
             { path: "client/:id", component: TrainerClient },
+            { path: "client/:id/workouts", component: TrainerClientWorkouts },
+            {
+                path: "client/:id/workouts/:workoutId",
+                component: TrainerClientWorkoutDetail,
+            },
         ],
     },
 

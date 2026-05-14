@@ -27,27 +27,27 @@ class UserController extends Controller
         }
 
         return response()->json([
-            'id'            => $user->id,
-            'name'          => $user->name,
-            'email'         => $user->email,
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
             'profile_photo' => $user->profile_photo
                 ? (str_starts_with($user->profile_photo, 'http')
                     ? $user->profile_photo
                     : asset('storage/'.$user->profile_photo))
                 : null,
-            'created_at'        => $user->created_at,
-            'location'          => $user->location ?? 'Unknown',
-            'bio'               => $user->bio,
-            'goal'              => $user->goal,
-            'weight'            => $user->weight,
-            'height'            => $user->height,
-            'age'               => $user->age,
-            'gender'            => $user->gender,
-            'completed_workouts'=> $user->completed_workouts,
+            'created_at' => $user->created_at,
+            'location' => $user->location ?? 'Unknown',
+            'bio' => $user->bio,
+            'goal' => $user->goal,
+            'weight' => $user->weight,
+            'height' => $user->height,
+            'age' => $user->age,
+            'gender' => $user->gender,
+            'completed_workouts' => $user->completed_workouts,
             'stats' => [
                 'workouts' => $workouts,
-                'sets'     => $sets,
-                'reps'     => $reps,
+                'sets' => $sets,
+                'reps' => $reps,
             ],
         ]);
 

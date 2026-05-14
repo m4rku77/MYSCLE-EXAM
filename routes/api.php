@@ -14,6 +14,7 @@ use App\Models\CoachNote;
 use App\Models\ExerciseLibrary;
 use App\Models\Message;
 use App\Models\TrainerClient;
+use App\Models\TrainingPlan;
 use App\Models\User;
 use App\Models\WorkoutLog;
 use App\Models\WorkoutLogSet;
@@ -152,6 +153,16 @@ Route::middleware('auth:sanctum')->group(function () {
         return response()->json($client);
     });
 
+    Route::get('/trainer/client/{id}/workouts', function ($id) {
+        if (auth()->user()->role !== 'trainer') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        return TrainingPlan::with('exercises.exerciseSets')
+            ->where('user_id', $id)
+            ->get();
+    });
+
     Route::put('/trainer/client/{id}', function (Request $request, $id) {
         if (auth()->user()->role !== 'trainer') {
             return response()->json(['error' => 'Unauthorized'], 403);
@@ -174,6 +185,58 @@ Route::middleware('auth:sanctum')->group(function () {
             'name' => $r->trainer->name,
             'profile_photo' => $r->trainer->profile_photo,
         ]);
+    });
+
+    Route::post('/trainer/client/{id}/workouts', function (Request $request, $id) {
+        if (auth()->user()->role !== 'trainer') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $plan = TrainingPlan::create([
+            'user_id' => $id,
+            'name' => $request->input('name'),
+        ]);
+
+        return response()->json($plan, 201);
+    });
+
+    Route::post('/trainer/client/{clientId}/workout-logs/start', function (Request $request, $clientId) {
+        if (auth()->user()->role !== 'trainer') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $log = WorkoutLog::create([
+            'user_id' => $clientId,
+            'training_plan_id' => $request->training_plan_id,
+        ]);
+
+        return response()->json($log);
+    });
+
+    Route::post('/trainer/client/{clientId}/workout-logs/{id}/finish', function (Request $request, $clientId, $id) {
+        if (auth()->user()->role !== 'trainer') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $log = WorkoutLog::where('id', $id)
+            ->where('user_id', $clientId)
+            ->firstOrFail();
+
+        $log->update(['duration_seconds' => $request->duration_seconds]);
+
+        foreach ($request->sets as $set) {
+            WorkoutLogSet::create([
+                'workout_log_id' => $log->id,
+                'exercise_name' => $set['exercise_name'],
+                'set_number' => $set['set_number'],
+                'reps' => $set['reps'],
+                'weight' => $set['weight'],
+            ]);
+        }
+
+        User::find($clientId)->increment('completed_workouts');
+
+        return response()->json(['message' => 'Workout saved']);
     });
 
     Route::post('/my/trainer-requests/accept/{trainerId}', function ($trainerId) {

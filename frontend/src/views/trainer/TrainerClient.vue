@@ -180,6 +180,17 @@ const openMessages = () => {
                                 >
                                     Message
                                 </button>
+
+                                <button
+                                    @click="
+                                        router.push(
+                                            `/trainer/client/${client.id}/workouts`,
+                                        )
+                                    "
+                                    class="bg-[#1a1a1a] border border-white/10 px-5 py-3 rounded-2xl font-semibold"
+                                >
+                                    Workouts
+                                </button>
                             </div>
                         </div>
                     </div>

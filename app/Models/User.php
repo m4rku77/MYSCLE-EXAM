@@ -53,6 +53,7 @@ class User extends Authenticatable
         'gender',
         'bio',
     ];
+
     protected $hidden = [
         self::PASSWORD,
     ];

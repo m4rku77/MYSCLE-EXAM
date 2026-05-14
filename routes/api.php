@@ -239,6 +239,17 @@ Route::middleware('auth:sanctum')->group(function () {
         return response()->json(['message' => 'Workout saved']);
     });
 
+    Route::get('/trainer/client/{id}/stats', function ($id) {
+        if (auth()->user()->role !== 'trainer') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        return WorkoutLog::where('user_id', $id)
+            ->with('sets')
+            ->orderBy('created_at', 'desc')
+            ->get();
+    });
+
     Route::post('/my/trainer-requests/accept/{trainerId}', function ($trainerId) {
         TrainerClient::where('trainer_id', $trainerId)
             ->where('client_id', auth()->id())

@@ -152,6 +152,17 @@ Route::middleware('auth:sanctum')->group(function () {
         return response()->json($client);
     });
 
+    Route::put('/trainer/client/{id}', function (Request $request, $id) {
+        if (auth()->user()->role !== 'trainer') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $client = User::findOrFail($id);
+        $client->update($request->only(['goal', 'weight', 'height', 'age', 'gender', 'bio']));
+
+        return response()->json($client);
+    });
+
     Route::get('/my/trainer-requests', function () {
         $pending = TrainerClient::where('client_id', auth()->id())
             ->where('status', 'pending')

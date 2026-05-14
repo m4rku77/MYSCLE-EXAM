@@ -32,7 +32,7 @@ class User extends Authenticatable
 
     public const STATUS = 'status';
 
-    public const PROFILE_IMAGE = 'profile_image';
+    public const PROFILE_IMAGE = 'profile_photo';
 
     public const CREATED_AT = 'created_at';
 
@@ -45,9 +45,14 @@ class User extends Authenticatable
         self::EMAIL,
         self::PASSWORD,
         self::ROLE,
-        self::PROFILE_IMAGE,
+        'profile_photo',
+        'goal',
+        'weight',
+        'height',
+        'age',
+        'gender',
+        'bio',
     ];
-
     protected $hidden = [
         self::PASSWORD,
     ];

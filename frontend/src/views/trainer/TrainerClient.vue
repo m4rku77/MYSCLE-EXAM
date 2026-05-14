@@ -8,110 +8,98 @@ const router = useRouter();
 
 const client = ref(null);
 const loading = ref(true);
+const saving = ref(false);
 
 const notes = ref([]);
 const newNote = ref("");
-
-const saving = ref(false);
 
 const stats = ref({
     workouts: 0,
     weight: "",
     goal: "",
+    height: "",
+    age: "",
+    gender: "",
+    bio: "",
 });
 
-// Popup / modal
 const showPopup = ref(false);
 const popupTitle = ref("");
 const popupMessage = ref("");
 
+const token = localStorage.getItem("token");
+const headers = { Authorization: `Bearer ${token}` };
+
 const getImage = (path, name) => {
-    if (!path) {
+    if (!path)
         return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`;
-    }
-
     if (path.startsWith("http")) return path;
-
     return `http://localhost:8000/storage/${path.replace("storage/", "")}`;
 };
 
 const fetchClient = async () => {
-    try {
-        const token = localStorage.getItem("token");
+    const res = await axios.get(
+        `http://localhost:8000/api/users/${route.params.id}`,
+        { headers },
+    );
+    client.value = res.data.data ?? res.data;
+    stats.value = {
+        workouts: client.value.completed_workouts ?? 0,
+        weight: client.value.weight ?? "",
+        goal: client.value.goal ?? "",
+        height: client.value.height ?? "",
+        age: client.value.age ?? "",
+        gender: client.value.gender ?? "",
+        bio: client.value.bio ?? "",
+    };
+};
 
-        const res = await axios.get(
-            `http://localhost:8000/api/users/${route.params.id}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            },
-        );
-
-        client.value = res.data.data ?? res.data;
-        stats.value = {
-            workouts: client.value.completed_workouts ?? 0,
-            weight: client.value.weight ?? "",
-            goal: client.value.goal ?? "",
-        };
-    } catch (err) {
-        console.error(err);
-    }
+const formatDate = (date) => {
+    if (!date) return "Now";
+    return new Date(date).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+    });
 };
 
 const fetchNotes = async () => {
     try {
-        const token = localStorage.getItem("token");
-
         const res = await axios.get(
             `http://localhost:8000/api/trainer/client/${route.params.id}/notes`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            },
+            { headers },
         );
-
         notes.value = res.data.data ?? res.data;
-    } catch (err) {
-        console.error(err);
+    } catch {
         notes.value = [];
     }
 };
 
 onMounted(async () => {
     loading.value = true;
-
     await Promise.all([fetchClient(), fetchNotes()]);
-
     loading.value = false;
 });
 
 const saveClientInfo = async () => {
     try {
         saving.value = true;
-
-        const token = localStorage.getItem("token");
-
         await axios.put(
             `http://localhost:8000/api/trainer/client/${route.params.id}`,
             {
                 weight: stats.value.weight,
                 goal: stats.value.goal,
+                height: stats.value.height,
+                age: stats.value.age,
+                gender: stats.value.gender,
+                bio: stats.value.bio,
             },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            },
+            { headers },
         );
-
-        popupTitle.value = "Client Info Saved";
-        popupMessage.value =
-            "Client information has been updated successfully.";
+        popupTitle.value = "Saved";
+        popupMessage.value = "Client information updated successfully.";
         showPopup.value = true;
-    } catch (err) {
-        console.error(err);
+    } catch {
         popupTitle.value = "Error";
         popupMessage.value = "Failed to save client information.";
         showPopup.value = true;
@@ -122,24 +110,13 @@ const saveClientInfo = async () => {
 
 const addNote = async () => {
     if (!newNote.value.trim()) return;
-
     try {
-        const token = localStorage.getItem("token");
-
         const res = await axios.post(
             `http://localhost:8000/api/trainer/client/${route.params.id}/notes`,
-            {
-                text: newNote.value,
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            },
+            { note: newNote.value },
+            { headers },
         );
-
-        const note = res.data.data ?? res.data;
-        notes.value.unshift(note);
+        notes.value.unshift(res.data.data ?? res.data);
         newNote.value = "";
     } catch (err) {
         console.error(err);
@@ -148,17 +125,10 @@ const addNote = async () => {
 
 const deleteNote = async (id) => {
     try {
-        const token = localStorage.getItem("token");
-
         await axios.delete(
             `http://localhost:8000/api/trainer/client/notes/${id}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            },
+            { headers },
         );
-
         notes.value = notes.value.filter((n) => n.id !== id);
     } catch (err) {
         console.error(err);
@@ -167,10 +137,6 @@ const deleteNote = async (id) => {
 
 const openMessages = () => {
     router.push(`/trainer/messages/${client.value.id}`);
-};
-
-const closePopup = () => {
-    showPopup.value = false;
 };
 </script>
 
@@ -205,10 +171,7 @@ const closePopup = () => {
                             <h1 class="text-4xl font-bold">
                                 {{ client.name }}
                             </h1>
-
-                            <p class="text-gray-400 mt-2">
-                                {{ client.email }}
-                            </p>
+                            <p class="text-gray-400 mt-2">{{ client.email }}</p>
 
                             <div class="flex flex-wrap gap-3 mt-6">
                                 <button
@@ -216,32 +179,6 @@ const closePopup = () => {
                                     class="bg-[#7ED957] text-black px-5 py-3 rounded-2xl font-semibold"
                                 >
                                     Message
-                                </button>
-
-                                <button
-                                    class="bg-[#1a1a1a] border border-white/10 px-5 py-3 rounded-2xl font-semibold"
-                                    @click="
-                                        () => {
-                                            popupTitle = 'Placeholder Action';
-                                            popupMessage =
-                                                'This button currently shows a demo popup.';
-                                            showPopup = true;
-                                        }
-                                    "
-                                >
-                                    Training
-                                </button>
-
-                                <button
-                                    class="bg-[#1a1a1a] border border-white/10 px-5 py-3 rounded-2xl font-semibold"
-                                >
-                                    Tasks
-                                </button>
-
-                                <button
-                                    class="bg-[#1a1a1a] border border-white/10 px-5 py-3 rounded-2xl font-semibold"
-                                >
-                                    Settings
                                 </button>
                             </div>
                         </div>
@@ -263,12 +200,11 @@ const closePopup = () => {
                     <div
                         class="bg-[#151515] border border-white/5 rounded-3xl p-6"
                     >
-                        <p class="text-sm text-gray-500">Current Weight</p>
+                        <p class="text-sm text-gray-500 mb-3">Current Weight</p>
                         <input
                             v-model="stats.weight"
-                            @blur="saveClientInfo"
-                            placeholder="Enter weight"
-                            class="mt-3 w-full bg-[#101010] border border-white/10 rounded-2xl px-4 py-3 outline-none"
+                            placeholder="e.g. 82kg"
+                            class="w-full bg-[#101010] border border-white/10 rounded-2xl px-4 py-3 outline-none focus:border-[#7ED957]"
                         />
                     </div>
                 </div>
@@ -278,71 +214,73 @@ const closePopup = () => {
                         class="flex items-center justify-between flex-wrap gap-4 mb-6"
                     >
                         <div>
-                            <h2 class="text-2xl font-bold">
-                                Client Information
-                            </h2>
+                            <h2 class="text-2xl font-bold">Client Metrics</h2>
                             <p class="text-gray-500 mt-1">
-                                Basic athlete profile
+                                Editable athlete data
                             </p>
-                        </div>
-                        <div v-if="saving" class="text-sm text-[#7ED957]">
-                            Saving...
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div class="bg-[#101010] rounded-2xl p-5">
-                            <p class="text-sm text-gray-500">Full Name</p>
-                            <h3 class="text-lg font-semibold mt-2">
-                                {{ client.name }}
-                            </h3>
-                        </div>
-
-                        <div class="bg-[#101010] rounded-2xl p-5">
-                            <p class="text-sm text-gray-500">Email</p>
-                            <h3 class="text-lg font-semibold mt-2 break-all">
-                                {{ client.email }}
-                            </h3>
-                        </div>
-
-                        <div class="bg-[#101010] rounded-2xl p-5">
-                            <p class="text-sm text-gray-500">Height</p>
-                            <h3 class="text-lg font-semibold mt-2">
-                                {{ client.height || "--" }}
-                            </h3>
-                        </div>
-
-                        <div class="bg-[#101010] rounded-2xl p-5">
-                            <p class="text-sm text-gray-500">Age</p>
-                            <h3 class="text-lg font-semibold mt-2">
-                                {{ client.age || "--" }}
-                            </h3>
-                        </div>
-
-                        <div class="bg-[#101010] rounded-2xl p-5">
-                            <p class="text-sm text-gray-500">Gender</p>
-                            <h3 class="text-lg font-semibold mt-2">
-                                {{ client.gender || "--" }}
-                            </h3>
-                        </div>
-
-                        <div class="bg-[#101010] rounded-2xl p-5">
                             <p class="text-sm text-gray-500 mb-3">Goal</p>
                             <input
                                 v-model="stats.goal"
-                                @blur="saveClientInfo"
-                                placeholder="Enter goal"
-                                class="w-full bg-[#181818] border border-white/10 rounded-2xl px-4 py-3 outline-none"
+                                placeholder="e.g. Muscle Gain"
+                                class="w-full bg-[#181818] border border-white/10 rounded-2xl px-4 py-3 outline-none focus:border-[#7ED957]"
                             />
                         </div>
 
+                        <div class="bg-[#101010] rounded-2xl p-5">
+                            <p class="text-sm text-gray-500 mb-3">Height</p>
+                            <input
+                                v-model="stats.height"
+                                placeholder="e.g. 182cm"
+                                class="w-full bg-[#181818] border border-white/10 rounded-2xl px-4 py-3 outline-none focus:border-[#7ED957]"
+                            />
+                        </div>
+
+                        <div class="bg-[#101010] rounded-2xl p-5">
+                            <p class="text-sm text-gray-500 mb-3">Age</p>
+                            <input
+                                v-model="stats.age"
+                                type="number"
+                                placeholder="e.g. 23"
+                                class="w-full bg-[#181818] border border-white/10 rounded-2xl px-4 py-3 outline-none focus:border-[#7ED957]"
+                            />
+                        </div>
+
+                        <div class="bg-[#101010] rounded-2xl p-5">
+                            <p class="text-sm text-gray-500 mb-3">Gender</p>
+                            <select
+                                v-model="stats.gender"
+                                class="w-full bg-[#181818] border border-white/10 rounded-2xl px-4 py-3 outline-none focus:border-[#7ED957]"
+                            >
+                                <option value="">Select gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
                         <div class="bg-[#101010] rounded-2xl p-5 md:col-span-2">
-                            <p class="text-sm text-gray-500">Bio</p>
-                            <p class="text-gray-300 mt-3 leading-relaxed">
-                                {{ client.bio || "No bio added." }}
-                            </p>
+                            <p class="text-sm text-gray-500 mb-3">Bio</p>
+                            <textarea
+                                v-model="stats.bio"
+                                placeholder="Client bio..."
+                                rows="3"
+                                class="w-full bg-[#181818] border border-white/10 rounded-2xl px-4 py-3 outline-none focus:border-[#7ED957] resize-none"
+                            />
                         </div>
                     </div>
+
+                    <button
+                        @click="saveClientInfo"
+                        :disabled="saving"
+                        class="mt-6 w-full py-3 bg-[#7ED957] text-black rounded-2xl font-semibold"
+                    >
+                        {{ saving ? "Saving..." : "Save Changes" }}
+                    </button>
                 </div>
 
                 <div class="bg-[#151515] border border-white/5 rounded-3xl p-6">
@@ -355,9 +293,8 @@ const closePopup = () => {
                         <input
                             v-model="newNote"
                             placeholder="Write a note..."
-                            class="flex-1 bg-[#101010] border border-white/10 rounded-2xl px-4 py-3 outline-none"
+                            class="flex-1 bg-[#101010] border border-white/10 rounded-2xl px-4 py-3 outline-none focus:border-[#7ED957]"
                         />
-
                         <button
                             @click="addNote"
                             class="bg-[#7ED957] text-black px-5 rounded-2xl font-semibold"
@@ -373,10 +310,9 @@ const closePopup = () => {
                             class="bg-[#101010] border border-white/5 rounded-2xl p-5"
                         >
                             <div class="flex items-center justify-between mb-3">
-                                <span class="text-sm text-[#7ED957]">
-                                    {{ note.created_at || "Now" }}
-                                </span>
-
+                                <span class="text-sm text-[#7ED957]">{{
+                                    formatDate(note.created_at)
+                                }}</span>
                                 <button
                                     @click="deleteNote(note.id)"
                                     class="text-red-400 text-sm hover:text-red-300"
@@ -384,9 +320,8 @@ const closePopup = () => {
                                     Delete
                                 </button>
                             </div>
-
                             <p class="text-gray-300 leading-relaxed">
-                                {{ note.text }}
+                                {{ note.note }}
                             </p>
                         </div>
                     </div>
@@ -401,7 +336,7 @@ const closePopup = () => {
         <div
             v-if="showPopup"
             class="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
-            @click.self="closePopup"
+            @click.self="showPopup = false"
         >
             <div
                 class="bg-[#151515] border border-white/10 rounded-3xl p-6 w-full max-w-md shadow-2xl mx-4"
@@ -409,14 +344,10 @@ const closePopup = () => {
                 <h3 class="text-xl font-bold text-white mb-3">
                     {{ popupTitle }}
                 </h3>
-
-                <p class="text-gray-300 mb-6">
-                    {{ popupMessage }}
-                </p>
-
-                <div class="flex justify-end gap-3">
+                <p class="text-gray-300 mb-6">{{ popupMessage }}</p>
+                <div class="flex justify-end">
                     <button
-                        @click="closePopup"
+                        @click="showPopup = false"
                         class="bg-[#1a1a1a] border border-white/10 px-4 py-2 rounded-2xl text-sm"
                     >
                         Close

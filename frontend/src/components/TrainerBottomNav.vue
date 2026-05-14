@@ -9,22 +9,9 @@ const go = (path) => {
 };
 
 const isActive = (type) => {
-    if (type === "clients") {
-        return route.path === "/trainer";
-    }
-
-    if (type === "plans") {
-        return route.path.startsWith("/trainer/plans");
-    }
-
-    if (type === "messages") {
-        return route.path.startsWith("/trainer/messages");
-    }
-
-    if (type === "profile") {
-        return route.path.startsWith("/trainer/profile");
-    }
-
+    if (type === "clients") return route.path === "/trainer";
+    if (type === "messages") return route.path.startsWith("/trainer/messages");
+    if (type === "profile") return route.path.startsWith("/trainer/profile");
     return false;
 };
 </script>
@@ -40,15 +27,6 @@ const isActive = (type) => {
         >
             <i class="fas fa-users text-lg"></i>
             <span>Clients</span>
-        </button>
-
-        <button
-            @click="go('/trainer/plans')"
-            class="flex flex-col items-center"
-            :class="isActive('plans') ? 'text-[#7ED957]' : 'text-gray-500'"
-        >
-            <i class="fas fa-dumbbell text-lg"></i>
-            <span>Plans</span>
         </button>
 
         <button

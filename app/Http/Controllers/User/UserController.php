@@ -37,12 +37,30 @@ class UserController extends Controller
                 : null,
             'created_at' => $user->created_at,
             'location' => $user->location ?? 'Unknown',
-            'bio' => $user->bio ?? 'No bio yet',
+            'bio' => $user->bio,
+            'goal' => $user->goal,
+            'weight' => $user->weight,
+            'height' => $user->height,
+            'age' => $user->age,
+            'gender' => $user->gender,
+            'completed_workouts' => $user->completed_workouts,
             'stats' => [
                 'workouts' => $workouts,
                 'sets' => $sets,
                 'reps' => $reps,
             ],
+        ]);
+
+    }
+
+    public function destroy(int $id)
+    {
+        $user = User::findOrFail($id);
+
+        $user->delete();
+
+        return response()->json([
+            'message' => 'User deleted successfully',
         ]);
     }
 }

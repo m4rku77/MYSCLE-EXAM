@@ -16,9 +16,12 @@ class UserLogicRepository
 
     public function register(array $data): User
     {
-        $data[User::PASSWORD] = Hash::make($data[User::PASSWORD]);
-
-        return $this->db->create($data);
+        return $this->db->create([
+            'name' => $data['first_name'].' '.$data['last_name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+            'role' => $data['role'] ?? 'user',
+        ]);
     }
 
     public function login(array $data): array

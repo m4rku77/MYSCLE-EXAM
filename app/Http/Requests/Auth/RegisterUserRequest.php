@@ -18,10 +18,10 @@ final class RegisterUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            User::NAME => ['required', 'string', 'max:255'],
-            User::SURNAME => ['required', 'string', 'max:255'],
-            User::EMAIL => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            User::PASSWORD => ['required', 'confirmed', Password::defaults()],
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'password' => ['required', 'confirmed', Password::defaults()],
         ];
     }
 }

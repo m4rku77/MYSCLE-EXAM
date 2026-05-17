@@ -53,7 +53,6 @@ class WorkoutController extends Controller
             $exercise = Exercise::create([
                 'training_plan_id' => $workout->id,
                 'name' => $exerciseData['name'],
-                'weight' => 0,
             ]);
 
             foreach ($exerciseData['sets'] as $setData) {

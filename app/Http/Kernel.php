@@ -43,7 +43,6 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
 
-        // 🌐 WEB (Blade / sessions / CSRF)
         'web' => [
             EncryptCookies::class,
             AddQueuedCookiesToResponse::class,
@@ -53,7 +52,6 @@ class Kernel extends HttpKernel
             SubstituteBindings::class,
         ],
 
-        // 🚀 API (NO CSRF, TOKEN BASED)
         'api' => [
             'throttle:api',
             SubstituteBindings::class,

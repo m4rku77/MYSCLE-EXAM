@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Auth;
 
 use App\Data\Auth\UpdatePasswordData;
-use App\Data\User\CreateUserData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\RegisterUserRequest;
@@ -15,7 +14,6 @@ use App\Models\User;
 use App\Repositories\Auth\PasswordLogicRepository;
 use App\Repositories\User\UserLogicRepository;
 use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\JsonResponse;
@@ -47,8 +45,13 @@ final class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'user' => $user,
             'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+            ],
         ]);
     }
 
@@ -61,15 +64,16 @@ final class AuthController extends Controller
         ]);
     }
 
-    public function register(RegisterUserRequest $request): Response
+    public function register(RegisterUserRequest $request): JsonResponse
     {
-        $data = CreateUserData::from($request->validated());
+        $user = $this->userLogic->register($request->validated());
 
-        $user = $this->userLogic->createUser($data);
+        $token = $user->createToken('auth_token')->plainTextToken;
 
-        event(new Registered($user));
-
-        return response()->noContent();
+        return response()->json([
+            'user' => $user,
+            'token' => $token,
+        ]);
     }
 
     public function sendEmailVerification(Request $request): JsonResponse

@@ -32,7 +32,7 @@ class User extends Authenticatable
 
     public const STATUS = 'status';
 
-    public const PROFILE_IMAGE = 'profile_image';
+    public const PROFILE_IMAGE = 'profile_photo';
 
     public const CREATED_AT = 'created_at';
 
@@ -41,14 +41,17 @@ class User extends Authenticatable
     protected $table = self::TABLE;
 
     protected $fillable = [
-        self::USERNAME,
-        self::FIRST_NAME,
-        self::LAST_NAME,
+        'name',
         self::EMAIL,
         self::PASSWORD,
         self::ROLE,
-        self::STATUS,
-        self::PROFILE_IMAGE,
+        'profile_photo',
+        'goal',
+        'weight',
+        'height',
+        'age',
+        'gender',
+        'bio',
     ];
 
     protected $hidden = [
@@ -113,13 +116,28 @@ class User extends Authenticatable
         );
     }
 
-    public function getFullNameAttribute(): string
-    {
-        return $this->first_name.' '.$this->last_name;
-    }
-
     public function workouts()
     {
         return $this->hasMany(Workout::class);
+    }
+
+    public function clients()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'trainer_clients',
+            'trainer_id',
+            'client_id'
+        );
+    }
+
+    public function trainers()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'trainer_clients',
+            'client_id',
+            'trainer_id'
+        );
     }
 }

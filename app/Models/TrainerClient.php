@@ -15,7 +15,7 @@ class TrainerClient extends Model
 
     public const TRAINER_ID = 'trainer_id';
 
-    public const ATHLETE_ID = 'athlete_id';
+    public const CLIENT_ID = 'client_id';
 
     public const STATUS = 'status';
 
@@ -27,25 +27,17 @@ class TrainerClient extends Model
 
     protected $fillable = [
         self::TRAINER_ID,
-        self::ATHLETE_ID,
+        self::CLIENT_ID,
         self::STATUS,
     ];
 
     public function trainer(): BelongsTo
     {
-        return $this->belongsTo(
-            User::class,
-            self::TRAINER_ID,
-            User::ID
-        );
+        return $this->belongsTo(User::class, self::TRAINER_ID, User::ID);
     }
 
-    public function athlete(): BelongsTo
+    public function client(): BelongsTo
     {
-        return $this->belongsTo(
-            User::class,
-            self::ATHLETE_ID,
-            User::ID
-        );
+        return $this->belongsTo(User::class, self::CLIENT_ID, User::ID);
     }
 }

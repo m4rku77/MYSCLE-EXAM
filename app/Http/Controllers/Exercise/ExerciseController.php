@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Exercise;
 
-use App\Http\Requests\CreateExerciseRequest;
 use App\Http\Resources\ExerciseResource;
+use App\Models\Exercise;
 use App\Repositories\Exercise\ExerciseLogicRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -30,11 +30,14 @@ class ExerciseController
         );
     }
 
-    public function store(CreateExerciseRequest $request): ExerciseResource
+    public function store(Request $request)
     {
-        $exercise = $this->logic->create($request->validated());
+        $exercise = Exercise::create([
+            'training_plan_id' => $request->workout_id,
+            'name' => $request->name,
+        ]);
 
-        return new ExerciseResource($exercise);
+        return response()->json($exercise);
     }
 
     public function update(Request $request, $id)

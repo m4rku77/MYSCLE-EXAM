@@ -37,4 +37,20 @@ class MessageLogicRepository
     {
         $this->db->delete($id);
     }
+
+    public function getConversation($user1, $user2)
+    {
+        Message::where('sender_id', $user2)
+            ->where('receiver_id', $user1)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        return Message::where(function ($q) use ($user1, $user2) {
+            $q->where('sender_id', $user1)
+                ->where('receiver_id', $user2);
+        })->orWhere(function ($q) use ($user1, $user2) {
+            $q->where('sender_id', $user2)
+                ->where('receiver_id', $user1);
+        })->orderBy('created_at')->get();
+    }
 }

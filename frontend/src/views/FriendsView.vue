@@ -10,6 +10,12 @@ const users = ref([])
 const search = ref("")
 const loading = ref(true)
 
+const getImage = (path, name) => {
+  if (!path) return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`
+  if (path.startsWith("http")) return path
+  return `http://localhost:8000/storage/${path}`
+}
+
 const fetchFriends = async () => {
   try {
     const token = localStorage.getItem("token")
@@ -90,7 +96,7 @@ const addFriend = async (id) => {
 }
 
 const goToUser = (id) => {
-  router.push(`/user/${id}`) 
+  router.push(`/user/${id}`)
 }
 
 onMounted(async () => {
@@ -134,9 +140,7 @@ const filteredFriends = () => {
       >
         <div class="flex items-center gap-3">
           <img
-            :src="user.profile_photo 
-              ? user.profile_photo 
-              : `https://ui-avatars.com/api/?name=${user.name}`"
+            :src="getImage(user.profile_photo, user.name)"
             class="w-8 h-8 rounded-full object-cover"
           />
           <span>{{ user.name }}</span>
@@ -165,9 +169,7 @@ const filteredFriends = () => {
       >
         <div class="flex items-center gap-3">
           <img
-            :src="friend.profile_photo 
-              ? friend.profile_photo 
-              : `https://ui-avatars.com/api/?name=${friend.name}`"
+            :src="getImage(friend.profile_photo, friend.name)"
             class="w-10 h-10 rounded-full object-cover"
           />
 
@@ -179,12 +181,12 @@ const filteredFriends = () => {
           </div>
         </div>
 
- <button 
-  @click="goToUser(friend.id)"
-  class="px-4 py-2 bg-[#7ED957] text-black rounded-lg text-sm font-semibold hover:scale-105 hover:bg-[#6fd44a] transition"
->
-  View
-</button>
+        <button 
+          @click="goToUser(friend.id)"
+          class="px-4 py-2 bg-[#7ED957] text-black rounded-lg text-sm font-semibold hover:scale-105 hover:bg-[#6fd44a] transition"
+        >
+          View
+        </button>
       </div>
 
       <div v-else-if="!loading && !search" class="text-gray-500 text-center mt-6">

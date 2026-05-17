@@ -361,4 +361,49 @@ Route::middleware('auth:sanctum')->group(function () {
             'created_at' => $last->created_at,
         ]);
     });
+    
+
+    Route::post('/stripe/checkout', function (Request $request) {
+    \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
+
+    $session = \Stripe\Checkout\Session::create([
+        'payment_method_types' => ['card'],
+        'line_items' => [[
+            'price_data' => [
+                'currency'     => 'usd',
+                'product_data' => ['name' => 'Trainer Subscription'],
+                'unit_amount'  => 2999,
+            ],
+            'quantity' => 1,
+        ]],
+        'mode'        => 'payment',
+        'success_url' => 'http://localhost:5173/payment/success',
+        'cancel_url'  => 'http://localhost:5173/payment/cancel',
+        'metadata'    => ['user_id' => auth()->id()],
+    ]);
+
+    return response()->json(['url' => $session->url]);
+});
+});
+
+Route::post('/stripe/webhook', function (Request $request) {
+    \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
+
+    $payload = $request->getContent();
+    $sig     = $request->header('Stripe-Signature');
+
+    try {
+        $event = \Stripe\Webhook::constructEvent(
+            $payload, $sig, config('services.stripe.webhook_secret')
+        );
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 400);
+    }
+
+    if ($event->type === 'checkout.session.completed') {
+        $userId = $event->data->object->metadata->user_id;
+        User::find($userId)?->update(['role' => 'trainer']);
+    }
+
+    return response()->json(['status' => 'ok']);
 });

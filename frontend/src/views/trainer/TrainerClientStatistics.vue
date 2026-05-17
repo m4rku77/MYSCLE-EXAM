@@ -568,7 +568,6 @@ watch(activeTab, async (val) => {
             </div>
 
             <div class="max-w-5xl mx-auto px-5 py-6 space-y-5 pb-20">
-                <!-- OVERVIEW TAB -->
                 <template v-if="activeTab === 'overview'">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                         <div
@@ -866,7 +865,6 @@ watch(activeTab, async (val) => {
                     </div>
                 </template>
 
-                <!-- STRENGTH TAB -->
                 <template v-if="activeTab === 'strength'">
                     <div
                         v-if="exerciseList.length === 0"

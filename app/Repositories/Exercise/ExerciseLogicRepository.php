@@ -35,6 +35,7 @@ class ExerciseLogicRepository
 
         $exercise->update([
             'name' => $data['name'] ?? $exercise->name,
+            'notes' => $data['notes'] ?? $exercise->notes,
         ]);
 
         if (! empty($data['sets_data']) && is_array($data['sets_data'])) {

@@ -21,7 +21,7 @@ return new class extends Migration
 
             $table->string('profile_photo')->nullable();
 
-            $table->enum('role', ['user', 'trainer', 'moderator'])->default('user');
+            $table->enum('role', ['user', 'trainer', 'admin'])->default('user');
 
             $table->string('goal')->nullable();
 

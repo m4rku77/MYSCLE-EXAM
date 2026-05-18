@@ -19,7 +19,7 @@ return new class extends Migration
                 ->constrained('users')
                 ->cascadeOnDelete();
 
-            $table->string('status')->default('pending');
+            $table->enum('status', ['pending', 'accepted'])->default('pending');
 
             $table->timestamps();
         });

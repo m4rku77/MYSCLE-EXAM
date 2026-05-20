@@ -219,7 +219,6 @@ const filtered = computed(() =>
             </main>
         </div>
 
-        <!-- MOBILE VIEW -->
         <div class="md:hidden flex flex-col h-[100dvh]">
             <div
                 class="bg-gradient-to-b from-[#7ED957] to-[#5fcf47] text-black px-5 pt-12 pb-8 rounded-b-3xl"

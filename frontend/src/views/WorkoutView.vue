@@ -225,7 +225,6 @@ const removeExercise = (index) => {
         v-else-if="workout"
         class="h-[100dvh] bg-[#080808] text-white flex flex-col"
     >
-        <!-- DESKTOP -->
         <div class="hidden md:flex h-full">
             <aside
                 class="w-64 bg-[#0f0f0f] border-r border-white/5 flex flex-col px-6 py-8 fixed h-full"
@@ -524,7 +523,6 @@ const removeExercise = (index) => {
             </main>
         </div>
 
-        <!-- MOBILE -->
         <div class="md:hidden flex flex-col h-full">
             <div
                 class="bg-gradient-to-b from-[#7ED957] to-[#5fcf47] text-black px-5 pt-12 pb-8 rounded-b-3xl"

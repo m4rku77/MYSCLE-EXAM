@@ -4,9 +4,11 @@ import UserBottomNav from "../components/UserBottomNav.vue";
 
 const route = useRoute();
 
-const hideNav = ["/dashboard"];
 const shouldHideNav =
-    hideNav.includes(route.path) || route.path.startsWith("/workout/");
+    route.path === "/dashboard" ||
+    route.path.startsWith("/workout/") ||
+    route.path === "/statistics" ||
+    route.path === "/create-workout";
 </script>
 
 <template>
@@ -14,7 +16,6 @@ const shouldHideNav =
         <div class="flex-1 overflow-y-auto">
             <RouterView />
         </div>
-
         <UserBottomNav v-if="!shouldHideNav" />
     </div>
 </template>

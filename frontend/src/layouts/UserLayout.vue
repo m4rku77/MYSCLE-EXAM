@@ -3,6 +3,10 @@ import { useRoute } from "vue-router";
 import UserBottomNav from "../components/UserBottomNav.vue";
 
 const route = useRoute();
+
+const hideNav = ["/dashboard"];
+const shouldHideNav =
+    hideNav.includes(route.path) || route.path.startsWith("/workout/");
 </script>
 
 <template>
@@ -11,6 +15,6 @@ const route = useRoute();
             <RouterView />
         </div>
 
-        <UserBottomNav v-if="route.path !== '/dashboard'" />
+        <UserBottomNav v-if="!shouldHideNav" />
     </div>
 </template>

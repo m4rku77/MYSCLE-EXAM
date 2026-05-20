@@ -361,4 +361,88 @@ Route::middleware('auth:sanctum')->group(function () {
             'created_at' => $last->created_at,
         ]);
     });
+    
+
+    Route::post('/stripe/checkout', function (Request $request) {
+        \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
+
+        $session = \Stripe\Checkout\Session::create([
+            'payment_method_types' => ['card'],
+            'line_items' => [[
+                'price_data' => [
+                    'currency'        => 'usd',
+                    'product_data'    => ['name' => 'Trainer Subscription'],
+                    'unit_amount'     => 2999,
+                    'recurring'       => ['interval' => 'month'],
+                ],
+                'quantity' => 1,
+            ]],
+            'mode'               => 'subscription',
+            'subscription_data'  => ['trial_period_days' => 30],
+            'success_url'        => 'http://localhost:5173/payment/success',
+            'cancel_url'         => 'http://localhost:5173/payment/cancel',
+            'metadata'           => ['user_id' => auth()->id()],
+        ]);
+
+        return response()->json(['url' => $session->url]);
+    });
+});
+
+Route::post('/stripe/webhook', function (Request $request) {
+    \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
+
+    $payload = $request->getContent();
+    $sig     = $request->header('Stripe-Signature');
+
+    try {
+        $event = \Stripe\Webhook::constructEvent(
+            $payload, $sig, config('services.stripe.webhook_secret')
+        );
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 400);
+    }
+
+    if ($event->type === 'checkout.session.completed') {
+        $userId         = $event->data->object->metadata->user_id;
+        $subscriptionId = $event->data->object->subscription;
+        $customerId     = $event->data->object->customer;
+
+        $subscription = \Stripe\Subscription::retrieve($subscriptionId);
+
+        \App\Models\User::find($userId)?->update(['role' => 'trainer']);
+
+        \DB::table('subscriptions')->insert([
+            'user_id'                => $userId,
+            'stripe_customer_id'     => $customerId,
+            'stripe_subscription_id' => $subscriptionId,
+            'status'                 => 'trialing',
+            'trial_ends_at'          => \Carbon\Carbon::createFromTimestamp($subscription->trial_end),
+            'created_at'             => now(),
+            'updated_at'             => now(),
+        ]);
+    }
+
+    if ($event->type === 'customer.subscription.updated') {
+        $subscriptionId = $event->data->object->id;
+        $status         = $event->data->object->status;
+
+        \DB::table('subscriptions')
+            ->where('stripe_subscription_id', $subscriptionId)
+            ->update(['status' => $status, 'updated_at' => now()]);
+    }
+
+    if ($event->type === 'customer.subscription.deleted') {
+        $subscriptionId = $event->data->object->id;
+
+        \DB::table('subscriptions')
+            ->where('stripe_subscription_id', $subscriptionId)
+            ->update(['status' => 'cancelled', 'ends_at' => now(), 'updated_at' => now()]);
+
+        $sub = \DB::table('subscriptions')->where('stripe_subscription_id', $subscriptionId)->first();
+        if ($sub) {
+            \App\Models\User::find($sub->user_id)?->update(['role' => 'user']);
+        }
+    }
+
+    return response()->json(['status' => 'ok']);
 });

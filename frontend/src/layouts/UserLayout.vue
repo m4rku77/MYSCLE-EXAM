@@ -1,5 +1,8 @@
 <script setup>
+import { useRoute } from "vue-router";
 import UserBottomNav from "../components/UserBottomNav.vue";
+
+const route = useRoute();
 </script>
 
 <template>
@@ -8,6 +11,6 @@ import UserBottomNav from "../components/UserBottomNav.vue";
             <RouterView />
         </div>
 
-        <UserBottomNav />
+        <UserBottomNav v-if="route.path !== '/dashboard'" />
     </div>
 </template>

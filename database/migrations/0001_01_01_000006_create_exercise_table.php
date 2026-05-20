@@ -20,6 +20,8 @@ return new class extends Migration
 
             $table->string(Exercise::NAME, 100);
 
+            $table->text('notes')->nullable();
+
             $table->timestamp(Exercise::CREATED_AT)
                 ->useCurrent();
 

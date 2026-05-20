@@ -26,6 +26,10 @@ import TrainerClient from "../views/trainer/TrainerClient.vue";
 import TrainerClientWorkouts from "../views/trainer/TrainerClientWorkouts.vue";
 import TrainerClientWorkoutDetail from "../views/trainer/TrainerClientWorkoutDetail.vue";
 import TrainerClientStatistics from "../views/trainer/TrainerClientStatistics.vue";
+
+import UpgradeView from "../views/UpgradeView.vue";
+import PaymentSuccess from "../views/PaymentSuccess.vue";
+import PaymentCancel from "../views/PaymentCancel.vue";
 const routes = [
     { path: "/", component: HomeView },
 
@@ -57,6 +61,15 @@ const routes = [
         component: MessagesChatView,
         meta: { requiresAuth: true, requiresAdmin: true },
     },
+
+    //stripe
+    {
+        path: "/upgrade",
+        component: UpgradeView,
+        meta: { requiresAuth: true },
+    },
+    { path: "/payment/success", component: PaymentSuccess },
+    { path: "/payment/cancel", component: PaymentCancel },
 
     // USER
     {
@@ -127,7 +140,7 @@ router.beforeEach((to) => {
     const role = localStorage.getItem("role");
 
     if (to.meta.requiresAuth && !token) {
-        return "/login";
+        return `/login?redirect=${to.path}`;
     }
 
     if (to.meta.requiresAdmin && role !== "admin") {

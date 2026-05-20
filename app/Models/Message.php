@@ -10,21 +10,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Message extends Model
 {
     public const TABLE = 'messages';
-
     public const ID = 'id';
-
     public const SENDER_ID = 'sender_id';
-
     public const RECEIVER_ID = 'receiver_id';
-
     public const MESSAGE = 'message';
-
     public const CREATED_AT = 'created_at';
-
     public const UPDATED_AT = 'updated_at';
-
     public const READ_AT = 'read_at';
-
     protected $table = self::TABLE;
 
     protected $fillable = [

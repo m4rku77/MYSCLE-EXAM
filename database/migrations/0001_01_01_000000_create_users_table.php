@@ -15,13 +15,12 @@ return new class extends Migration
 
             $table->string('email')->unique();
 
-            $table->timestamp('email_verified_at')->nullable();
 
             $table->string('password');
 
             $table->string('profile_photo')->nullable();
 
-            $table->string('role')->default('user');
+            $table->enum('role', ['user', 'trainer', 'admin'])->default('user');
 
             $table->string('goal')->nullable();
 

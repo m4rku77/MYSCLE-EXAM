@@ -15,31 +15,18 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     public const TABLE = 'users';
-
     public const ID = 'id';
-
     public const USERNAME = 'username';
-
     public const FIRST_NAME = 'first_name';
-
     public const LAST_NAME = 'last_name';
-
     public const EMAIL = 'email';
-
     public const PASSWORD = 'password';
-
     public const ROLE = 'role';
-
     public const STATUS = 'status';
-
     public const PROFILE_IMAGE = 'profile_photo';
-
     public const CREATED_AT = 'created_at';
-
     public const UPDATED_AT = 'updated_at';
-
     protected $table = self::TABLE;
-
     protected $fillable = [
         'name',
         self::EMAIL,

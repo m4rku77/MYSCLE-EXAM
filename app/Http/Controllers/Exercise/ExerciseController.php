@@ -32,10 +32,11 @@ class ExerciseController
 
     public function store(Request $request)
     {
-        $exercise = Exercise::create([
-            'training_plan_id' => $request->workout_id,
-            'name' => $request->name,
-        ]);
+       $exercise = Exercise::create([
+        'training_plan_id' => $request->workout_id,
+        'name' => $request->name,
+        'notes' => $request->notes,
+    ]);
 
         return response()->json($exercise);
     }
@@ -47,6 +48,7 @@ class ExerciseController
         $this->logic->updateExercise($id, [
             'name' => $request->name,
             'sets_data' => $request->sets_data,
+            'notes' => $request->notes,
         ]);
 
         return response()->json([

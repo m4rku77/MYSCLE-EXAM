@@ -16,4 +16,8 @@ class WorkoutLog extends Model
     {
         return $this->hasMany(WorkoutLogSet::class);
     }
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class);
+    }
 }

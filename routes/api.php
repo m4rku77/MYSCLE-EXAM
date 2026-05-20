@@ -27,10 +27,10 @@ Route::get('/home', [StatsController::class, 'home']);
 Route::get('/stats', [StatsController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
-
-
+    Route::get('/admin/trainer-clients', [AdminUserController::class, 'trainerClients']);
+    Route::get('/admin/workout-logs', [AdminUserController::class, 'workoutLogs']);
     Route::get('/admin/subscriptions', [AdminUserController::class, 'subscriptions']);
-    
+    Route::get('/admin/training-plans', [AdminUserController::class, 'trainingPlans']);
     Route::get('/messages/{userId}', [MessageController::class, 'getMessages']);
     Route::post('/messages', [MessageController::class, 'store']);
 
@@ -52,7 +52,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
-
+    Route::get('/admin/friends', [AdminUserController::class, 'friends']);
     Route::get('/friends', [FriendController::class, 'index']);
     Route::post('/friends/add', [FriendController::class, 'add']);
     Route::delete('/friends/{id}', [FriendController::class, 'remove']);

@@ -31,6 +31,7 @@ import UpgradeView from "../views/UpgradeView.vue";
 import PaymentSuccess from "../views/PaymentSuccess.vue";
 import PaymentCancel from "../views/PaymentCancel.vue";
 import AdminLayout from "../layouts/AdminLayout.vue";
+import ActivityLogView from "../views/admin/ActivityLog.vue";
 
 import SubscriptionView from "../views/admin/SubscriptionView.vue";
 const routes = [
@@ -128,6 +129,7 @@ const routes = [
             { path: "statistics", component: Statistics },
             { path: "friends", component: FriendsView },
             { path: "subscriptions", component: SubscriptionView },
+            { path: "activitylog", component: ActivityLogView },
         ],
     },
 

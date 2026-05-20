@@ -12,7 +12,11 @@ const links = [
         path: "/admin/subscriptions",
         icon: "fas fa-credit-card",
     },
-    { name: "Activity Log", path: "/admin/activity", icon: "fas fa-history" },
+    {
+        name: "Activity Log",
+        path: "/admin/activitylog",
+        icon: "fas fa-history",
+    },
 ];
 </script>
 

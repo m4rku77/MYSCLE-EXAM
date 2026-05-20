@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 import UserBottomNav from "../components/UserBottomNav.vue";
+const role = localStorage.getItem("role");
 
 const router = useRouter();
 const chats = ref([]);
@@ -24,6 +25,16 @@ const formatTime = (date) => {
     if (!date) return "";
     const d = new Date(date);
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+};
+
+const openChat = (id) => {
+    if (role === "trainer") {
+        router.push(`/trainer/messages/${id}`);
+    } else if (role === "admin") {
+        router.push(`/admin/messages/${id}`);
+    } else {
+        router.push(`/messages/${id}`);
+    }
 };
 
 const getLastMessage = async (userId) => {
@@ -127,48 +138,6 @@ const newChats = computed(() => chats.value.filter((c) => !c.last_message));
 
 <template>
     <div class="h-screen bg-[#080808] text-white flex">
-        <aside
-            class="hidden md:flex w-64 bg-[#0f0f0f] border-r border-white/5 flex-col px-6 py-8 fixed h-full"
-        >
-            <div class="flex items-center gap-3 mb-12">
-                <img src="/logo.png" class="h-8" />
-                <span class="font-black text-lg tracking-widest uppercase"
-                    >Myscle</span
-                >
-            </div>
-            <nav class="space-y-1 flex-1">
-                <div
-                    @click="router.push('/dashboard')"
-                    class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
-                >
-                    <i class="fas fa-dumbbell w-4"></i> Workouts
-                </div>
-                <div
-                    @click="router.push('/statistics')"
-                    class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
-                >
-                    <i class="fas fa-chart-line w-4"></i> Statistics
-                </div>
-                <div
-                    @click="router.push('/friends')"
-                    class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
-                >
-                    <i class="fas fa-users w-4"></i> Friends
-                </div>
-                <div
-                    class="flex items-center gap-3 px-4 py-3 bg-[#7ED957]/10 border border-[#7ED957]/20 rounded-2xl text-[#7ED957] font-semibold text-sm"
-                >
-                    <i class="fas fa-comment w-4"></i> Messages
-                </div>
-                <div
-                    @click="router.push('/profile')"
-                    class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
-                >
-                    <i class="fas fa-user w-4"></i> Profile
-                </div>
-            </nav>
-        </aside>
-
         <div class="flex-1 md:ml-64 flex flex-col overflow-hidden">
             <div
                 class="md:hidden bg-gradient-to-b from-[#7ED957] to-[#5fcf47] text-black px-5 pt-12 pb-8 rounded-b-3xl shrink-0"
@@ -260,7 +229,6 @@ const newChats = computed(() => chats.value.filter((c) => !c.last_message));
                             class="absolute top-0 right-0 w-3 h-3 bg-[#7ED957] rounded-full border-2 border-[#111]"
                         ></span>
                     </div>
-
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-2 mb-0.5">
                             <p
@@ -276,9 +244,8 @@ const newChats = computed(() => chats.value.filter((c) => !c.last_message));
                             <span
                                 v-if="chat.isTrainer"
                                 class="text-xs bg-[#7ED957]/20 text-[#7ED957] px-2 py-0.5 rounded-full shrink-0 font-semibold"
+                                >Trainer</span
                             >
-                                Trainer
-                            </span>
                         </div>
                         <p
                             class="text-xs truncate"
@@ -300,7 +267,6 @@ const newChats = computed(() => chats.value.filter((c) => !c.last_message));
                             }}
                         </p>
                     </div>
-
                     <div class="flex flex-col items-end gap-2 shrink-0">
                         <span v-if="chat.time" class="text-xs text-gray-600">{{
                             formatTime(chat.time)
@@ -312,6 +278,7 @@ const newChats = computed(() => chats.value.filter((c) => !c.last_message));
                     </div>
                 </div>
             </div>
+
             <UserBottomNav
                 class="md:hidden fixed bottom-0 left-0 w-full z-40"
             />

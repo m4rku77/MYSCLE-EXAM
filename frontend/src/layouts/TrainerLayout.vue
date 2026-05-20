@@ -1,13 +1,19 @@
 <script setup>
+import { useRoute } from "vue-router";
 import TrainerBottomNav from "../components/TrainerBottomNav.vue";
+import TrainerSidebar from "../components/TrainerSidebar.vue";
+
+const route = useRoute();
+
+const shouldHideNav = route.path.startsWith("/trainer/messages");
 </script>
 
 <template>
-    <div class="min-h-screen flex flex-col bg-[#0f0f0f] text-white">
-        <div class="flex-1 overflow-y-auto">
+    <div class="min-h-screen flex bg-[#080808] text-white">
+        <TrainerSidebar />
+        <div class="flex-1 flex flex-col">
             <RouterView />
         </div>
-
-        <TrainerBottomNav />
+        <TrainerBottomNav v-if="!shouldHideNav" class="md:hidden" />
     </div>
 </template>

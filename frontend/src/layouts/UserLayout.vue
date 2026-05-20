@@ -10,7 +10,8 @@ const shouldHideNav =
     route.path === "/statistics" ||
     route.path === "/create-workout" ||
     route.path === "/friends" ||
-    route.path.startsWith("/messages");
+    route.path.startsWith("/messages") ||
+    route.path === "/profile";
 </script>
 
 <template>

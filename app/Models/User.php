@@ -127,4 +127,8 @@ class User extends Authenticatable
             'trainer_id'
         );
     }
+    public function subscription()
+    {
+        return $this->hasOne(\App\Models\Subscription::class);
+    }
 }

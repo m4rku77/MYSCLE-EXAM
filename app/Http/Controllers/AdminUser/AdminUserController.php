@@ -35,4 +35,13 @@ class AdminUserController
 
         return response()->json($user);
     }
+
+    public function subscriptions()
+    {
+        $subscriptions = \App\Models\Subscription::with('user')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($subscriptions);
+    }
 }

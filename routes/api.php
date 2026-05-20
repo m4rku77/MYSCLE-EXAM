@@ -28,6 +28,9 @@ Route::get('/stats', [StatsController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
+
+    Route::get('/admin/subscriptions', [AdminUserController::class, 'subscriptions']);
+    
     Route::get('/messages/{userId}', [MessageController::class, 'getMessages']);
     Route::post('/messages', [MessageController::class, 'store']);
 
@@ -446,3 +449,4 @@ Route::post('/stripe/webhook', function (Request $request) {
 
     return response()->json(['status' => 'ok']);
 });
+

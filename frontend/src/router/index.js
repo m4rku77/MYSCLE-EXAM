@@ -30,6 +30,9 @@ import TrainerClientStatistics from "../views/trainer/TrainerClientStatistics.vu
 import UpgradeView from "../views/UpgradeView.vue";
 import PaymentSuccess from "../views/PaymentSuccess.vue";
 import PaymentCancel from "../views/PaymentCancel.vue";
+import AdminLayout from "../layouts/AdminLayout.vue";
+
+import SubscriptionView from "../views/admin/SubscriptionView.vue";
 const routes = [
     { path: "/", component: HomeView },
 
@@ -115,7 +118,7 @@ const routes = [
     // ADMIN
     {
         path: "/admin",
-        component: MainLayout,
+        component: AdminLayout,
         meta: { requiresAuth: true, requiresAdmin: true },
         children: [
             { path: "", component: AdminDashboard },
@@ -124,6 +127,7 @@ const routes = [
             { path: "messages", component: Messages },
             { path: "statistics", component: Statistics },
             { path: "friends", component: FriendsView },
+            { path: "subscriptions", component: SubscriptionView },
         ],
     },
 

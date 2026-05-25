@@ -163,7 +163,7 @@ const newChats = computed(() => chats.value.filter((c) => !c.last_message));
 
             <div class="px-5 md:px-8 pt-4 shrink-0">
                 <div
-                    class="flex bg-[#111] border border-white/5 rounded-2xl p-1"
+                    class="flex bg-[#111] border border-white/5 rounded-2xl p-1 w-full md:w-fit md:min-w-64 md:mx-auto"
                 >
                     <button
                         @click="activeTab = 'chats'"

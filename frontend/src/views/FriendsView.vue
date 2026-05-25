@@ -7,8 +7,16 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 const friends = ref([]);
 const users = ref([]);
+const requests = ref([]);
+const pendingSent = ref([]);
 const search = ref("");
 const loading = ref(true);
+
+const token = localStorage.getItem("token");
+const headers = {
+    Authorization: `Bearer ${token}`,
+    Accept: "application/json",
+};
 
 const getImage = (path, name) => {
     if (!path)
@@ -19,12 +27,8 @@ const getImage = (path, name) => {
 
 const fetchFriends = async () => {
     try {
-        const token = localStorage.getItem("token");
         const res = await axios.get("http://localhost:8000/api/friends", {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
+            headers,
         });
         let data = Array.isArray(res.data) ? res.data : res.data.data || [];
         friends.value = data.map((u) => ({
@@ -38,18 +42,29 @@ const fetchFriends = async () => {
     }
 };
 
+const fetchRequests = async () => {
+    try {
+        const res = await axios.get(
+            "http://localhost:8000/api/friends/requests",
+            { headers },
+        );
+        requests.value = Array.isArray(res.data)
+            ? res.data
+            : res.data.data || [];
+    } catch (err) {
+        console.error(err);
+    }
+};
+
 const searchUsers = async () => {
     if (!search.value.trim()) {
         users.value = [];
         return;
     }
     try {
-        const token = localStorage.getItem("token");
         const res = await axios.get(
             `http://localhost:8000/api/users?search=${encodeURIComponent(search.value)}`,
-            {
-                headers: { Authorization: `Bearer ${token}` },
-            },
+            { headers },
         );
         users.value = res.data.map((u) => ({
             id: u.id,
@@ -63,16 +78,40 @@ const searchUsers = async () => {
 
 const addFriend = async (id) => {
     try {
-        const token = localStorage.getItem("token");
         await axios.post(
             "http://localhost:8000/api/friends/add",
             { friend_id: id },
-            { headers: { Authorization: `Bearer ${token}` } },
+            { headers },
         );
-        await fetchFriends();
+        pendingSent.value.push(id);
         users.value = users.value.filter((u) => u.id !== id);
     } catch (err) {
         console.error(err.response?.data || err.message);
+    }
+};
+
+const acceptRequest = async (id) => {
+    try {
+        await axios.post(
+            `http://localhost:8000/api/friends/accept/${id}`,
+            {},
+            { headers },
+        );
+        requests.value = requests.value.filter((r) => r.id !== id);
+        await fetchFriends();
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+const declineRequest = async (id) => {
+    try {
+        await axios.delete(`http://localhost:8000/api/friends/decline/${id}`, {
+            headers,
+        });
+        requests.value = requests.value.filter((r) => r.id !== id);
+    } catch (err) {
+        console.error(err);
     }
 };
 
@@ -81,7 +120,7 @@ const goToUser = (id) => {
 };
 
 onMounted(async () => {
-    await fetchFriends();
+    await Promise.all([fetchFriends(), fetchRequests()]);
     loading.value = false;
 });
 
@@ -197,11 +236,18 @@ const filteredFriends = () =>
                             }}</span>
                         </div>
                         <button
+                            v-if="!pendingSent.includes(user.id)"
                             @click="addFriend(user.id)"
                             class="px-4 py-2 bg-[#7ED957] text-black rounded-xl text-sm font-bold hover:bg-[#6bc947] transition-all"
                         >
                             + Add
                         </button>
+                        <span
+                            v-else
+                            class="px-4 py-2 bg-white/5 border border-white/10 text-gray-500 rounded-xl text-sm font-semibold"
+                        >
+                            Pending...
+                        </span>
                     </div>
                 </div>
 
@@ -211,6 +257,50 @@ const filteredFriends = () =>
                 >
                     <i class="fas fa-search text-2xl mb-3 opacity-20"></i>
                     <p>No users found for "{{ search }}"</p>
+                </div>
+
+                <div v-if="requests.length > 0" class="space-y-2">
+                    <p
+                        class="text-xs text-gray-500 uppercase tracking-wider px-1"
+                    >
+                        Friend Requests
+                        <span
+                            class="ml-2 bg-[#7ED957]/10 text-[#7ED957] border border-[#7ED957]/20 px-2 py-0.5 rounded-full text-xs font-bold"
+                            >{{ requests.length }}</span
+                        >
+                    </p>
+                    <div
+                        v-for="req in requests"
+                        :key="req.id"
+                        class="bg-[#111] border border-[#7ED957]/20 rounded-2xl p-4 flex justify-between items-center"
+                    >
+                        <div class="flex items-center gap-3">
+                            <img
+                                :src="getImage(req.profile_photo, req.name)"
+                                class="w-10 h-10 rounded-full object-cover ring-2 ring-[#7ED957]/20"
+                            />
+                            <div>
+                                <p class="font-bold text-sm">{{ req.name }}</p>
+                                <p class="text-xs text-gray-500">
+                                    Wants to be your friend
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button
+                                @click="acceptRequest(req.id)"
+                                class="px-3 py-2 bg-[#7ED957] text-black rounded-xl text-xs font-bold hover:bg-[#6bc947] transition-all"
+                            >
+                                Accept
+                            </button>
+                            <button
+                                @click="declineRequest(req.id)"
+                                class="px-3 py-2 bg-white/5 border border-white/10 text-gray-400 rounded-xl text-xs font-semibold hover:bg-white/10 transition-all"
+                            >
+                                Decline
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div v-if="!search || filteredFriends().length > 0">

@@ -7,6 +7,12 @@ const route = useRoute();
 const showBack = computed(() => route.path.startsWith("/workout/"));
 const isActive = (path) =>
     route.path === path || route.path.startsWith(path + "/");
+
+const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    router.push("/");
+};
 </script>
 
 <template>
@@ -83,5 +89,13 @@ const isActive = (path) =>
                 <i class="fas fa-user w-4"></i> Profile
             </div>
         </nav>
+        <div class="border-t border-white/5 pt-4">
+            <div
+                @click="logout"
+                class="flex items-center gap-3 px-4 py-3 rounded-2xl text-red-400 hover:text-white hover:bg-red-500/10 font-semibold text-sm cursor-pointer transition-all"
+            >
+                <i class="fas fa-sign-out-alt w-4"></i> Logout
+            </div>
+        </div>
     </aside>
 </template>

@@ -92,11 +92,24 @@ class FriendController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'goal' => 'nullable|string',
+            'weight' => 'nullable|numeric',
+            'height' => 'nullable|numeric',
+            'age' => 'nullable|integer',
+            'gender' => 'nullable|string',
+            'bio' => 'nullable|string',
         ]);
 
         $user = Auth::user();
-        $user->name = $request->name;
-        $user->save();
+        $user->update($request->only([
+            'name',
+            'goal',
+            'weight',
+            'height',
+            'age',
+            'gender',
+            'bio',
+        ]));
 
         return response()->json([
             'message' => 'Profile updated',

@@ -53,7 +53,6 @@ onMounted(async () => {
                     >Myscle</span
                 >
             </div>
-
             <div class="flex gap-2 items-center">
                 <button
                     @click="goLogin"
@@ -101,21 +100,18 @@ onMounted(async () => {
                     ></span>
                     Trusted by athletes worldwide
                 </div>
-
                 <h1
                     class="text-6xl md:text-8xl font-black leading-[1.05] mb-6 tracking-tight"
                 >
                     Train Smarter.<br />
                     <span class="text-[#7ED957]">Get Stronger.</span>
                 </h1>
-
                 <p
                     class="text-gray-400 text-xl mb-10 max-w-2xl mx-auto leading-relaxed"
                 >
                     The all-in-one fitness platform to track workouts, build
                     plans, and crush your goals — built for serious athletes.
                 </p>
-
                 <div class="flex flex-col sm:flex-row justify-center gap-4">
                     <button
                         @click="goRegister"
@@ -130,9 +126,8 @@ onMounted(async () => {
                         Sign In
                     </button>
                 </div>
-
                 <p class="text-gray-600 text-sm mt-5">
-                    No credit card required · Free forever
+                    No credit card required · First month free
                 </p>
             </div>
         </section>
@@ -157,10 +152,10 @@ onMounted(async () => {
                 </div>
                 <div>
                     <p class="text-5xl font-black text-[#7ED957] mb-2">
-                        {{ loading ? "—" : stats.consistency + "%" }}
+                        {{ loading ? "—" : stats.trainers + "+" }}
                     </p>
                     <p class="text-gray-500 text-sm uppercase tracking-widest">
-                        Consistency Rate
+                        Active Trainers
                     </p>
                 </div>
             </div>
@@ -179,7 +174,6 @@ onMounted(async () => {
                     smarter, and grow faster.
                 </p>
             </div>
-
             <div class="grid md:grid-cols-3 gap-6">
                 <div
                     class="group bg-[#111] border border-white/5 p-8 rounded-3xl hover:border-[#7ED957]/30 transition-all hover:-translate-y-1"
@@ -195,7 +189,6 @@ onMounted(async () => {
                         records. See exactly how far you've come.
                     </p>
                 </div>
-
                 <div
                     class="group bg-[#111] border border-white/5 p-8 rounded-3xl hover:border-[#7ED957]/30 transition-all hover:-translate-y-1"
                 >
@@ -210,7 +203,6 @@ onMounted(async () => {
                         sets, reps, and rest timers built in.
                     </p>
                 </div>
-
                 <div
                     class="group bg-[#111] border border-white/5 p-8 rounded-3xl hover:border-[#7ED957]/30 transition-all hover:-translate-y-1"
                 >
@@ -356,67 +348,129 @@ onMounted(async () => {
         </section>
 
         <section class="py-32 px-6">
-            <div
-                class="max-w-4xl mx-auto bg-gradient-to-br from-[#111] to-[#0f0f0f] border border-[#7ED957]/20 rounded-3xl p-12 text-center relative overflow-hidden"
-            >
-                <div
-                    class="absolute top-0 right-0 w-80 h-80 bg-[#7ED957]/5 blur-[100px] rounded-full pointer-events-none"
-                ></div>
-
-                <div
-                    class="inline-flex items-center gap-2 bg-[#7ED957]/10 border border-[#7ED957]/20 rounded-full px-4 py-1.5 text-sm text-[#7ED957] mb-6 font-medium"
+            <div class="max-w-4xl mx-auto text-center mb-16">
+                <p
+                    class="text-[#7ED957] text-sm uppercase tracking-widest font-semibold mb-3"
                 >
-                    🏆 For Professionals
+                    Pricing
+                </p>
+                <h2 class="text-5xl font-black mb-4">
+                    Simple, transparent pricing
+                </h2>
+                <p class="text-gray-400 max-w-xl mx-auto">
+                    Start free for 30 days. No credit card needed. Cancel
+                    anytime.
+                </p>
+            </div>
+
+            <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-6">
+                <div class="bg-[#111] border border-white/5 rounded-3xl p-8">
+                    <p
+                        class="text-xs text-gray-500 uppercase tracking-widest font-semibold mb-4"
+                    >
+                        Athlete
+                    </p>
+                    <div class="mb-6">
+                        <span class="text-5xl font-black">Free</span>
+                        <p class="text-gray-500 text-sm mt-1">
+                            Forever, no limits
+                        </p>
+                    </div>
+                    <ul class="space-y-3 mb-8">
+                        <li
+                            v-for="item in [
+                                'Track workouts & sets',
+                                'Exercise library',
+                                'Personal statistics',
+                                'Friends & messaging',
+                                'Workout calendar',
+                            ]"
+                            :key="item"
+                            class="flex items-center gap-3 text-gray-300 text-sm"
+                        >
+                            <span
+                                class="w-5 h-5 bg-white/10 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
+                                >✓</span
+                            >
+                            {{ item }}
+                        </li>
+                    </ul>
+                    <button
+                        @click="goRegister"
+                        class="w-full py-3.5 bg-white/5 border border-white/10 text-white rounded-2xl font-bold text-sm hover:bg-white/10 transition-all"
+                    >
+                        Get Started Free
+                    </button>
                 </div>
 
-                <h2 class="text-5xl font-black mb-4">Become a Trainer</h2>
-                <p class="text-gray-400 text-lg mb-10 max-w-xl mx-auto">
-                    Unlock professional tools to manage clients, assign
-                    workouts, track their progress, and grow your coaching
-                    business.
-                </p>
-
                 <div
-                    class="grid sm:grid-cols-2 gap-4 max-w-lg mx-auto mb-10 text-left"
+                    class="bg-gradient-to-br from-[#111] to-[#0f0f0f] border border-[#7ED957]/30 rounded-3xl p-8 relative overflow-hidden"
                 >
                     <div
-                        v-for="item in [
-                            'Manage unlimited clients',
-                            'Assign custom workouts',
-                            'View client statistics',
-                            'Strength progress tracking',
-                            'Coach notes & messaging',
-                            'Client calendar heatmap',
-                        ]"
-                        :key="item"
-                        class="flex items-center gap-3 text-sm text-gray-300"
-                    >
-                        <span
-                            class="w-5 h-5 bg-[#7ED957] rounded-full flex items-center justify-center text-black text-xs font-bold shrink-0"
-                            >✓</span
+                        class="absolute top-0 right-0 w-48 h-48 bg-[#7ED957]/5 blur-[80px] rounded-full pointer-events-none"
+                    ></div>
+                    <div class="flex items-center justify-between mb-4">
+                        <p
+                            class="text-xs text-[#7ED957] uppercase tracking-widest font-semibold"
                         >
-                        {{ item }}
+                            Trainer
+                        </p>
+                        <span
+                            class="bg-[#7ED957]/10 border border-[#7ED957]/20 text-[#7ED957] text-xs font-bold px-3 py-1 rounded-full"
+                            >🏆 Pro</span
+                        >
                     </div>
-                </div>
-
-                <div class="mb-8">
-                    <span class="text-6xl font-black">$29</span>
-                    <span class="text-gray-400 text-lg">.99 one-time</span>
-                    <p class="text-gray-600 text-sm mt-1">
-                        No subscription. Pay once, use forever.
+                    <div class="mb-2">
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-5xl font-black">$29</span>
+                            <span class="text-gray-400 text-lg"
+                                >.99<span class="text-sm">/mo</span></span
+                            >
+                        </div>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span
+                                class="bg-[#7ED957]/10 border border-[#7ED957]/20 text-[#7ED957] text-xs font-bold px-3 py-1 rounded-full"
+                                >First month FREE</span
+                            >
+                            <span class="text-gray-600 text-xs"
+                                >then $29.99/mo</span
+                            >
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-xs mb-6">
+                        Cancel anytime · No hidden fees
+                    </p>
+                    <ul class="space-y-3 mb-8">
+                        <li
+                            v-for="item in [
+                                'Everything in Athlete',
+                                'Manage unlimited clients',
+                                'Assign custom workouts',
+                                'View client statistics',
+                                'Strength progress tracking',
+                                'Coach notes & messaging',
+                                'Client calendar heatmap',
+                            ]"
+                            :key="item"
+                            class="flex items-center gap-3 text-gray-300 text-sm"
+                        >
+                            <span
+                                class="w-5 h-5 bg-[#7ED957] rounded-full flex items-center justify-center text-black text-xs font-bold shrink-0"
+                                >✓</span
+                            >
+                            {{ item }}
+                        </li>
+                    </ul>
+                    <button
+                        @click="goUpgrade"
+                        class="w-full py-3.5 bg-[#7ED957] text-black rounded-2xl font-bold text-sm hover:bg-[#6bc947] transition-all shadow-lg shadow-[#7ED957]/20"
+                    >
+                        Start Free Trial
+                    </button>
+                    <p class="text-center text-gray-600 text-xs mt-3">
+                        Secure payment via Stripe · Instant access
                     </p>
                 </div>
-
-                <button
-                    @click="goUpgrade"
-                    class="bg-[#7ED957] text-black px-12 py-4 rounded-2xl font-bold text-lg hover:bg-[#6bc947] transition-all shadow-2xl shadow-[#7ED957]/20 hover:scale-105"
-                >
-                    Upgrade to Trainer
-                </button>
-
-                <p class="text-gray-600 text-xs mt-4">
-                    Secure payment via Stripe · Instant access
-                </p>
             </div>
         </section>
 

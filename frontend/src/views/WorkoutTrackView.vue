@@ -168,32 +168,34 @@ const removeExercise = (index) => {
         class="h-[100dvh] bg-[#080808] text-white flex flex-col"
     >
         <div class="hidden md:flex h-full">
-            <aside
-                class="w-64 bg-[#0f0f0f] border-r border-white/5 flex flex-col px-6 py-8 fixed h-full"
-            >
-                <div class="flex items-center gap-3 mb-12">
-                    <img src="/logo.png" class="h-8" />
-                    <span class="font-black text-lg tracking-widest uppercase"
-                        >Myscle</span
-                    >
-                </div>
-
-                <nav class="space-y-1 flex-1">
-                    <div
-                        @click="router.back()"
-                        class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
-                    >
-                        <i class="fas fa-arrow-left w-4"></i> Back
-                    </div>
-                </nav>
-
-                <button
-                    @click="saveChanges"
-                    class="w-full py-3.5 bg-[#7ED957] text-black rounded-2xl font-bold text-sm hover:bg-[#6bc947] transition-all shadow-lg shadow-[#7ED957]/20 flex items-center justify-center gap-2"
+            <div class="flex items-center gap-3 mb-12">
+                <img src="/logo.png" class="h-8" />
+                <span class="font-black text-lg tracking-widest uppercase"
+                    >Myscle</span
                 >
-                    <i class="fas fa-save text-xs"></i> Save Changes
-                </button>
-            </aside>
+            </div>
+
+            <nav class="space-y-1 flex-1">
+                <div
+                    @click="router.back()"
+                    class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
+                >
+                    <i class="fas fa-arrow-left w-4"></i> Back
+                </div>
+                <div
+                    @click="router.push('/dashboard')"
+                    class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
+                >
+                    <i class="fas fa-dumbbell w-4"></i> Workouts
+                </div>
+            </nav>
+
+            <button
+                @click="saveChanges"
+                class="w-full py-3.5 bg-[#7ED957] text-black rounded-2xl font-bold text-sm hover:bg-[#6bc947] transition-all shadow-lg shadow-[#7ED957]/20 flex items-center justify-center gap-2"
+            >
+                <i class="fas fa-save text-xs"></i> Save Changes
+            </button>
 
             <main class="ml-64 flex-1 overflow-y-auto">
                 <div class="max-w-3xl mx-auto px-10 py-10">

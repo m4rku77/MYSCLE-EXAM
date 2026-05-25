@@ -11,12 +11,12 @@ use Illuminate\Http\JsonResponse;
 
 class StatsController extends Controller
 {
-    public function index(): JsonResponse
+    public function index()
     {
         return response()->json([
-            'workouts' => TrainingPlan::count(),
-            'users' => User::count(),
-            // 'trainers' =>
+            'workouts' => \App\Models\WorkoutLog::count(),
+            'users' => \App\Models\User::count(),
+            'trainers' => \App\Models\User::where('role', 'trainer')->count(),
         ]);
     }
 }

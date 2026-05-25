@@ -29,3 +29,9 @@ html {
     scrollbar-width: thin;
     scrollbar-color: rgba(126, 217, 87, 0.3) transparent;
 }
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    opacity: 1;
+    filter: invert(1) sepia(1) saturate(5) hue-rotate(60deg);
+}

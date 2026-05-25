@@ -1,9 +1,10 @@
 <script setup>
+import { computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
 const router = useRouter();
 const route = useRoute();
-
+const showBack = computed(() => route.path.startsWith("/workout/"));
 const isActive = (path) =>
     route.path === path || route.path.startsWith(path + "/");
 </script>
@@ -17,6 +18,13 @@ const isActive = (path) =>
             <span class="font-black text-lg tracking-widest uppercase"
                 >Myscle</span
             >
+        </div>
+        <div
+            v-if="showBack"
+            @click="router.back()"
+            class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
+        >
+            <i class="fas fa-arrow-left w-4"></i> Back
         </div>
         <nav class="space-y-1 flex-1">
             <div

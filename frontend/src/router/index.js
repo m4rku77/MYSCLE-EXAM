@@ -34,6 +34,7 @@ import AdminLayout from "../layouts/AdminLayout.vue";
 import ActivityLogView from "../views/admin/ActivityLog.vue";
 
 import SubscriptionView from "../views/admin/SubscriptionView.vue";
+import IncomeView from "../views/admin/IncomeView.vue";
 const routes = [
     { path: "/", component: HomeView },
 
@@ -130,6 +131,7 @@ const routes = [
             { path: "friends", component: FriendsView },
             { path: "subscriptions", component: SubscriptionView },
             { path: "activitylog", component: ActivityLogView },
+            { path: "income", component: IncomeView },
         ],
     },
 

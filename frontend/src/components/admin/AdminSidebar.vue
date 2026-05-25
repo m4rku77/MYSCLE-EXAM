@@ -12,12 +12,19 @@ const links = [
         path: "/admin/subscriptions",
         icon: "fas fa-credit-card",
     },
+    { name: "Income", path: "/admin/income", icon: "fas fa-dollar-sign" },
     {
         name: "Activity Log",
         path: "/admin/activitylog",
         icon: "fas fa-history",
     },
 ];
+
+const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    router.push("/");
+};
 </script>
 
 <template>
@@ -55,10 +62,10 @@ const links = [
 
         <div class="border-t border-white/5 pt-4">
             <div
-                @click="router.push('/dashboard')"
-                class="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-500 hover:text-white hover:bg-white/5 font-semibold text-sm cursor-pointer transition-all"
+                @click="logout()"
+                class="flex items-center gap-3 px-4 py-3 rounded-2xl text-red-400 hover:text-white hover:bg-red-500/10 font-semibold text-sm cursor-pointer transition-all"
             >
-                <i class="fas fa-arrow-left w-4"></i> Back to App
+                <i class="fas fa-sign-out-alt w-4"></i> Logout
             </div>
         </div>
     </aside>

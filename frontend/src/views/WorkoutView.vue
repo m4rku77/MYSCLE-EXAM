@@ -237,6 +237,12 @@ const removeExercise = (index) => {
                 </div>
                 <nav class="space-y-1 flex-1">
                     <div
+                        @click="router.back()"
+                        class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
+                    >
+                        <i class="fas fa-arrow-left w-4"></i> Back
+                    </div>
+                    <div
                         @click="router.push('/dashboard')"
                         class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
                     >
@@ -306,6 +312,7 @@ const removeExercise = (index) => {
                             >
                                 Workout
                             </p>
+
                             <h1 class="text-4xl font-black">
                                 {{ workout.name }}
                             </h1>
@@ -327,6 +334,7 @@ const removeExercise = (index) => {
                                 >
                             </div>
                         </div>
+
                         <button
                             v-if="!isEditing"
                             @click="isEditing = true"

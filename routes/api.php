@@ -216,6 +216,14 @@ Route::middleware('auth:sanctum')->group(function () {
         return response()->json($log);
     });
 
+    Route::put('/workouts/{id}', function (Request $request, $id) {
+        $plan = \App\Models\TrainingPlan::where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+        $plan->update($request->only(['is_favorite', 'name', 'notes']));
+        return response()->json($plan);
+    });
+
     Route::post('/trainer/client/{clientId}/workout-logs/{id}/finish', function (Request $request, $clientId, $id) {
         if (auth()->user()->role !== 'trainer') {
             return response()->json(['error' => 'Unauthorized'], 403);

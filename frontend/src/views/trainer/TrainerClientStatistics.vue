@@ -78,8 +78,6 @@ onMounted(async () => {
     }
 });
 
-// ── OVERVIEW ────────────────────────────────────────────────
-
 const totalWorkouts = computed(() => logs.value.length);
 const totalSets = computed(() =>
     logs.value.reduce((s, l) => s + (l.sets?.length || 0), 0),
@@ -283,8 +281,6 @@ const createChart = () => {
         },
     });
 };
-
-// ── STRENGTH ────────────────────────────────────────────────
 
 const exerciseList = computed(() => {
     const names = new Set();

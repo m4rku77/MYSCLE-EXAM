@@ -26,14 +26,16 @@ class TrainingPlan extends Model
 
     public const UPDATED_AT = 'updated_at';
 
+    public const NOTES = 'notes';
+    
     protected $table = self::TABLE;
 
     protected $fillable = [
         self::USER_ID,
         self::NAME,
         self::IS_FAVORITE,
+        self::NOTES,
     ];
-
     protected $casts = [
         self::IS_FAVORITE => 'boolean',
     ];

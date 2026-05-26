@@ -13,7 +13,7 @@ const headers = {
     Authorization: `Bearer ${token}`,
     Accept: "application/json",
 };
-
+const isFavorite = ref(false);
 const workout = ref(null);
 const exercises = ref([]);
 const library = ref([]);
@@ -50,6 +50,7 @@ onMounted(async () => {
         );
         const data = res.data.data ?? res.data;
         workout.value = data;
+        isFavorite.value = data.is_favorite ?? false;
         exercises.value = data.exercises ?? [];
         exercises.value.forEach((ex) => {
             searchQueries.value[ex.id] = ex.name;
@@ -74,6 +75,20 @@ onMounted(async () => {
         loading.value = false;
     }
 });
+
+const toggleFavorite = async () => {
+    try {
+        isFavorite.value = !isFavorite.value;
+        await axios.put(
+            `http://localhost:8000/api/workouts/${workoutId}`,
+            { is_favorite: isFavorite.value },
+            { headers },
+        );
+    } catch (err) {
+        isFavorite.value = !isFavorite.value;
+        console.error(err);
+    }
+};
 
 onUnmounted(() => clearInterval(timer));
 
@@ -313,9 +328,24 @@ const removeExercise = (index) => {
                                 Workout
                             </p>
 
-                            <h1 class="text-4xl font-black">
-                                {{ workout.name }}
-                            </h1>
+                            <div class="flex items-center gap-3">
+                                <h1 class="text-4xl font-black">
+                                    {{ workout.name }}
+                                </h1>
+                                <button
+                                    @click="toggleFavorite"
+                                    class="transition-all hover:scale-110"
+                                >
+                                    <i
+                                        class="fas fa-star text-2xl"
+                                        :class="
+                                            isFavorite
+                                                ? 'text-yellow-400'
+                                                : 'text-gray-700'
+                                        "
+                                    ></i>
+                                </button>
+                            </div>
                             <div
                                 class="flex items-center gap-3 mt-2 text-sm text-gray-500"
                             >
@@ -562,9 +592,20 @@ const removeExercise = (index) => {
                         Save
                     </button>
                 </div>
-                <h1 class="text-3xl font-black tracking-tight">
-                    {{ workout.name }}
-                </h1>
+
+                <div class="flex items-center gap-2 mt-1">
+                    <h1 class="text-3xl font-black tracking-tight">
+                        {{ workout.name }}
+                    </h1>
+                    <button @click="toggleFavorite" class="transition-all">
+                        <i
+                            class="fas fa-star"
+                            :class="
+                                isFavorite ? 'text-yellow-400' : 'text-black/30'
+                            "
+                        ></i>
+                    </button>
+                </div>
                 <div class="flex items-center gap-3 mt-2">
                     <span class="text-black/50 text-sm"
                         >{{ exercises.length }} exercises</span

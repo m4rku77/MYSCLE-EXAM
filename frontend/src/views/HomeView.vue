@@ -16,6 +16,12 @@ const loading = ref(true);
 
 const stats = ref({ workouts: 0, users: 0, consistency: 0 });
 
+const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+};
+
+const mobileMenuOpen = ref(false);
+
 onMounted(async () => {
     window.addEventListener("scroll", () => {
         scrolled.value = window.scrollY > 50;
@@ -41,7 +47,7 @@ onMounted(async () => {
     <div class="bg-[#080808] text-white overflow-x-hidden font-sans">
         <header
             :class="[
-                'fixed w-full z-50 px-8 py-4 flex justify-between items-center transition-all duration-500 overflow-hidden',
+                'fixed w-full z-50 px-6 md:px-8 py-4 flex items-center justify-between md:grid md:grid-cols-3 transition-all duration-500 overflow-hidden',
                 scrolled
                     ? 'bg-black/60 backdrop-blur-2xl border-b border-white/10'
                     : 'bg-transparent',
@@ -53,10 +59,32 @@ onMounted(async () => {
                     >Myscle</span
                 >
             </div>
-            <div class="flex gap-2 items-center">
+
+            <div class="hidden md:flex items-center gap-6 justify-center">
+                <button
+                    @click="scrollTo('features')"
+                    class="text-sm text-gray-400 hover:text-[#6bc947] transition"
+                >
+                    Features
+                </button>
+                <button
+                    @click="scrollTo('how-it-works')"
+                    class="text-sm text-gray-400 hover:text-[#6bc947] transition"
+                >
+                    How it works
+                </button>
+                <button
+                    @click="scrollTo('pricing')"
+                    class="text-sm text-gray-400 hover:text-[#6bc947] transition"
+                >
+                    Pricing
+                </button>
+            </div>
+
+            <div class="hidden md:flex gap-2 items-center justify-end">
                 <button
                     @click="goLogin"
-                    class="px-4 py-2 text-sm text-gray-400 hover:text-white transition"
+                    class="px-4 py-2 text-sm text-gray-400 hover:text-[#6bc947] transition"
                 >
                     Login
                 </button>
@@ -67,11 +95,71 @@ onMounted(async () => {
                     Get Started
                 </button>
             </div>
+
+            <div class="flex justify-end md:hidden">
+                <button
+                    @click="mobileMenuOpen = !mobileMenuOpen"
+                    class="text-gray-400 hover:text-white transition"
+                >
+                    <i
+                        :class="mobileMenuOpen ? 'fas fa-times' : 'fas fa-bars'"
+                        class="text-xl"
+                    ></i>
+                </button>
+            </div>
+
             <div
                 class="absolute bottom-0 left-0 h-[2px] bg-[#7ED957] transition-all duration-100 rounded-full"
                 :style="{ width: scrollProgress + '%' }"
             ></div>
         </header>
+
+        <div
+            v-if="mobileMenuOpen"
+            class="fixed top-[60px] left-0 w-full z-40 bg-black/90 backdrop-blur-2xl border-b border-white/10 px-6 py-6 flex flex-col gap-4"
+        >
+            <button
+                @click="
+                    scrollTo('features');
+                    mobileMenuOpen = false;
+                "
+                class="text-sm text-gray-300 hover:text-white text-left transition"
+            >
+                Features
+            </button>
+            <button
+                @click="
+                    scrollTo('how-it-works');
+                    mobileMenuOpen = false;
+                "
+                class="text-sm text-gray-300 hover:text-white text-left transition"
+            >
+                How it works
+            </button>
+            <button
+                @click="
+                    scrollTo('pricing');
+                    mobileMenuOpen = false;
+                "
+                class="text-sm text-gray-300 hover:text-white text-left transition"
+            >
+                Pricing
+            </button>
+            <div class="border-t border-white/10 pt-4 flex gap-3">
+                <button
+                    @click="goLogin"
+                    class="flex-1 py-2.5 text-sm text-gray-400 border border-white/10 rounded-xl hover:bg-white/5 transition"
+                >
+                    Login
+                </button>
+                <button
+                    @click="goRegister"
+                    class="flex-1 py-2.5 text-sm font-bold text-black bg-[#7ED957] rounded-xl hover:bg-[#6bc947] transition"
+                >
+                    Get Started
+                </button>
+            </div>
+        </div>
 
         <section
             class="min-h-screen flex items-center justify-center text-center px-6 relative overflow-hidden"
@@ -98,7 +186,7 @@ onMounted(async () => {
                     <span
                         class="w-2 h-2 bg-[#7ED957] rounded-full animate-pulse"
                     ></span>
-                    Trusted by athletes worldwide
+                    Made for athletes and trainers
                 </div>
                 <h1
                     class="text-6xl md:text-8xl font-black leading-[1.05] mb-6 tracking-tight"
@@ -127,7 +215,7 @@ onMounted(async () => {
                     </button>
                 </div>
                 <p class="text-gray-600 text-sm mt-5">
-                    No credit card required · First month free
+                    Credit card required · First month free
                 </p>
             </div>
         </section>
@@ -161,7 +249,7 @@ onMounted(async () => {
             </div>
         </section>
 
-        <section class="py-32 px-6 max-w-6xl mx-auto">
+        <section id="features" class="py-32 px-6 max-w-6xl mx-auto">
             <div class="text-center mb-20">
                 <p
                     class="text-[#7ED957] text-sm uppercase tracking-widest font-semibold mb-3"
@@ -220,7 +308,10 @@ onMounted(async () => {
             </div>
         </section>
 
-        <section class="py-20 px-6 max-w-6xl mx-auto space-y-32">
+        <section
+            id="how-it-works"
+            class="py-20 px-6 max-w-6xl mx-auto space-y-32"
+        >
             <div class="grid md:grid-cols-2 gap-16 items-center">
                 <div>
                     <p
@@ -347,7 +438,7 @@ onMounted(async () => {
             </div>
         </section>
 
-        <section class="py-32 px-6">
+        <section id="pricing" class="py-32 px-6">
             <div class="max-w-4xl mx-auto text-center mb-16">
                 <p
                     class="text-[#7ED957] text-sm uppercase tracking-widest font-semibold mb-3"
@@ -358,8 +449,7 @@ onMounted(async () => {
                     Simple, transparent pricing
                 </h2>
                 <p class="text-gray-400 max-w-xl mx-auto">
-                    Start free for 30 days. No credit card needed. Cancel
-                    anytime.
+                    Start free for 30 days. Credit card needed. Cancel anytime.
                 </p>
             </div>
 
@@ -474,26 +564,30 @@ onMounted(async () => {
             </div>
         </section>
 
-        <section class="py-32 text-center px-6 relative overflow-hidden">
+        <section
+            class="py-20 md:py-32 text-center px-6 relative overflow-hidden"
+        >
             <div
                 class="absolute inset-0 bg-gradient-to-t from-[#7ED957]/5 to-transparent pointer-events-none"
             ></div>
             <div class="relative z-10">
-                <h2 class="text-6xl font-black mb-6 leading-tight">
+                <h2 class="text-4xl md:text-6xl font-black mb-6 leading-tight">
                     Your transformation<br />starts today.
                 </h2>
-                <p class="text-gray-400 text-xl mb-10 max-w-lg mx-auto">
+                <p
+                    class="text-gray-400 text-lg md:text-xl mb-10 max-w-lg mx-auto"
+                >
                     Join thousands of athletes already using Myscle to reach
                     their peak.
                 </p>
                 <button
                     @click="goRegister"
-                    class="bg-[#7ED957] text-black px-12 py-5 rounded-2xl font-bold text-xl hover:bg-[#6bc947] transition-all shadow-2xl shadow-[#7ED957]/20 hover:scale-105"
+                    class="bg-[#7ED957] text-black px-8 md:px-12 py-4 md:py-5 rounded-2xl font-bold text-lg md:text-xl hover:bg-[#6bc947] transition-all shadow-2xl shadow-[#7ED957]/20 hover:scale-105 w-full sm:w-auto"
                 >
                     Create Free Account
                 </button>
                 <p class="text-gray-600 text-sm mt-4">
-                    No credit card · Free forever · Cancel anytime
+                    Free forever · Cancel anytime
                 </p>
             </div>
         </section>

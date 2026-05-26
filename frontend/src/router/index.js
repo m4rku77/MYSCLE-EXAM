@@ -80,7 +80,7 @@ const routes = [
     {
         path: "/",
         component: UserLayout,
-        meta: { requiresAuth: true, role: "user" },
+        meta: { requiresAuth: true },
         children: [
             { path: "dashboard", component: Dashboard },
             { path: "workout/:id", component: WorkoutView },
@@ -160,7 +160,7 @@ router.beforeEach((to) => {
 
     if (requiredRole && requiredRole !== role) {
         if (role === "admin") return "/admin";
-        if (role === "trainer") return "/trainer";
+        if (role === "trainer" && requiredRole === "user") return true;
         return "/dashboard";
     }
 

@@ -8,6 +8,16 @@ const showBack = computed(() => route.path.startsWith("/workout/"));
 const isActive = (path) =>
     route.path === path || route.path.startsWith(path + "/");
 
+const role = localStorage.getItem("role");
+
+const switchMode = () => {
+    if (route.path.startsWith("/trainer")) {
+        router.push("/dashboard");
+    } else {
+        router.push("/trainer");
+    }
+};
+
 const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
@@ -89,12 +99,34 @@ const logout = () => {
                 <i class="fas fa-user w-4"></i> Profile
             </div>
         </nav>
-        <div class="border-t border-white/5 pt-4">
+
+        <div class="space-y-2 pt-4">
             <div
-                @click="logout"
-                class="flex items-center gap-3 px-4 py-3 rounded-2xl text-red-400 hover:text-white hover:bg-red-500/10 font-semibold text-sm cursor-pointer transition-all"
+                v-if="role === 'trainer'"
+                @click="switchMode"
+                class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#7ED957]/10 border border-[#7ED957]/20 text-[#7ED957] font-semibold text-sm cursor-pointer hover:bg-[#7ED957]/20 transition-all"
             >
-                <i class="fas fa-sign-out-alt w-4"></i> Logout
+                <i class="fas fa-repeat w-4"></i>
+                {{
+                    route.path.startsWith("/trainer")
+                        ? "Switch to Athlete"
+                        : "Switch to Trainer"
+                }}
+            </div>
+            <div
+                v-else
+                @click="router.push('/upgrade')"
+                class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#7ED957] text-black font-bold text-sm cursor-pointer hover:bg-[#6bc947] transition-all shadow-lg shadow-[#7ED957]/20"
+            >
+                <i class="fas fa-crown w-4"></i> Upgrade to Trainer
+            </div>
+            <div class="border-t border-white/5 pt-2">
+                <div
+                    @click="logout"
+                    class="flex items-center gap-3 px-4 py-3 rounded-2xl text-red-400 hover:text-white hover:bg-red-500/10 font-semibold text-sm cursor-pointer transition-all"
+                >
+                    <i class="fas fa-sign-out-alt w-4"></i> Logout
+                </div>
             </div>
         </div>
     </aside>

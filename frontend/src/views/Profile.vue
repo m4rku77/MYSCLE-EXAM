@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 
@@ -26,9 +26,22 @@ const confirmPassword = ref("");
 const passwordError = ref("");
 const unit = ref(localStorage.getItem("unit") || "kg");
 const friendRequests = ref([]);
+const original = ref({});
 
 const token = localStorage.getItem("token");
 const headers = { Authorization: `Bearer ${token}` };
+
+const hasChanges = computed(
+    () =>
+        name.value !== original.value.name ||
+        goal.value !== original.value.goal ||
+        String(weight.value) !== String(original.value.weight) ||
+        String(height.value) !== String(original.value.height) ||
+        String(age.value) !== String(original.value.age) ||
+        gender.value !== original.value.gender ||
+        bio.value !== original.value.bio ||
+        file.value !== null,
+);
 
 const setUnit = (value) => {
     unit.value = value;
@@ -49,6 +62,15 @@ const fetchProfile = async () => {
         age.value = res.data.age ?? "";
         gender.value = res.data.gender ?? "";
         bio.value = res.data.bio ?? "";
+        original.value = {
+            name: name.value,
+            goal: goal.value,
+            weight: weight.value,
+            height: height.value,
+            age: age.value,
+            gender: gender.value,
+            bio: bio.value,
+        };
     } catch (err) {
         console.error(err);
     } finally {
@@ -107,7 +129,17 @@ const saveProfile = async () => {
             );
             user.value.profile_photo = res.data.photo;
             preview.value = null;
+            file.value = null;
         }
+        original.value = {
+            name: name.value,
+            goal: goal.value,
+            weight: weight.value,
+            height: height.value,
+            age: age.value,
+            gender: gender.value,
+            bio: bio.value,
+        };
         success.value = "Profile updated";
         setTimeout(() => (success.value = ""), 3000);
     } catch (err) {
@@ -234,37 +266,80 @@ onMounted(() => {
         </aside>
 
         <div class="flex-1 md:ml-64 flex flex-col overflow-hidden">
+            <!-- Mobile header -->
             <div
-                class="md:hidden bg-gradient-to-b from-[#7ED957] to-[#5fcf47] text-black px-5 pt-12 pb-8 rounded-b-3xl shrink-0"
+                class="md:hidden bg-gradient-to-b from-[#7ED957] to-[#5fcf47] text-black px-5 pt-12 pb-4 rounded-b-3xl shrink-0"
             >
                 <p
                     class="text-black/50 text-xs uppercase tracking-widest font-semibold mb-1"
                 >
                     Account
                 </p>
-                <h1 class="text-3xl font-black">Profile</h1>
-            </div>
-            <div
-                class="hidden md:block bg-[#0f0f0f] border-b border-white/5 px-8 py-6 shrink-0"
-            >
-                <p
-                    class="text-xs text-[#7ED957] uppercase tracking-widest font-semibold mb-1"
+                <div class="flex items-center justify-between">
+                    <h1 class="text-3xl font-black">Profile</h1>
+                    <div class="flex gap-2">
+                        <button
+                            v-if="hasChanges"
+                            @click="saveProfile"
+                            class="flex items-center gap-1.5 px-4 py-2 bg-black text-[#7ED957] rounded-xl text-sm font-bold hover:bg-black/80 transition-all"
+                        >
+                            <i class="fas fa-check text-xs"></i> Save
+                        </button>
+                        <button
+                            @click="logout"
+                            class="flex items-center gap-1.5 px-4 py-2 bg-black/20 text-black rounded-xl text-sm font-bold hover:bg-black/30 transition-all"
+                        >
+                            <i class="fas fa-sign-out-alt text-xs"></i> Logout
+                        </button>
+                    </div>
+                </div>
+                <div
+                    v-if="success"
+                    class="mt-3 bg-black/15 text-black text-xs py-2 rounded-xl text-center font-semibold"
                 >
-                    Account
-                </p>
-                <h1 class="text-3xl font-bold">Profile</h1>
+                    {{ success }}
+                </div>
+            </div>
+
+            <!-- Desktop header -->
+            <div
+                class="hidden md:flex bg-[#0f0f0f] border-b border-white/5 px-8 py-4 shrink-0 items-center justify-between"
+            >
+                <div>
+                    <p
+                        class="text-xs text-[#7ED957] uppercase tracking-widest font-semibold mb-0.5"
+                    >
+                        Account
+                    </p>
+                    <h1 class="text-2xl font-bold">Profile</h1>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div
+                        v-if="success"
+                        class="bg-[#7ED957]/10 border border-[#7ED957]/30 text-[#7ED957] text-xs py-2 px-4 rounded-xl font-semibold"
+                    >
+                        {{ success }}
+                    </div>
+                    <button
+                        @click="logout"
+                        class="flex items-center gap-2 px-4 py-2.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl font-semibold text-sm hover:bg-red-500/20 transition-all"
+                    >
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                    <button
+                        v-if="hasChanges"
+                        @click="saveProfile"
+                        class="flex items-center gap-2 px-5 py-2.5 bg-[#7ED957] text-black rounded-xl font-bold text-sm hover:bg-[#6bc947] transition-all shadow-lg shadow-[#7ED957]/20"
+                    >
+                        <i class="fas fa-check"></i> Save Changes
+                    </button>
+                </div>
             </div>
 
             <div
                 class="flex-1 overflow-y-auto px-5 md:px-8 pt-6 pb-32 md:pb-10"
             >
-                <div
-                    v-if="success"
-                    class="mb-5 bg-[#7ED957]/10 border border-[#7ED957]/30 text-[#7ED957] text-sm py-3 rounded-2xl text-center font-semibold"
-                >
-                    {{ success }}
-                </div>
-
+                <!-- MOBILE -->
                 <div class="md:hidden max-w-2xl mx-auto space-y-5">
                     <div
                         class="bg-[#111] border border-white/5 rounded-3xl p-6 flex flex-col items-center gap-5"
@@ -299,6 +374,7 @@ onMounted(() => {
                             </p>
                         </div>
                     </div>
+
                     <div
                         v-if="friendRequests.length > 0"
                         class="bg-[#111] border border-white/5 rounded-3xl p-6 space-y-4"
@@ -350,6 +426,7 @@ onMounted(() => {
                             </div>
                         </div>
                     </div>
+
                     <div
                         v-if="trainerRequests.length > 0"
                         class="bg-[#111] border border-white/5 rounded-3xl p-6 space-y-4"
@@ -397,6 +474,7 @@ onMounted(() => {
                             </div>
                         </div>
                     </div>
+
                     <div
                         class="bg-[#111] border border-white/5 rounded-3xl p-6 space-y-4"
                     >
@@ -452,6 +530,7 @@ onMounted(() => {
                             </div>
                         </div>
                     </div>
+
                     <div
                         class="bg-[#111] border border-white/5 rounded-3xl p-6 space-y-4"
                     >
@@ -543,6 +622,7 @@ onMounted(() => {
                             ></textarea>
                         </div>
                     </div>
+
                     <div
                         class="bg-[#111] border border-white/5 rounded-3xl p-6 space-y-4"
                     >
@@ -590,22 +670,9 @@ onMounted(() => {
                             </button>
                         </div>
                     </div>
-                    <div class="flex flex-col gap-3 pb-4">
-                        <button
-                            @click="saveProfile"
-                            class="flex-1 py-3.5 bg-[#7ED957] text-black rounded-2xl font-bold text-sm hover:bg-[#6bc947] transition-all shadow-lg shadow-[#7ED957]/20"
-                        >
-                            Save Changes
-                        </button>
-                        <button
-                            @click="logout"
-                            class="flex-1 py-3.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl font-bold text-sm hover:bg-red-500/20 transition-all"
-                        >
-                            Logout
-                        </button>
-                    </div>
                 </div>
 
+                <!-- DESKTOP -->
                 <div class="hidden md:block max-w-6xl mx-auto">
                     <div
                         v-if="
@@ -779,7 +846,6 @@ onMounted(() => {
                                     </div>
                                 </div>
                             </div>
-
                             <div class="border-t border-white/5 pt-5 space-y-3">
                                 <p
                                     class="text-xs text-gray-500 uppercase tracking-wider"
@@ -891,7 +957,6 @@ onMounted(() => {
                                     </div>
                                 </div>
                             </div>
-
                             <div
                                 class="border-t border-white/5 pt-5 flex-1 flex flex-col"
                             >
@@ -1003,12 +1068,6 @@ onMounted(() => {
                             </div>
                         </div>
                     </div>
-                    <button
-                        @click="saveProfile"
-                        class="w-full max-w-xs mx-auto block py-3.5 bg-[#7ED957] text-black rounded-2xl font-bold text-sm hover:bg-[#6bc947] transition-all shadow-lg shadow-[#7ED957]/20"
-                    >
-                        Save Changes
-                    </button>
                 </div>
             </div>
         </div>

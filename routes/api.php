@@ -224,6 +224,11 @@ Route::middleware('auth:sanctum')->group(function () {
         return response()->json($plan);
     });
 
+    Route::get('/my/subscription', function () {
+        $sub = \App\Models\Subscription::where('user_id', auth()->id())->first();
+        return response()->json($sub);
+    });
+
     Route::post('/trainer/client/{clientId}/workout-logs/{id}/finish', function (Request $request, $clientId, $id) {
         if (auth()->user()->role !== 'trainer') {
             return response()->json(['error' => 'Unauthorized'], 403);

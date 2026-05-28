@@ -23,6 +23,21 @@ const stats = ref({
     bio: "",
 });
 
+const showRemovePopup = ref(false);
+
+const removeClient = async () => {
+    try {
+        await axios.delete(
+            `http://localhost:8000/api/trainer/client/${client.value.id}`,
+            { headers },
+        );
+        showRemovePopup.value = false;
+        router.push("/trainer");
+    } catch (err) {
+        console.error(err);
+    }
+};
+
 const showPopup = ref(false);
 const popupTitle = ref("");
 const popupMessage = ref("");
@@ -352,6 +367,14 @@ const openMessages = () => {
                         No notes yet
                     </div>
                 </div>
+                <div class="flex justify-center mt-4">
+                    <button
+                        @click="showRemovePopup = true"
+                        class="bg-red-500/10 border border-red-500/20 text-red-400 px-5 py-3 rounded-2xl font-semibold hover:bg-red-500/20 transition-all"
+                    >
+                        Remove Client
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -373,6 +396,38 @@ const openMessages = () => {
                         class="bg-[#1a1a1a] border border-white/10 px-4 py-2 rounded-2xl text-sm"
                     >
                         Close
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div
+            v-if="showRemovePopup"
+            class="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+            @click.self="showRemovePopup = false"
+        >
+            <div
+                class="bg-[#151515] border border-white/10 rounded-3xl p-6 w-full max-w-md shadow-2xl mx-4"
+            >
+                <h3 class="text-xl font-bold text-white mb-2">Remove Client</h3>
+                <p class="text-gray-400 mb-6">
+                    Are you sure you want to remove
+                    <span class="text-white font-semibold">{{
+                        client?.name
+                    }}</span>
+                    as your client? This action cannot be undone.
+                </p>
+                <div class="flex gap-3 justify-end">
+                    <button
+                        @click="showRemovePopup = false"
+                        class="bg-[#1a1a1a] border border-white/10 px-4 py-2 rounded-2xl text-sm hover:bg-white/5 transition-all"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        @click="removeClient"
+                        class="bg-red-500 text-white px-4 py-2 rounded-2xl text-sm font-semibold hover:bg-red-600 transition-all"
+                    >
+                        Remove
                     </button>
                 </div>
             </div>

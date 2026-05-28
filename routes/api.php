@@ -294,6 +294,16 @@ Route::middleware('auth:sanctum')->group(function () {
         return response()->json(['message' => 'Accepted']);
     });
 
+    Route::delete('/trainer/client/{id}', function ($id) {
+        if (auth()->user()->role !== 'trainer') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+        TrainerClient::where('trainer_id', auth()->id())
+            ->where('client_id', $id)
+            ->delete();
+        return response()->json(['message' => 'Client removed']);
+    });
+
     Route::delete('/my/trainer-requests/decline/{trainerId}', function ($trainerId) {
         TrainerClient::where('trainer_id', $trainerId)
             ->where('client_id', auth()->id())

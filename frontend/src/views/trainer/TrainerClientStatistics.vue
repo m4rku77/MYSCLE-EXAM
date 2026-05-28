@@ -159,6 +159,7 @@ const getCalendarDays = () => {
                     ) || 0),
                 0,
             ),
+            logs: dayLogs,
         });
     }
     return days;
@@ -281,7 +282,6 @@ const createChart = () => {
         },
     });
 };
-
 const exerciseList = computed(() => {
     const names = new Set();
     logs.value.forEach((log) =>
@@ -291,20 +291,17 @@ const exerciseList = computed(() => {
     );
     return [...names].sort();
 });
-
 const filteredExercises = computed(() => {
     if (!exerciseSearch.value) return exerciseList.value;
     return exerciseList.value.filter((e) =>
         e.toLowerCase().includes(exerciseSearch.value.toLowerCase()),
     );
 });
-
 const selectExercise = (ex) => {
     selectedExercise.value = ex;
     exerciseSearch.value = ex;
     showExerciseDropdown.value = false;
 };
-
 const exerciseData = computed(() => {
     if (!selectedExercise.value) return [];
     const byDate = {};
@@ -323,18 +320,16 @@ const exerciseData = computed(() => {
         const maxReps =
             sets.find((s) => Number(s.weight) === maxWeight)?.reps || 0;
         const orm = Math.round(maxWeight * (1 + Number(maxReps) / 30));
-        if (!byDate[dateKey] || orm > byDate[dateKey].orm) {
+        if (!byDate[dateKey] || orm > byDate[dateKey].orm)
             byDate[dateKey] = {
                 date: dateKey,
                 maxWeight,
                 maxReps: Number(maxReps),
                 orm,
             };
-        }
     });
     return Object.values(byDate);
 });
-
 const monthlyProgress = computed(() => {
     if (!selectedExercise.value) return [];
     const byMonth = {};
@@ -352,13 +347,11 @@ const monthlyProgress = computed(() => {
             ) ?? [];
         if (!sets.length) return;
         const maxWeight = Math.max(...sets.map((s) => Number(s.weight) || 0));
-        if (!byMonth[key] || maxWeight > byMonth[key].weight) {
+        if (!byMonth[key] || maxWeight > byMonth[key].weight)
             byMonth[key] = { key, label, weight: maxWeight };
-        }
     });
     return Object.values(byMonth).sort((a, b) => a.key.localeCompare(b.key));
 });
-
 const bestEver = computed(() =>
     exerciseData.value.length
         ? exerciseData.value.reduce((best, d) => (d.orm > best.orm ? d : best))
@@ -369,7 +362,6 @@ const trend = computed(() => {
     if (data.length < 2) return 0;
     return data[data.length - 1].maxWeight - data[data.length - 2].maxWeight;
 });
-
 const createStrengthChart = async () => {
     await nextTick();
     if (!strengthChartRef.value || !exerciseData.value.length) return;
@@ -431,7 +423,6 @@ const createStrengthChart = async () => {
         },
     });
 };
-
 const createMonthlyWeightChart = async () => {
     await nextTick();
     if (!monthlyWeightChartRef.value || !monthlyProgress.value.length) return;
@@ -505,572 +496,648 @@ watch(activeTab, async (val) => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-[#080808] text-white">
-        <div
-            v-if="loading"
-            class="h-screen flex items-center justify-center text-gray-600"
-        >
-            Loading statistics...
-        </div>
-
-        <div v-else>
+    <div class="h-screen bg-[#080808] text-white flex">
+        <div class="flex-1 md:ml-64 flex flex-col overflow-hidden">
             <div
-                class="bg-[#0f0f0f] border-b border-white/5 px-5 py-6 max-w-5xl mx-auto"
+                v-if="loading"
+                class="h-full flex items-center justify-center text-gray-600"
             >
-                <button
-                    @click="router.back()"
-                    class="text-gray-500 hover:text-white text-sm mb-5 flex items-center gap-2 transition"
-                >
-                    <i class="fas fa-chevron-left text-xs"></i> Back
-                </button>
-
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p
-                            class="text-xs text-[#7ED957] uppercase tracking-widest font-semibold mb-1"
-                        >
-                            Training Report
-                        </p>
-                        <h1 class="text-3xl font-bold">{{ client?.name }}</h1>
-                    </div>
-
-                    <div
-                        class="flex bg-[#1a1a1a] border border-white/10 rounded-2xl p-1"
-                    >
-                        <button
-                            @click="activeTab = 'overview'"
-                            :class="
-                                activeTab === 'overview'
-                                    ? 'bg-[#7ED957] text-black'
-                                    : 'text-gray-400'
-                            "
-                            class="px-4 py-2 rounded-xl text-sm font-semibold transition-all"
-                        >
-                            Overview
-                        </button>
-                        <button
-                            @click="activeTab = 'strength'"
-                            :class="
-                                activeTab === 'strength'
-                                    ? 'bg-[#7ED957] text-black'
-                                    : 'text-gray-400'
-                            "
-                            class="px-4 py-2 rounded-xl text-sm font-semibold transition-all"
-                        >
-                            Strength
-                        </button>
-                    </div>
-                </div>
+                Loading statistics...
             </div>
 
-            <div class="max-w-5xl mx-auto px-5 py-6 space-y-5 pb-20">
-                <template v-if="activeTab === 'overview'">
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <div
-                            class="bg-[#111] border border-white/5 rounded-2xl p-5"
-                        >
+            <div v-else class="flex-1 overflow-y-auto">
+                <div
+                    class="bg-[#0f0f0f] border-b border-white/5 px-5 py-6 max-w-5xl mx-auto w-full"
+                >
+                    <button
+                        @click="router.back()"
+                        class="flex items-center gap-2 text-gray-500 hover:text-white text-sm mb-4 transition"
+                    >
+                        <i class="fas fa-chevron-left text-xs"></i> Back
+                    </button>
+                    <div class="flex items-center justify-between">
+                        <div>
                             <p
-                                class="text-xs text-gray-500 uppercase tracking-wider mb-2"
+                                class="text-xs text-[#7ED957] uppercase tracking-widest font-semibold mb-1"
                             >
-                                Workouts
+                                Training Report
                             </p>
-                            <p class="text-3xl font-bold text-[#7ED957]">
-                                {{ totalWorkouts }}
-                            </p>
-                            <p class="text-xs text-gray-600 mt-1">completed</p>
+                            <h1 class="text-3xl font-bold">
+                                {{ client?.name }}
+                            </h1>
                         </div>
                         <div
-                            class="bg-[#111] border border-white/5 rounded-2xl p-5"
+                            class="flex bg-[#1a1a1a] border border-white/10 rounded-2xl p-1"
                         >
-                            <p
-                                class="text-xs text-gray-500 uppercase tracking-wider mb-2"
+                            <button
+                                @click="activeTab = 'overview'"
+                                :class="
+                                    activeTab === 'overview'
+                                        ? 'bg-[#7ED957] text-black'
+                                        : 'text-gray-400'
+                                "
+                                class="px-4 py-2 rounded-xl text-sm font-semibold transition-all"
                             >
-                                Total Sets
-                            </p>
-                            <p class="text-3xl font-bold text-[#7ED957]">
-                                {{ totalSets }}
-                            </p>
-                            <p class="text-xs text-gray-600 mt-1">all time</p>
-                        </div>
-                        <div
-                            class="bg-[#111] border border-white/5 rounded-2xl p-5"
-                        >
-                            <p
-                                class="text-xs text-gray-500 uppercase tracking-wider mb-2"
+                                Overview
+                            </button>
+                            <button
+                                @click="activeTab = 'strength'"
+                                :class="
+                                    activeTab === 'strength'
+                                        ? 'bg-[#7ED957] text-black'
+                                        : 'text-gray-400'
+                                "
+                                class="px-4 py-2 rounded-xl text-sm font-semibold transition-all"
                             >
-                                Avg Session
-                            </p>
-                            <p class="text-3xl font-bold text-[#7ED957]">
-                                {{ Math.floor(avgDuration / 60)
-                                }}<span class="text-lg">m</span>
-                            </p>
-                            <p class="text-xs text-gray-600 mt-1">duration</p>
-                        </div>
-                        <div
-                            class="bg-[#111] border border-white/5 rounded-2xl p-5"
-                        >
-                            <p
-                                class="text-xs text-gray-500 uppercase tracking-wider mb-2"
-                            >
-                                Best Streak
-                            </p>
-                            <p class="text-3xl font-bold text-[#7ED957]">
-                                {{ longestStreak
-                                }}<span class="text-lg">d</span>
-                            </p>
-                            <p class="text-xs text-gray-600 mt-1">
-                                consecutive days
-                            </p>
+                                Strength
+                            </button>
                         </div>
                     </div>
+                </div>
 
-                    <div
-                        class="bg-[#111] border border-white/5 rounded-2xl p-6"
-                    >
-                        <div class="flex items-center justify-between mb-5">
-                            <p
-                                class="text-xs text-gray-500 uppercase tracking-wider"
+                <div class="max-w-5xl mx-auto px-5 py-6 space-y-5 pb-36">
+                    <template v-if="activeTab === 'overview'">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <div
+                                class="bg-[#111] border border-white/5 rounded-2xl p-5"
                             >
-                                Sessions per Month
-                            </p>
-                            <div class="flex items-center gap-2">
-                                <button
-                                    @click="selectedYear--"
-                                    class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 text-xs flex items-center justify-center"
+                                <p
+                                    class="text-xs text-gray-500 uppercase tracking-wider mb-2"
                                 >
-                                    ‹
-                                </button>
-                                <span class="text-sm font-semibold px-1">{{
-                                    selectedYear
-                                }}</span>
-                                <button
-                                    @click="selectedYear++"
-                                    class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 text-xs flex items-center justify-center"
-                                >
-                                    ›
-                                </button>
-                            </div>
-                        </div>
-                        <div class="h-48"><canvas ref="chartRef"></canvas></div>
-                    </div>
-
-                    <div
-                        class="bg-[#111] border border-white/5 rounded-2xl p-6"
-                    >
-                        <div class="flex items-center justify-between mb-5">
-                            <p
-                                class="text-xs text-gray-500 uppercase tracking-wider"
-                            >
-                                Workout Calendar
-                            </p>
-                            <div class="flex items-center gap-2">
-                                <button
-                                    @click="viewMode = 'month'"
-                                    :class="
-                                        viewMode === 'month'
-                                            ? 'bg-[#7ED957] text-black'
-                                            : 'bg-white/5 text-gray-400'
-                                    "
-                                    class="px-3 py-1 rounded-lg text-xs font-semibold"
-                                >
-                                    Month
-                                </button>
-                                <button
-                                    @click="viewMode = 'year'"
-                                    :class="
-                                        viewMode === 'year'
-                                            ? 'bg-[#7ED957] text-black'
-                                            : 'bg-white/5 text-gray-400'
-                                    "
-                                    class="px-3 py-1 rounded-lg text-xs font-semibold"
-                                >
-                                    Year
-                                </button>
-                            </div>
-                        </div>
-
-                        <div v-if="viewMode === 'month'">
-                            <div class="flex items-center justify-between mb-4">
-                                <button
-                                    @click="
-                                        selectedMonth > 0
-                                            ? selectedMonth--
-                                            : ((selectedMonth = 11),
-                                              selectedYear--)
-                                    "
-                                    class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 text-xs flex items-center justify-center"
-                                >
-                                    ‹
-                                </button>
-                                <p class="text-sm font-semibold">
-                                    {{ months[selectedMonth] }}
-                                    {{ selectedYear }}
+                                    Workouts
                                 </p>
-                                <button
-                                    @click="
-                                        selectedMonth < 11
-                                            ? selectedMonth++
-                                            : ((selectedMonth = 0),
-                                              selectedYear++)
-                                    "
-                                    class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 text-xs flex items-center justify-center"
-                                >
-                                    ›
-                                </button>
+                                <p class="text-3xl font-bold text-[#7ED957]">
+                                    {{ totalWorkouts }}
+                                </p>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    completed
+                                </p>
                             </div>
                             <div
-                                class="grid grid-cols-7 text-center text-xs text-gray-600 mb-2"
+                                class="bg-[#111] border border-white/5 rounded-2xl p-5"
                             >
-                                <span
-                                    v-for="d in [
-                                        'Mo',
-                                        'Tu',
-                                        'We',
-                                        'Th',
-                                        'Fr',
-                                        'Sa',
-                                        'Su',
-                                    ]"
-                                    :key="d"
-                                    >{{ d }}</span
+                                <p
+                                    class="text-xs text-gray-500 uppercase tracking-wider mb-2"
                                 >
+                                    Total Sets
+                                </p>
+                                <p class="text-3xl font-bold text-[#7ED957]">
+                                    {{ totalSets }}
+                                </p>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    all time
+                                </p>
                             </div>
-                            <div class="grid grid-cols-7 gap-1">
-                                <div
-                                    v-for="(d, i) in getCalendarDays()"
-                                    :key="i"
-                                    @click="openDay(d)"
-                                    class="aspect-square rounded-lg flex items-center justify-center text-xs transition-all"
-                                    :class="
-                                        !d
-                                            ? ''
-                                            : d.count === 0
-                                              ? 'bg-white/5 text-gray-700'
-                                              : 'bg-[#7ED957] text-black font-bold cursor-pointer hover:scale-105'
-                                    "
+                            <div
+                                class="bg-[#111] border border-white/5 rounded-2xl p-5"
+                            >
+                                <p
+                                    class="text-xs text-gray-500 uppercase tracking-wider mb-2"
                                 >
-                                    <span v-if="d">{{ d.day }}</span>
-                                </div>
+                                    Avg Session
+                                </p>
+                                <p class="text-3xl font-bold text-[#7ED957]">
+                                    {{ Math.floor(avgDuration / 60)
+                                    }}<span class="text-lg">m</span>
+                                </p>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    duration
+                                </p>
                             </div>
-                            <div class="mt-4 text-xs text-gray-600 text-center">
-                                {{ filteredLogs.length }} session{{
-                                    filteredLogs.length !== 1 ? "s" : ""
-                                }}
-                                this month
+                            <div
+                                class="bg-[#111] border border-white/5 rounded-2xl p-5"
+                            >
+                                <p
+                                    class="text-xs text-gray-500 uppercase tracking-wider mb-2"
+                                >
+                                    Best Streak
+                                </p>
+                                <p class="text-3xl font-bold text-[#7ED957]">
+                                    {{ longestStreak
+                                    }}<span class="text-lg">d</span>
+                                </p>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    consecutive days
+                                </p>
                             </div>
                         </div>
 
-                        <div v-else class="space-y-4">
-                            <div v-for="mth in getYearGrid()" :key="mth.name">
-                                <p class="text-xs text-gray-500 mb-2">
-                                    {{ mth.name }}
+                        <div
+                            class="bg-[#111] border border-white/5 rounded-2xl p-6"
+                        >
+                            <div class="flex items-center justify-between mb-5">
+                                <p
+                                    class="text-xs text-gray-500 uppercase tracking-wider"
+                                >
+                                    Sessions per Month
                                 </p>
-                                <div class="grid grid-cols-7 gap-0.5">
+                                <div class="flex items-center gap-2">
+                                    <button
+                                        @click="selectedYear--"
+                                        class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 text-xs flex items-center justify-center"
+                                    >
+                                        ‹
+                                    </button>
+                                    <span class="text-sm font-semibold px-1">{{
+                                        selectedYear
+                                    }}</span>
+                                    <button
+                                        @click="selectedYear++"
+                                        class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 text-xs flex items-center justify-center"
+                                    >
+                                        ›
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="h-48">
+                                <canvas ref="chartRef"></canvas>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-[#111] border border-white/5 rounded-2xl p-6"
+                        >
+                            <div class="flex items-center justify-between mb-5">
+                                <p
+                                    class="text-xs text-gray-500 uppercase tracking-wider"
+                                >
+                                    Workout Calendar
+                                </p>
+                                <div class="flex items-center gap-2">
+                                    <button
+                                        @click="viewMode = 'month'"
+                                        :class="
+                                            viewMode === 'month'
+                                                ? 'bg-[#7ED957] text-black'
+                                                : 'bg-white/5 text-gray-400'
+                                        "
+                                        class="px-3 py-1 rounded-lg text-xs font-semibold"
+                                    >
+                                        Month
+                                    </button>
+                                    <button
+                                        @click="viewMode = 'year'"
+                                        :class="
+                                            viewMode === 'year'
+                                                ? 'bg-[#7ED957] text-black'
+                                                : 'bg-white/5 text-gray-400'
+                                        "
+                                        class="px-3 py-1 rounded-lg text-xs font-semibold"
+                                    >
+                                        Year
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div v-if="viewMode === 'month'">
+                                <div
+                                    class="flex items-center justify-between mb-4"
+                                >
+                                    <button
+                                        @click="
+                                            selectedMonth > 0
+                                                ? selectedMonth--
+                                                : ((selectedMonth = 11),
+                                                  selectedYear--)
+                                        "
+                                        class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 text-xs flex items-center justify-center"
+                                    >
+                                        ‹
+                                    </button>
+                                    <p class="text-sm font-semibold">
+                                        {{ months[selectedMonth] }}
+                                        {{ selectedYear }}
+                                    </p>
+                                    <button
+                                        @click="
+                                            selectedMonth < 11
+                                                ? selectedMonth++
+                                                : ((selectedMonth = 0),
+                                                  selectedYear++)
+                                        "
+                                        class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 text-xs flex items-center justify-center"
+                                    >
+                                        ›
+                                    </button>
+                                </div>
+                                <div
+                                    class="grid grid-cols-7 text-center text-xs text-gray-600 mb-2"
+                                >
+                                    <span
+                                        v-for="d in [
+                                            'Mo',
+                                            'Tu',
+                                            'We',
+                                            'Th',
+                                            'Fr',
+                                            'Sa',
+                                            'Su',
+                                        ]"
+                                        :key="d"
+                                        >{{ d }}</span
+                                    >
+                                </div>
+                                <div class="grid grid-cols-7 gap-1">
                                     <div
-                                        v-for="(d, i) in mth.days"
+                                        v-for="(d, i) in getCalendarDays()"
                                         :key="i"
-                                        class="aspect-square rounded-sm"
+                                        @click="openDay(d)"
+                                        class="aspect-square rounded-lg flex items-center justify-center text-xs transition-all"
                                         :class="
                                             !d
                                                 ? ''
-                                                : d.worked
-                                                  ? 'bg-[#7ED957]'
-                                                  : 'bg-white/5'
+                                                : d.count === 0
+                                                  ? 'bg-white/5 text-gray-700'
+                                                  : 'bg-[#7ED957] text-black font-bold cursor-pointer hover:scale-105'
                                         "
-                                    ></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div
-                        class="bg-[#111] border border-white/5 rounded-2xl p-6"
-                    >
-                        <p
-                            class="text-xs text-gray-500 uppercase tracking-wider mb-1"
-                        >
-                            Session History
-                        </p>
-                        <p class="text-sm text-gray-400 mb-5">
-                            {{ filteredLogs.length }} sessions shown
-                        </p>
-                        <div
-                            v-if="filteredLogs.length > 0"
-                            class="space-y-2 max-h-80 overflow-y-auto"
-                        >
-                            <div
-                                v-for="log in filteredLogs"
-                                :key="log.id"
-                                class="flex items-center gap-4 bg-[#0f0f0f] border border-white/5 rounded-xl px-4 py-3"
-                            >
-                                <div
-                                    class="w-2 h-2 rounded-full bg-[#7ED957] shrink-0"
-                                ></div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-medium">
-                                        {{ formatDate(log.created_at) }}
-                                    </p>
+                                    >
+                                        <span v-if="d">{{ d.day }}</span>
+                                    </div>
                                 </div>
                                 <div
-                                    class="flex items-center gap-5 text-xs text-gray-500 shrink-0"
+                                    class="mt-4 text-xs text-gray-600 text-center"
                                 >
-                                    <div class="text-center">
-                                        <p
-                                            class="text-white font-semibold text-sm"
-                                        >
-                                            {{ log.sets?.length || 0 }}
-                                        </p>
-                                        <p>sets</p>
-                                    </div>
-                                    <div class="text-center">
-                                        <p
-                                            class="text-white font-semibold text-sm"
-                                        >
-                                            {{
-                                                log.sets?.reduce(
-                                                    (s, set) =>
-                                                        s +
-                                                        (Number(set.reps) || 0),
-                                                    0,
-                                                ) || 0
-                                            }}
-                                        </p>
-                                        <p>reps</p>
-                                    </div>
-                                    <div class="text-center hidden md:block">
-                                        <p
-                                            class="text-white font-semibold text-sm"
-                                        >
-                                            {{
-                                                formatDuration(
-                                                    log.duration_seconds,
-                                                )
-                                            }}
-                                        </p>
-                                        <p>time</p>
+                                    {{ filteredLogs.length }} session{{
+                                        filteredLogs.length !== 1 ? "s" : ""
+                                    }}
+                                    this month
+                                </div>
+                            </div>
+
+                            <div v-else class="space-y-4">
+                                <div
+                                    v-for="mth in getYearGrid()"
+                                    :key="mth.name"
+                                >
+                                    <p class="text-xs text-gray-500 mb-2">
+                                        {{ mth.name }}
+                                    </p>
+                                    <div class="grid grid-cols-7 gap-0.5">
+                                        <div
+                                            v-for="(d, i) in mth.days"
+                                            :key="i"
+                                            class="aspect-square rounded-sm"
+                                            :class="
+                                                !d
+                                                    ? ''
+                                                    : d.worked
+                                                      ? 'bg-[#7ED957]'
+                                                      : 'bg-white/5'
+                                            "
+                                        ></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div v-else class="text-center text-gray-600 py-10">
-                            <i
-                                class="fas fa-calendar text-2xl mb-3 opacity-20"
-                            ></i>
-                            <p>No sessions for this period</p>
-                        </div>
-                    </div>
-                </template>
 
-                <template v-if="activeTab === 'strength'">
-                    <div
-                        v-if="exerciseList.length === 0"
-                        class="text-center text-gray-600 py-20"
-                    >
-                        <i class="fas fa-dumbbell text-4xl mb-4 opacity-20"></i>
-                        <p>No exercise data yet</p>
-                    </div>
-
-                    <template v-else>
                         <div
                             class="bg-[#111] border border-white/5 rounded-2xl p-6"
                         >
                             <p
-                                class="text-xs text-gray-500 uppercase tracking-wider mb-3"
+                                class="text-xs text-gray-500 uppercase tracking-wider mb-1"
                             >
-                                Select Exercise
+                                Session History
                             </p>
-                            <div class="relative">
-                                <input
-                                    v-model="exerciseSearch"
-                                    @focus="showExerciseDropdown = true"
-                                    @blur="hideDropdown"
-                                    placeholder="Search exercise..."
-                                    class="w-full bg-[#0f0f0f] border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-[#7ED957] text-sm"
-                                />
+                            <p class="text-sm text-gray-400 mb-5">
+                                {{ filteredLogs.length }} sessions shown
+                            </p>
+                            <div
+                                v-if="filteredLogs.length > 0"
+                                class="space-y-2 max-h-80 overflow-y-auto"
+                            >
                                 <div
-                                    v-if="
-                                        showExerciseDropdown &&
-                                        filteredExercises.length
-                                    "
-                                    class="absolute w-full mt-2 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-xl max-h-48 overflow-y-auto z-50"
+                                    v-for="log in filteredLogs"
+                                    :key="log.id"
+                                    class="flex items-center gap-4 bg-[#0f0f0f] border border-white/5 rounded-xl px-4 py-3"
                                 >
                                     <div
-                                        v-for="ex in filteredExercises"
-                                        :key="ex"
-                                        @mousedown="selectExercise(ex)"
-                                        class="px-4 py-3 text-sm cursor-pointer transition-all hover:bg-white/5"
-                                        :class="
-                                            selectedExercise === ex
-                                                ? 'text-[#7ED957] font-semibold'
-                                                : 'text-gray-300'
-                                        "
-                                    >
-                                        {{ ex }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <template
-                            v-if="selectedExercise && exerciseData.length > 0"
-                        >
-                            <div class="grid grid-cols-3 gap-3">
-                                <div
-                                    class="bg-[#111] border border-white/5 rounded-2xl p-5"
-                                >
-                                    <p
-                                        class="text-xs text-gray-500 uppercase tracking-wider mb-2"
-                                    >
-                                        Best Weight
-                                    </p>
-                                    <p
-                                        class="text-3xl font-bold text-[#7ED957]"
-                                    >
-                                        {{ bestEver?.maxWeight
-                                        }}<span class="text-lg">kg</span>
-                                    </p>
-                                    <p class="text-xs text-gray-600 mt-1">
-                                        × {{ bestEver?.maxReps }} reps
-                                    </p>
-                                </div>
-                                <div
-                                    class="bg-[#111] border border-white/5 rounded-2xl p-5"
-                                >
-                                    <p
-                                        class="text-xs text-gray-500 uppercase tracking-wider mb-2"
-                                    >
-                                        Trend
-                                    </p>
-                                    <p
-                                        class="text-3xl font-bold"
-                                        :class="
-                                            trend >= 0
-                                                ? 'text-[#7ED957]'
-                                                : 'text-red-400'
-                                        "
-                                    >
-                                        {{ trend >= 0 ? "+" : "" }}{{ trend
-                                        }}<span class="text-lg">kg</span>
-                                    </p>
-                                    <p class="text-xs text-gray-600 mt-1">
-                                        vs last session
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div
-                                class="bg-[#111] border border-white/5 rounded-2xl p-6"
-                            >
-                                <p
-                                    class="text-xs text-gray-500 uppercase tracking-wider mb-1"
-                                >
-                                    Weight Progress by Month
-                                </p>
-                                <p class="text-sm text-gray-400 mb-5">
-                                    Max weight used per month
-                                </p>
-                                <div class="h-48">
-                                    <canvas
-                                        ref="monthlyWeightChartRef"
-                                    ></canvas>
-                                </div>
-                            </div>
-
-                            <div
-                                class="bg-[#111] border border-white/5 rounded-2xl p-6"
-                            >
-                                <p
-                                    class="text-xs text-gray-500 uppercase tracking-wider mb-4"
-                                >
-                                    Session Breakdown
-                                </p>
-                                <div class="space-y-2 max-h-80 overflow-y-auto">
-                                    <div
-                                        v-for="d in [...exerciseData].reverse()"
-                                        :key="d.date"
-                                        class="flex items-center gap-4 bg-[#0f0f0f] border border-white/5 rounded-xl px-4 py-3"
-                                    >
-                                        <div
-                                            class="w-2 h-2 rounded-full bg-[#7ED957] shrink-0"
-                                        ></div>
-                                        <p class="text-sm text-gray-400 flex-1">
-                                            {{ d.date }}
+                                        class="w-2 h-2 rounded-full bg-[#7ED957] shrink-0"
+                                    ></div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium">
+                                            {{ formatDate(log.created_at) }}
                                         </p>
+                                    </div>
+                                    <div
+                                        class="flex items-center gap-5 text-xs text-gray-500 shrink-0"
+                                    >
+                                        <div class="text-center">
+                                            <p
+                                                class="text-white font-semibold text-sm"
+                                            >
+                                                {{ log.sets?.length || 0 }}
+                                            </p>
+                                            <p>sets</p>
+                                        </div>
+                                        <div class="text-center">
+                                            <p
+                                                class="text-white font-semibold text-sm"
+                                            >
+                                                {{
+                                                    log.sets?.reduce(
+                                                        (s, set) =>
+                                                            s +
+                                                            (Number(set.reps) ||
+                                                                0),
+                                                        0,
+                                                    ) || 0
+                                                }}
+                                            </p>
+                                            <p>reps</p>
+                                        </div>
                                         <div
-                                            class="flex items-center gap-5 text-xs text-gray-500 shrink-0"
+                                            class="text-center hidden md:block"
                                         >
-                                            <div class="text-center">
-                                                <p
-                                                    class="text-white font-semibold text-sm"
-                                                >
-                                                    {{ d.maxWeight
-                                                    }}<span
-                                                        class="text-gray-600"
-                                                        >kg</span
-                                                    >
-                                                </p>
-                                                <p>weight</p>
-                                            </div>
-                                            <div class="text-center">
-                                                <p
-                                                    class="text-white font-semibold text-sm"
-                                                >
-                                                    {{ d.maxReps }}
-                                                </p>
-                                                <p>reps</p>
-                                            </div>
+                                            <p
+                                                class="text-white font-semibold text-sm"
+                                            >
+                                                {{
+                                                    formatDuration(
+                                                        log.duration_seconds,
+                                                    )
+                                                }}
+                                            </p>
+                                            <p>time</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </template>
-
-                        <div
-                            v-else-if="selectedExercise"
-                            class="text-center text-gray-600 py-10"
-                        >
-                            <p>No data for {{ selectedExercise }}</p>
+                            <div v-else class="text-center text-gray-600 py-10">
+                                <i
+                                    class="fas fa-calendar text-2xl mb-3 opacity-20"
+                                ></i>
+                                <p>No sessions for this period</p>
+                            </div>
                         </div>
                     </template>
-                </template>
+
+                    <template v-if="activeTab === 'strength'">
+                        <div
+                            v-if="exerciseList.length === 0"
+                            class="text-center text-gray-600 py-20"
+                        >
+                            <i
+                                class="fas fa-dumbbell text-4xl mb-4 opacity-20"
+                            ></i>
+                            <p>No exercise data yet</p>
+                        </div>
+
+                        <template v-else>
+                            <div
+                                class="bg-[#111] border border-white/5 rounded-2xl p-6"
+                            >
+                                <p
+                                    class="text-xs text-gray-500 uppercase tracking-wider mb-3"
+                                >
+                                    Select Exercise
+                                </p>
+                                <div class="relative">
+                                    <input
+                                        v-model="exerciseSearch"
+                                        @focus="showExerciseDropdown = true"
+                                        @blur="hideDropdown"
+                                        placeholder="Search exercise..."
+                                        class="w-full bg-[#0f0f0f] border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-[#7ED957] text-sm"
+                                    />
+                                    <div
+                                        v-if="
+                                            showExerciseDropdown &&
+                                            filteredExercises.length
+                                        "
+                                        class="absolute w-full mt-2 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-xl max-h-48 overflow-y-auto z-50"
+                                    >
+                                        <div
+                                            v-for="ex in filteredExercises"
+                                            :key="ex"
+                                            @mousedown="selectExercise(ex)"
+                                            class="px-4 py-3 text-sm cursor-pointer transition-all hover:bg-white/5"
+                                            :class="
+                                                selectedExercise === ex
+                                                    ? 'text-[#7ED957] font-semibold'
+                                                    : 'text-gray-300'
+                                            "
+                                        >
+                                            {{ ex }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <template
+                                v-if="
+                                    selectedExercise && exerciseData.length > 0
+                                "
+                            >
+                                <div
+                                    class="grid grid-cols-2 md:grid-cols-3 gap-3"
+                                >
+                                    <div
+                                        class="bg-[#111] border border-white/5 rounded-2xl p-5"
+                                    >
+                                        <p
+                                            class="text-xs text-gray-500 uppercase tracking-wider mb-2"
+                                        >
+                                            Best Weight
+                                        </p>
+                                        <p
+                                            class="text-3xl font-bold text-[#7ED957]"
+                                        >
+                                            {{ bestEver?.maxWeight
+                                            }}<span class="text-lg">kg</span>
+                                        </p>
+                                        <p class="text-xs text-gray-600 mt-1">
+                                            × {{ bestEver?.maxReps }} reps
+                                        </p>
+                                    </div>
+                                    <div
+                                        class="bg-[#111] border border-white/5 rounded-2xl p-5"
+                                    >
+                                        <p
+                                            class="text-xs text-gray-500 uppercase tracking-wider mb-2"
+                                        >
+                                            Trend
+                                        </p>
+                                        <p
+                                            class="text-3xl font-bold"
+                                            :class="
+                                                trend >= 0
+                                                    ? 'text-[#7ED957]'
+                                                    : 'text-red-400'
+                                            "
+                                        >
+                                            {{ trend >= 0 ? "+" : "" }}{{ trend
+                                            }}<span class="text-lg">kg</span>
+                                        </p>
+                                        <p class="text-xs text-gray-600 mt-1">
+                                            vs last session
+                                        </p>
+                                    </div>
+                                    <div
+                                        class="bg-[#111] border border-white/5 rounded-2xl p-5"
+                                    >
+                                        <p
+                                            class="text-xs text-gray-500 uppercase tracking-wider mb-2"
+                                        >
+                                            Sessions
+                                        </p>
+                                        <p
+                                            class="text-3xl font-bold text-[#7ED957]"
+                                        >
+                                            {{ exerciseData.length }}
+                                        </p>
+                                        <p class="text-xs text-gray-600 mt-1">
+                                            logged
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="bg-[#111] border border-white/5 rounded-2xl p-6"
+                                >
+                                    <p
+                                        class="text-xs text-gray-500 uppercase tracking-wider mb-1"
+                                    >
+                                        Weight Progress by Month
+                                    </p>
+                                    <p class="text-sm text-gray-400 mb-5">
+                                        Max weight used per month
+                                    </p>
+                                    <div class="h-48">
+                                        <canvas
+                                            ref="monthlyWeightChartRef"
+                                        ></canvas>
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="bg-[#111] border border-white/5 rounded-2xl p-6"
+                                >
+                                    <p
+                                        class="text-xs text-gray-500 uppercase tracking-wider mb-4"
+                                    >
+                                        Session Breakdown
+                                    </p>
+                                    <div
+                                        class="space-y-2 max-h-80 overflow-y-auto"
+                                    >
+                                        <div
+                                            v-for="d in [
+                                                ...exerciseData,
+                                            ].reverse()"
+                                            :key="d.date"
+                                            class="flex items-center gap-4 bg-[#0f0f0f] border border-white/5 rounded-xl px-4 py-3"
+                                        >
+                                            <div
+                                                class="w-2 h-2 rounded-full bg-[#7ED957] shrink-0"
+                                            ></div>
+                                            <p
+                                                class="text-sm text-gray-400 flex-1"
+                                            >
+                                                {{ d.date }}
+                                            </p>
+                                            <div
+                                                class="flex items-center gap-5 text-xs text-gray-500 shrink-0"
+                                            >
+                                                <div class="text-center">
+                                                    <p
+                                                        class="text-white font-semibold text-sm"
+                                                    >
+                                                        {{ d.maxWeight
+                                                        }}<span
+                                                            class="text-gray-600"
+                                                            >kg</span
+                                                        >
+                                                    </p>
+                                                    <p>weight</p>
+                                                </div>
+                                                <div class="text-center">
+                                                    <p
+                                                        class="text-white font-semibold text-sm"
+                                                    >
+                                                        {{ d.maxReps }}
+                                                    </p>
+                                                    <p>reps</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <div
+                                v-else-if="selectedExercise"
+                                class="text-center text-gray-600 py-10"
+                            >
+                                <p>No data for {{ selectedExercise }}</p>
+                            </div>
+                        </template>
+                    </template>
+                </div>
             </div>
         </div>
+    </div>
 
+    <div
+        v-if="showDayModal"
+        class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-5"
+        @click.self="showDayModal = false"
+    >
         <div
-            v-if="showDayModal"
-            class="fixed inset-0 bg-black/70 flex items-end md:items-center justify-center z-50"
-            @click.self="showDayModal = false"
+            class="bg-[#111] border border-white/10 w-full max-w-md rounded-2xl p-6"
         >
-            <div
-                class="bg-[#111] border border-white/10 w-full md:max-w-md rounded-t-2xl md:rounded-2xl p-6"
-            >
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="font-semibold">Day {{ selectedDay?.day }}</h2>
-                    <button
-                        @click="showDayModal = false"
-                        class="text-gray-500 text-xl"
-                    >
-                        ✕
-                    </button>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-semibold">
+                    {{ months[selectedMonth] }} {{ selectedDay?.day }}
+                </h2>
+                <button
+                    @click="showDayModal = false"
+                    class="text-gray-500 hover:text-white text-xl transition-all"
+                >
+                    ✕
+                </button>
+            </div>
+            <div class="grid grid-cols-3 gap-3 text-center text-sm mb-4">
+                <div class="bg-[#0f0f0f] rounded-xl p-3">
+                    <p class="text-[#7ED957] font-bold text-xl">
+                        {{ selectedDay?.count }}
+                    </p>
+                    <p class="text-gray-500 text-xs mt-1">sessions</p>
                 </div>
-                <div class="grid grid-cols-3 gap-3 text-center text-sm">
-                    <div class="bg-[#0f0f0f] rounded-xl p-3">
-                        <p class="text-[#7ED957] font-bold text-xl">
-                            {{ selectedDay?.count }}
-                        </p>
-                        <p class="text-gray-500 text-xs mt-1">sessions</p>
+                <div class="bg-[#0f0f0f] rounded-xl p-3">
+                    <p class="text-white font-bold text-xl">
+                        {{ selectedDay?.sets }}
+                    </p>
+                    <p class="text-gray-500 text-xs mt-1">sets</p>
+                </div>
+                <div class="bg-[#0f0f0f] rounded-xl p-3">
+                    <p class="text-white font-bold text-xl">
+                        {{ selectedDay?.reps }}
+                    </p>
+                    <p class="text-gray-500 text-xs mt-1">reps</p>
+                </div>
+            </div>
+            <div v-if="selectedDay?.logs?.length" class="space-y-2">
+                <p class="text-xs text-gray-500 uppercase tracking-wider mb-2">
+                    Workouts
+                </p>
+                <div
+                    v-for="log in selectedDay.logs"
+                    :key="log.id"
+                    class="flex items-center gap-3 bg-[#0f0f0f] border border-white/5 rounded-xl px-4 py-3"
+                >
+                    <div
+                        class="w-8 h-8 bg-[#7ED957]/10 rounded-xl flex items-center justify-center shrink-0"
+                    >
+                        <i class="fas fa-dumbbell text-[#7ED957] text-xs"></i>
                     </div>
-                    <div class="bg-[#0f0f0f] rounded-xl p-3">
-                        <p class="text-white font-bold text-xl">
-                            {{ selectedDay?.sets }}
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold truncate">
+                            {{ log.training_plan?.name ?? "Workout" }}
                         </p>
-                        <p class="text-gray-500 text-xs mt-1">sets</p>
-                    </div>
-                    <div class="bg-[#0f0f0f] rounded-xl p-3">
-                        <p class="text-white font-bold text-xl">
-                            {{ selectedDay?.reps }}
+                        <p class="text-xs text-gray-500">
+                            {{ log.sets?.length || 0 }} sets ·
+                            {{ formatDuration(log.duration_seconds) }}
                         </p>
-                        <p class="text-gray-500 text-xs mt-1">reps</p>
                     </div>
                 </div>
             </div>

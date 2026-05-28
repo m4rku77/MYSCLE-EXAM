@@ -147,7 +147,7 @@ const openModal = () => {
                         @click="openModal"
                         class="flex items-center gap-2 px-5 py-2.5 bg-[#000000] text-[#6bc947] rounded-2xl font-bold text-sm hover:bg-[#6bc947] transition-all shadow-lg shadow-[#7ED957]/20"
                     >
-                        <i class="fas fa-plus text-xs"></i> Add Workout
+                        <i class="fas fa-plus text-xs"></i> Add Client
                     </button>
                 </div>
                 <input

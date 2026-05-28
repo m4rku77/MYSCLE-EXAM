@@ -276,12 +276,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::get('/trainer/client/{id}/stats', function ($id) {
-        if (auth()->user()->role !== 'trainer') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
         return WorkoutLog::where('user_id', $id)
-            ->with('sets')
+            ->with(['sets', 'trainingPlan'])
             ->orderBy('created_at', 'desc')
             ->get();
     });

@@ -18,12 +18,12 @@ class FriendController extends Controller
         $friends = DB::table('friends')
             ->join('users', 'friends.friend_id', '=', 'users.id')
             ->where('friends.user_id', $user->id)
+            ->where('friends.status', 'accepted')
             ->select('users.id', 'users.name', 'users.profile_photo')
             ->get();
 
         return response()->json($friends);
     }
-
     public function add(Request $request)
     {
         $request->validate([

@@ -226,25 +226,28 @@ const filteredFriends = () =>
                         :key="user.id"
                         class="bg-[#111] border border-white/5 rounded-2xl p-4 flex justify-between items-center hover:border-white/10 transition-all"
                     >
-                        <div class="flex items-center gap-3">
+                        <RouterLink
+                            :to="`/user/${user.id}`"
+                            class="flex items-center gap-3 flex-1 min-w-0"
+                        >
                             <img
                                 :src="getImage(user.profile_photo, user.name)"
                                 class="w-10 h-10 rounded-full object-cover ring-2 ring-white/5"
                             />
-                            <span class="font-semibold text-sm">{{
+                            <span class="font-semibold text-sm truncate">{{
                                 user.name
                             }}</span>
-                        </div>
+                        </RouterLink>
                         <button
                             v-if="!pendingSent.includes(user.id)"
                             @click="addFriend(user.id)"
-                            class="px-4 py-2 bg-[#7ED957] text-black rounded-xl text-sm font-bold hover:bg-[#6bc947] transition-all"
+                            class="px-4 py-2 bg-[#7ED957] text-black rounded-xl text-sm font-bold hover:bg-[#6bc947] transition-all shrink-0 ml-3"
                         >
                             + Add
                         </button>
                         <span
                             v-else
-                            class="px-4 py-2 bg-white/5 border border-white/10 text-gray-500 rounded-xl text-sm font-semibold"
+                            class="px-4 py-2 bg-white/5 border border-white/10 text-gray-500 rounded-xl text-sm font-semibold shrink-0 ml-3"
                         >
                             Pending...
                         </span>
@@ -324,7 +327,8 @@ const filteredFriends = () =>
                         <div
                             v-for="friend in filteredFriends()"
                             :key="friend.id"
-                            class="bg-[#111] border border-white/5 rounded-2xl p-4 flex justify-between items-center hover:border-white/10 transition-all group"
+                            @click="goToUser(friend.id)"
+                            class="bg-[#111] border border-white/5 rounded-2xl p-4 flex justify-between items-center hover:border-[#7ED957]/20 transition-all group cursor-pointer"
                         >
                             <div class="flex items-center gap-4">
                                 <div class="relative">
@@ -353,12 +357,9 @@ const filteredFriends = () =>
                                     </p>
                                 </div>
                             </div>
-                            <button
-                                @click="goToUser(friend.id)"
-                                class="px-4 py-2 bg-white/5 border border-white/10 text-white rounded-xl text-sm font-semibold hover:bg-[#7ED957] hover:text-black hover:border-transparent transition-all"
-                            >
-                                View
-                            </button>
+                            <i
+                                class="fas fa-chevron-right text-gray-700 group-hover:text-[#7ED957] transition-colors text-sm"
+                            ></i>
                         </div>
                     </div>
 

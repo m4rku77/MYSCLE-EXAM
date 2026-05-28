@@ -3,6 +3,56 @@ import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
 
+const friendStatus = ref(null);
+const currentUserId = ref(null);
+
+const fetchFriendStatus = async () => {
+    try {
+        const token = localStorage.getItem("token");
+        const headers = { Authorization: `Bearer ${token}` };
+
+        const meRes = await axios.get("http://localhost:8000/api/me", {
+            headers,
+        });
+        currentUserId.value = meRes.data.id;
+
+        const friendsRes = await axios.get(
+            "http://localhost:8000/api/friends",
+            { headers },
+        );
+        const friends = friendsRes.data;
+        if (friends.some((f) => f.id === Number(route.params.id))) {
+            friendStatus.value = "friends";
+            return;
+        }
+
+        const sentRes = await axios.get("http://localhost:8000/api/friends", {
+            headers,
+        });
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+const addFriend = async () => {
+    try {
+        const token = localStorage.getItem("token");
+        await axios.post(
+            "http://localhost:8000/api/friends/add",
+            { friend_id: route.params.id },
+            { headers: { Authorization: `Bearer ${token}` } },
+        );
+        friendStatus.value = "pending";
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+onMounted(async () => {
+    await fetchUser();
+    await fetchFriendStatus();
+});
+
 const route = useRoute();
 const user = ref(null);
 
@@ -63,6 +113,31 @@ const formatDate = (date) => {
                     <p class="text-xs text-gray-500">
                         Joined {{ formatDate(user.created_at) }}
                     </p>
+                </div>
+                <div class="space-y-1">
+                    <div class="pt-2">
+                        <button
+                            v-if="friendStatus === 'friends'"
+                            class="flex items-center gap-2 px-4 py-2 bg-[#7ED957]/10 border border-[#7ED957]/20 text-[#7ED957] rounded-xl text-xs font-semibold"
+                        >
+                            <i class="fas fa-check"></i> Friends
+                        </button>
+                        <button
+                            v-else-if="friendStatus === 'pending'"
+                            class="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 text-gray-400 rounded-xl text-xs font-semibold"
+                        >
+                            <i class="fas fa-clock"></i> Request Sent
+                        </button>
+                        <button
+                            v-else-if="
+                                currentUserId !== Number(route.params.id)
+                            "
+                            @click="addFriend"
+                            class="flex items-center gap-2 px-4 py-2 bg-[#7ED957] text-black rounded-xl text-xs font-bold hover:bg-[#6bc947] transition-all"
+                        >
+                            <i class="fas fa-user-plus"></i> Add Friend
+                        </button>
+                    </div>
                 </div>
             </div>
 

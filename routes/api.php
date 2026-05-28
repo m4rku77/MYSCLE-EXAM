@@ -225,8 +225,28 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::get('/my/subscription', function () {
-        $sub = \App\Models\Subscription::where('user_id', auth()->id())->first();
+        $sub = \App\Models\Subscription::where('user_id', auth()->id())
+            ->whereIn('status', ['active', 'trialing'])
+            ->first();
+        
         return response()->json($sub);
+    });
+
+    Route::delete('/my/subscription', function () {
+        \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
+        
+        $sub = \App\Models\Subscription::where('user_id', auth()->id())
+            ->whereIn('status', ['active', 'trialing'])
+            ->first();
+        
+        if (!$sub) return response()->json(['error' => 'No active subscription'], 404);
+        
+        \Stripe\Subscription::retrieve($sub->stripe_subscription_id)->cancel();
+        
+        $sub->update(['status' => 'cancelled']);
+        auth()->user()->update(['role' => 'user']);
+        
+        return response()->json(['message' => 'Cancelled']);
     });
 
     Route::post('/trainer/client/{clientId}/workout-logs/{id}/finish', function (Request $request, $clientId, $id) {

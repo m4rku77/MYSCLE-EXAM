@@ -208,10 +208,36 @@ const logout = () => {
     window.location.href = "/login";
 };
 
+const subscription = ref(null);
+
+const fetchSubscription = async () => {
+    try {
+        const res = await axios.get(
+            "http://localhost:8000/api/my/subscription",
+            { headers },
+        );
+        subscription.value = res.data;
+    } catch {}
+};
+
+const cancelSubscription = async () => {
+    if (!confirm("Are you sure you want to cancel your subscription?")) return;
+    try {
+        await axios.delete("http://localhost:8000/api/my/subscription", {
+            headers,
+        });
+        subscription.value = null;
+        success.value = "Subscription cancelled";
+    } catch (err) {
+        console.error(err);
+    }
+};
+
 onMounted(() => {
     fetchProfile();
     fetchTrainerRequests();
     fetchFriendRequests();
+    fetchSubscription();
 });
 </script>
 
@@ -843,6 +869,30 @@ onMounted(() => {
                                         <p class="text-sm font-bold capitalize">
                                             {{ user?.role ?? "—" }}
                                         </p>
+                                        <div
+                                            class="bg-[#0a0a0a] rounded-2xl p-3 border border-white/5"
+                                        >
+                                            <p
+                                                class="text-xs text-gray-500 mb-1"
+                                            >
+                                                Role
+                                            </p>
+                                            <p
+                                                class="text-sm font-bold capitalize"
+                                            >
+                                                {{ user?.role ?? "—" }}
+                                            </p>
+                                            <button
+                                                v-if="
+                                                    subscription &&
+                                                    user?.role === 'trainer'
+                                                "
+                                                @click="cancelSubscription"
+                                                class="mt-2 text-xs text-red-400 hover:text-red-300 transition-all"
+                                            >
+                                                Cancel subscription
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -145,9 +145,9 @@ const openModal = () => {
                     </div>
                     <button
                         @click="openModal"
-                        class="bg-black text-[#7ED957] px-4 py-2 rounded-xl font-bold text-sm"
+                        class="flex items-center gap-2 px-5 py-2.5 bg-[#000000] text-[#6bc947] rounded-2xl font-bold text-sm hover:bg-[#6bc947] transition-all shadow-lg shadow-[#7ED957]/20"
                     >
-                        + Add
+                        <i class="fas fa-plus text-xs"></i> Add Workout
                     </button>
                 </div>
                 <input

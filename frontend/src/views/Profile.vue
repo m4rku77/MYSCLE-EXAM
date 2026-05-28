@@ -1,10 +1,12 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
+
+const route = useRoute();
 
 const router = useRouter();
-
+const role = localStorage.getItem("role");
 const user = ref(null);
 const loading = ref(true);
 const name = ref("");
@@ -30,6 +32,16 @@ const original = ref({});
 
 const token = localStorage.getItem("token");
 const headers = { Authorization: `Bearer ${token}` };
+
+const isTrainerMode = computed(() => route.path.startsWith("/trainer"));
+
+const switchMode = () => {
+    if (isTrainerMode.value) {
+        router.push("/dashboard");
+    } else {
+        router.push("/trainer");
+    }
+};
 
 const hasChanges = computed(
     () =>
@@ -311,12 +323,6 @@ onMounted(() => {
                         >
                             <i class="fas fa-check text-xs"></i> Save
                         </button>
-                        <button
-                            @click="logout"
-                            class="flex items-center gap-1.5 px-4 py-2 bg-black/20 text-black rounded-xl text-sm font-bold hover:bg-black/30 transition-all"
-                        >
-                            <i class="fas fa-sign-out-alt text-xs"></i> Logout
-                        </button>
                     </div>
                 </div>
                 <div
@@ -346,12 +352,7 @@ onMounted(() => {
                     >
                         {{ success }}
                     </div>
-                    <button
-                        @click="logout"
-                        class="flex items-center gap-2 px-4 py-2.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl font-semibold text-sm hover:bg-red-500/20 transition-all"
-                    >
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
+
                     <button
                         v-if="hasChanges"
                         @click="saveProfile"
@@ -399,6 +400,39 @@ onMounted(() => {
                                 {{ email }}
                             </p>
                         </div>
+                        <button
+                            @click="logout"
+                            class="flex items-center gap-2 px-4 py-2.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl font-semibold text-sm hover:bg-red-500/20 transition-all"
+                        >
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                        <button
+                            v-if="role === 'user'"
+                            @click="router.push('/upgrade')"
+                            class="flex items-center gap-2 px-4 py-2 bg-[#7ED957] text-black rounded-xl text-xs font-bold hover:bg-[#6bc947] transition-all shadow-lg shadow-[#7ED957]/20"
+                        >
+                            <i class="fas fa-crown text-xs"></i> Upgrade to
+                            Trainer
+                        </button>
+                        <button
+                            v-if="role === 'trainer'"
+                            @click="switchMode"
+                            class="flex items-center gap-2 px-4 py-2 bg-[#7ED957]/10 border border-[#7ED957]/20 text-[#7ED957] rounded-xl text-xs font-semibold hover:bg-[#7ED957]/20 transition-all"
+                        >
+                            <i
+                                :class="
+                                    isTrainerMode
+                                        ? 'fas fa-dumbbell'
+                                        : 'fas fa-crown'
+                                "
+                                class="text-xs"
+                            ></i>
+                            {{
+                                isTrainerMode
+                                    ? "Switch to Athlete"
+                                    : "Switch to Trainer"
+                            }}
+                        </button>
                     </div>
 
                     <div

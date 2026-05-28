@@ -317,7 +317,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/workout-logs', function () {
         return WorkoutLog::where('user_id', auth()->id())
-            ->with('sets')
+            ->with(['sets', 'trainingPlan'])
             ->orderBy('created_at', 'desc')
             ->get();
     });

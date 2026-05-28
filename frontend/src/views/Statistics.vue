@@ -185,7 +185,16 @@ const getYearGrid = () => {
 };
 const openDay = (day) => {
     if (!day || day.count === 0) return;
-    selectedDay.value = day;
+    const dayLogs = logs.value.filter((l) => {
+        if (!l.created_at) return false;
+        const date = new Date(l.created_at);
+        return (
+            date.getFullYear() === selectedYear.value &&
+            date.getMonth() === selectedMonth.value &&
+            date.getDate() === day.day
+        );
+    });
+    selectedDay.value = { ...day, logs: dayLogs };
     showDayModal.value = true;
 };
 const formatDate = (date) => {
@@ -1105,22 +1114,24 @@ watch(activeTab, async (val) => {
 
     <div
         v-if="showDayModal"
-        class="fixed inset-0 bg-black/70 flex items-end md:items-center justify-center z-50"
+        class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-5"
         @click.self="showDayModal = false"
     >
         <div
-            class="bg-[#111] border border-white/10 w-full md:max-w-md rounded-t-2xl md:rounded-2xl p-6"
+            class="bg-[#111] border border-white/10 w-full max-w-md rounded-2xl p-6"
         >
             <div class="flex justify-between items-center mb-4">
-                <h2 class="font-semibold">Day {{ selectedDay?.day }}</h2>
+                <h2 class="font-semibold">
+                    {{ months[selectedMonth] }} {{ selectedDay?.day }}
+                </h2>
                 <button
                     @click="showDayModal = false"
-                    class="text-gray-500 text-xl"
+                    class="text-gray-500 hover:text-white text-xl transition-all"
                 >
                     ✕
                 </button>
             </div>
-            <div class="grid grid-cols-3 gap-3 text-center text-sm">
+            <div class="grid grid-cols-3 gap-3 text-center text-sm mb-4">
                 <div class="bg-[#0f0f0f] rounded-xl p-3">
                     <p class="text-[#7ED957] font-bold text-xl">
                         {{ selectedDay?.count }}
@@ -1138,6 +1149,31 @@ watch(activeTab, async (val) => {
                         {{ selectedDay?.reps }}
                     </p>
                     <p class="text-gray-500 text-xs mt-1">reps</p>
+                </div>
+            </div>
+            <div v-if="selectedDay?.logs?.length" class="space-y-2">
+                <p class="text-xs text-gray-500 uppercase tracking-wider mb-2">
+                    Workouts
+                </p>
+                <div
+                    v-for="log in selectedDay.logs"
+                    :key="log.id"
+                    class="flex items-center gap-3 bg-[#0f0f0f] border border-white/5 rounded-xl px-4 py-3"
+                >
+                    <div
+                        class="w-8 h-8 bg-[#7ED957]/10 rounded-xl flex items-center justify-center shrink-0"
+                    >
+                        <i class="fas fa-dumbbell text-[#7ED957] text-xs"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold truncate">
+                            {{ log.training_plan?.name ?? "Workout" }}
+                        </p>
+                        <p class="text-xs text-gray-500">
+                            {{ log.sets?.length || 0 }} sets ·
+                            {{ formatDuration(log.duration_seconds) }}
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

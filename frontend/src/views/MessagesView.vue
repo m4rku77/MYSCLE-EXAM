@@ -2,7 +2,6 @@
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
-import UserBottomNav from "../components/UserBottomNav.vue";
 const role = localStorage.getItem("role");
 
 const router = useRouter();
@@ -80,7 +79,12 @@ onMounted(async () => {
                 "http://localhost:8000/api/trainer/clients",
                 { headers },
             );
-            contacts = clientsRes.data.data ?? clientsRes.data;
+            const raw = clientsRes.data.data ?? clientsRes.data;
+            contacts = raw.map((c) => ({
+                id: c.id ?? c.client_id ?? c.user_id,
+                name: c.name,
+                profile_photo: c.profile_photo,
+            }));
         } else {
             const friendsRes = await axios.get(
                 "http://localhost:8000/api/friends",
@@ -92,18 +96,21 @@ onMounted(async () => {
                     "http://localhost:8000/api/my/trainer",
                     { headers },
                 );
-                if (trainerRes.data) {
+                const trainerData = trainerRes.data?.data ?? trainerRes.data;
+                if (trainerData && trainerData.id) {
                     const alreadyIn = contacts.some(
-                        (c) => c.id === trainerRes.data.id,
+                        (c) => c.id === trainerData.id,
                     );
                     if (!alreadyIn)
-                        contacts.push({ ...trainerRes.data, isTrainer: true });
+                        contacts.push({ ...trainerData, isTrainer: true });
                 }
-            } catch {}
+            } catch (e) {}
         }
 
+        const validContacts = contacts.filter((c) => c.id);
+
         const chatData = await Promise.all(
-            contacts.map(async (user) => {
+            validContacts.map(async (user) => {
                 const msgData = await getLastMessage(user.id);
                 return { ...user, ...msgData };
             }),
@@ -216,7 +223,7 @@ const newChats = computed(() => chats.value.filter((c) => !c.last_message));
                         ? activeChats
                         : newChats"
                     :key="chat.id"
-                    @click="goToChat(chat.id)"
+                    @click="chat.id && goToChat(chat.id)"
                     class="bg-[#111] border border-white/5 rounded-2xl p-4 flex items-center gap-4 cursor-pointer hover:border-white/10 transition-all"
                 >
                     <div class="relative shrink-0">
@@ -278,10 +285,6 @@ const newChats = computed(() => chats.value.filter((c) => !c.last_message));
                     </div>
                 </div>
             </div>
-
-            <UserBottomNav
-                class="md:hidden fixed bottom-0 left-0 w-full z-40"
-            />
         </div>
     </div>
 </template>

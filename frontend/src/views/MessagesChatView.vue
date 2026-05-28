@@ -7,7 +7,6 @@ const route = useRoute();
 const router = useRouter();
 
 const userId = route.params.id;
-
 const messages = ref([]);
 const newMessage = ref("");
 const user = ref(null);

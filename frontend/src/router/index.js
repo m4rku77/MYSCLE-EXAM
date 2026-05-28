@@ -54,12 +54,12 @@ const routes = [
     {
         path: "/messages/:id",
         component: MessagesChatView,
-        meta: { requiresAuth: true, role: "user" },
+        meta: { requiresAuth: true },
     },
     {
         path: "/trainer/messages/:id",
         component: MessagesChatView,
-        meta: { requiresAuth: true, role: "trainer" },
+        meta: { requiresAuth: true },
     },
     {
         path: "/admin/messages/:id",

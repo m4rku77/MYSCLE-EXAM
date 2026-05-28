@@ -1,11 +1,15 @@
 <script setup>
+import { computed } from "vue";
+
 import { useRoute } from "vue-router";
 import TrainerBottomNav from "../components/TrainerBottomNav.vue";
 import TrainerSidebar from "../components/TrainerSidebar.vue";
 
 const route = useRoute();
 
-const shouldHideNav = route.path.startsWith("/trainer/messages");
+const shouldHideNav = computed(() =>
+    /^\/trainer\/messages\/\d+/.test(route.path),
+);
 </script>
 
 <template>

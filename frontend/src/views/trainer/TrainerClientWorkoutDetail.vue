@@ -12,6 +12,7 @@ const token = localStorage.getItem("token");
 const headers = { Authorization: `Bearer ${token}` };
 
 const workout = ref(null);
+const client = ref(null);
 const exercises = ref([]);
 const library = ref([]);
 const loading = ref(true);
@@ -21,7 +22,21 @@ const saving = ref(false);
 const finishing = ref(false);
 const showSuccess = ref(false);
 
-const unit = localStorage.getItem("unit") || "kg";
+const unit = ref(localStorage.getItem("unit") || "kg");
+
+const toDisplay = (weightKg) => {
+    if (!weightKg) return 0;
+    return unit.value === "lbs"
+        ? Math.round(Number(weightKg) * 2.20462 * 10) / 10
+        : Number(weightKg);
+};
+
+const toKg = (weight) => {
+    if (!weight) return 0;
+    return unit.value === "lbs"
+        ? Math.round((Number(weight) / 2.20462) * 10) / 10
+        : Number(weight);
+};
 
 const searchQueries = ref({});
 const activeDropdown = ref(null);
@@ -40,7 +55,7 @@ const formatTime = (s) => {
 
 onMounted(async () => {
     try {
-        const [workoutsRes, libRes] = await Promise.all([
+        const [workoutsRes, libRes, clientRes] = await Promise.all([
             axios.get(
                 `http://localhost:8000/api/trainer/client/${clientId}/workouts`,
                 { headers },
@@ -48,7 +63,12 @@ onMounted(async () => {
             axios.get("http://localhost:8000/api/exercise-library", {
                 headers,
             }),
+            axios.get(`http://localhost:8000/api/users/${clientId}`, {
+                headers,
+            }),
         ]);
+
+        client.value = clientRes.data.data ?? clientRes.data;
 
         const workouts = workoutsRes.data.data ?? workoutsRes.data;
         const found = workouts.find((w) => w.id === parseInt(workoutId));
@@ -62,6 +82,7 @@ onMounted(async () => {
                     ...s,
                     set_number: i + 1,
                     done: false,
+                    weight: toDisplay(s.weight),
                 }));
             });
         }
@@ -102,7 +123,7 @@ const finishWorkout = async () => {
                     exercise_name: ex.name,
                     set_number: i + 1,
                     reps: set.reps,
-                    weight: set.weight,
+                    weight: toKg(set.weight),
                 });
             });
         });
@@ -199,7 +220,10 @@ const saveWorkout = async () => {
                         workout_id: workout.value.id,
                         name: ex.name,
                         library_id: ex.library_id,
-                        sets_data: ex.exercise_sets,
+                        sets_data: ex.exercise_sets.map((s) => ({
+                            ...s,
+                            weight: toKg(s.weight),
+                        })),
                         notes: ex.notes,
                     },
                     { headers },
@@ -218,7 +242,7 @@ const saveWorkout = async () => {
 </script>
 
 <template>
-    <div class="h-[100dvh] bg-[#080808] text-white flex flex-col">
+    <div class="h-[100dvh] bg-[#080808] text-white flex flex-col md:ml-64">
         <div
             v-if="loading"
             class="flex-1 flex items-center justify-center text-gray-400"
@@ -227,7 +251,6 @@ const saveWorkout = async () => {
         </div>
 
         <template v-else-if="workout">
-            <!-- MOBILE header -->
             <div
                 class="md:hidden bg-gradient-to-b from-[#7ED957] to-[#5fcf47] text-black px-5 pt-12 pb-8 rounded-b-3xl shrink-0"
             >
@@ -267,7 +290,6 @@ const saveWorkout = async () => {
                 </p>
             </div>
 
-            <!-- DESKTOP header -->
             <div
                 class="hidden md:flex bg-[#0f0f0f] border-b border-white/5 px-8 py-5 shrink-0 items-center justify-between"
             >
@@ -283,7 +305,7 @@ const saveWorkout = async () => {
                         <p
                             class="text-xs text-[#7ED957] uppercase tracking-widest font-semibold mb-0.5"
                         >
-                            Workout
+                            {{ client?.name ?? "Client" }}
                         </p>
                         <h1 class="text-2xl font-bold">{{ workout.name }}</h1>
                     </div>
@@ -292,8 +314,9 @@ const saveWorkout = async () => {
                     <span
                         v-if="isStarted"
                         class="font-mono text-xl font-bold text-[#7ED957] bg-[#7ED957]/10 border border-[#7ED957]/20 px-4 py-2 rounded-xl"
-                        >{{ formatTime(seconds) }}</span
                     >
+                        {{ formatTime(seconds) }}
+                    </span>
                     <button
                         v-if="!isEditing"
                         @click="isEditing = true"
@@ -506,7 +529,6 @@ const saveWorkout = async () => {
                 </div>
             </div>
 
-            <!-- Mobile FAB buttons -->
             <button
                 v-if="!isStarted && !isEditing"
                 @click="startWorkout"

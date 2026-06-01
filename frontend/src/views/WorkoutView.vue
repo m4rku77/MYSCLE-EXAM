@@ -8,11 +8,12 @@ const router = useRouter();
 
 const workoutId = route.params.id;
 const token = localStorage.getItem("token");
-const unit = localStorage.getItem("unit") || "kg";
+const unit = ref(localStorage.getItem("unit") || "kg");
 const headers = {
     Authorization: `Bearer ${token}`,
     Accept: "application/json",
 };
+
 const isFavorite = ref(false);
 const workout = ref(null);
 const exercises = ref([]);
@@ -38,6 +39,20 @@ const formatTime = (s) => {
     return `${m}:${sec}`;
 };
 
+const toDisplay = (weightKg) => {
+    if (!weightKg) return 0;
+    return unit.value === "lbs"
+        ? Math.round(Number(weightKg) * 2.20462 * 10) / 10
+        : Number(weightKg);
+};
+
+const toKg = (weight) => {
+    if (!weight) return 0;
+    return unit.value === "lbs"
+        ? Math.round((Number(weight) / 2.20462) * 10) / 10
+        : Number(weight);
+};
+
 onMounted(async () => {
     if (!token) {
         router.push("/login");
@@ -59,6 +74,7 @@ onMounted(async () => {
                 ...s,
                 set_number: i + 1,
                 done: false,
+                weight: toDisplay(s.weight),
             }));
         });
         const libRes = await axios.get(
@@ -86,7 +102,6 @@ const toggleFavorite = async () => {
         );
     } catch (err) {
         isFavorite.value = !isFavorite.value;
-        console.error(err);
     }
 };
 
@@ -118,7 +133,7 @@ const finishWorkout = async () => {
                     exercise_name: ex.name,
                     set_number: i + 1,
                     reps: set.reps,
-                    weight: set.weight,
+                    weight: toKg(set.weight),
                 });
             });
         });
@@ -158,10 +173,9 @@ const addCustomExercise = async (ex) => {
             { name: searchQueries.value[ex.id] },
             { headers },
         );
-        const newExercise = res.data;
-        library.value.push(newExercise);
-        ex.name = newExercise.name;
-        ex.library_id = newExercise.id;
+        library.value.push(res.data);
+        ex.name = res.data.name;
+        ex.library_id = res.data.id;
         activeDropdown.value = null;
     } catch (err) {
         console.error(err);
@@ -171,13 +185,17 @@ const addCustomExercise = async (ex) => {
 const saveChanges = async () => {
     try {
         for (const ex of exercises.value) {
+            const setsToSave = ex.sets.map((s) => ({
+                ...s,
+                weight: toKg(s.weight),
+            }));
             if (ex.id && typeof ex.id === "number" && ex.id < 1000000000) {
                 await axios.put(
                     `http://localhost:8000/api/exercises/${ex.id}`,
                     {
                         name: ex.name,
                         library_id: ex.library_id,
-                        sets_data: ex.sets,
+                        sets_data: setsToSave,
                         notes: ex.notes,
                     },
                     { headers },
@@ -189,7 +207,7 @@ const saveChanges = async () => {
                         workout_id: workout.value.id,
                         name: ex.name,
                         library_id: ex.library_id,
-                        sets_data: ex.sets,
+                        sets_data: setsToSave,
                         notes: ex.notes,
                     },
                     { headers },
@@ -312,7 +330,7 @@ const removeExercise = (index) => {
                     v-else
                     @click="finishWorkout"
                     :disabled="finishing"
-                    class="w-full py-3.5 bg-[#7ED957] text-black rounded-2xl font-bold text-sm hover:bg-[#6bc947] transition-all shadow-lg shadow-[#7ED957]/20 flex items-center justify-center gap-2 disabled:opacity-50"
+                    class="w-full py-3.5 bg-[#7ED957] text-black rounded-2xl font-bold text-sm hover:bg-[#6bc947] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                     <i class="fas fa-flag-checkered text-xs"></i> Finish Workout
                 </button>
@@ -327,7 +345,6 @@ const removeExercise = (index) => {
                             >
                                 Workout
                             </p>
-
                             <div class="flex items-center gap-3">
                                 <h1 class="text-4xl font-black">
                                     {{ workout.name }}
@@ -364,7 +381,6 @@ const removeExercise = (index) => {
                                 >
                             </div>
                         </div>
-
                         <button
                             v-if="!isEditing"
                             @click="isEditing = true"
@@ -392,14 +408,14 @@ const removeExercise = (index) => {
                                     v-model="searchQueries[ex.id]"
                                     @focus="activeDropdown = ex.id"
                                     placeholder="Search or create exercise..."
-                                    class="w-full px-4 py-3 rounded-xl bg-[#0a0a0a] border border-white/5 focus:border-[#7ED957] outline-none text-sm transition-all"
+                                    class="w-full px-4 py-3 rounded-2xl bg-[#0a0a0a] border border-white/5 focus:border-[#7ED957] outline-none text-sm transition-all"
                                 />
                                 <div
                                     v-if="
                                         activeDropdown === ex.id &&
                                         searchQueries[ex.id]
                                     "
-                                    class="absolute w-full mt-2 bg-[#151515] border border-white/10 rounded-xl shadow-2xl max-h-48 overflow-y-auto z-50"
+                                    class="absolute w-full mt-2 bg-[#151515] border border-white/10 rounded-2xl shadow-2xl max-h-48 overflow-y-auto z-50"
                                 >
                                     <div
                                         v-for="item in getFilteredLibrary(ex)"
@@ -592,7 +608,6 @@ const removeExercise = (index) => {
                         Save
                     </button>
                 </div>
-
                 <div class="flex items-center gap-2 mt-1">
                     <h1 class="text-3xl font-black tracking-tight">
                         {{ workout.name }}
@@ -643,7 +658,7 @@ const removeExercise = (index) => {
                                 v-for="item in getFilteredLibrary(ex)"
                                 :key="item.id"
                                 @click="selectExercise(ex, item)"
-                                class="px-4 py-3 hover:bg-white/5 cursor-pointer text-sm transition-colors"
+                                class="px-4 py-3 hover:bg-white/5 cursor-pointer text-sm"
                             >
                                 {{ item.name
                                 }}<span class="text-gray-500 ml-2 text-xs"

@@ -73,7 +73,6 @@ const filtered = computed(() =>
 
 <template>
     <div class="min-h-screen bg-[#080808] text-white flex flex-col">
-        <!-- DESKTOP -->
         <div class="hidden md:flex h-screen">
             <main class="flex-1 p-10">
                 <div class="max-w-4xl mx-auto">
@@ -198,7 +197,6 @@ const filtered = computed(() =>
             </main>
         </div>
 
-        <!-- MOBILE -->
         <div class="md:hidden flex flex-col h-[100dvh]">
             <div
                 class="bg-gradient-to-b from-[#7ED957] to-[#5fcf47] text-black px-5 pt-12 pb-8 rounded-b-3xl shrink-0"
@@ -319,7 +317,6 @@ const filtered = computed(() =>
             </button>
         </div>
 
-        <!-- Modal -->
         <div
             v-if="showModal"
             class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center px-5"

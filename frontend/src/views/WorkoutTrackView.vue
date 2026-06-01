@@ -8,7 +8,7 @@ const route = useRoute();
 const router = useRouter();
 
 const workoutId = route.params.id;
-const unit = localStorage.getItem("unit") || "kg";
+const unit = ref(localStorage.getItem("unit") || "kg");
 
 const workout = ref(null);
 const exercises = ref([]);
@@ -18,6 +18,20 @@ const loading = ref(true);
 const searchQueries = ref({});
 const activeDropdown = ref(null);
 const showSuccess = ref(false);
+
+const toDisplay = (weightKg) => {
+    if (!weightKg) return 0;
+    return unit.value === "lbs"
+        ? Math.round(Number(weightKg) * 2.20462 * 10) / 10
+        : Number(weightKg);
+};
+
+const toKg = (weight) => {
+    if (!weight) return 0;
+    return unit.value === "lbs"
+        ? Math.round((Number(weight) / 2.20462) * 10) / 10
+        : Number(weight);
+};
 
 onMounted(async () => {
     const token = localStorage.getItem("token");
@@ -41,7 +55,10 @@ onMounted(async () => {
         exercises.value.forEach((ex) => {
             searchQueries.value[ex.id] = ex.name;
             ex.notes = ex.notes ?? "";
-            ex.sets = ex.sets ?? [];
+            ex.sets = (ex.sets ?? []).map((s) => ({
+                ...s,
+                weight: toDisplay(s.weight),
+            }));
         });
         const libRes = await axios.get(
             "http://localhost:8000/api/exercise-library",
@@ -85,10 +102,9 @@ const addCustomExercise = async (ex) => {
             { name: searchQueries.value[ex.id] },
             { headers: { Authorization: `Bearer ${token}` } },
         );
-        const newExercise = res.data;
-        library.value.push(newExercise);
-        ex.name = newExercise.name;
-        ex.library_id = newExercise.id;
+        library.value.push(res.data);
+        ex.name = res.data.name;
+        ex.library_id = res.data.id;
         activeDropdown.value = null;
     } catch (err) {
         console.error(err);
@@ -99,13 +115,17 @@ const saveChanges = async () => {
     try {
         const token = localStorage.getItem("token");
         for (const ex of exercises.value) {
+            const setsToSave = ex.sets.map((s) => ({
+                ...s,
+                weight: toKg(s.weight),
+            }));
             if (ex.id && typeof ex.id === "number" && ex.id < 1000000000) {
                 await axios.put(
                     `http://localhost:8000/api/exercises/${ex.id}`,
                     {
                         name: ex.name,
                         library_id: ex.library_id,
-                        sets_data: ex.sets,
+                        sets_data: setsToSave,
                         notes: ex.notes,
                     },
                     { headers: { Authorization: `Bearer ${token}` } },
@@ -117,7 +137,7 @@ const saveChanges = async () => {
                         workout_id: workout.value.id,
                         name: ex.name,
                         library_id: ex.library_id,
-                        sets_data: ex.sets,
+                        sets_data: setsToSave,
                         notes: ex.notes,
                     },
                     { headers: { Authorization: `Bearer ${token}` } },
@@ -168,34 +188,60 @@ const removeExercise = (index) => {
         class="h-[100dvh] bg-[#080808] text-white flex flex-col"
     >
         <div class="hidden md:flex h-full">
-            <div class="flex items-center gap-3 mb-12">
-                <img src="/logo.png" class="h-8" />
-                <span class="font-black text-lg tracking-widest uppercase"
-                    >Myscle</span
-                >
-            </div>
-
-            <nav class="space-y-1 flex-1">
-                <div
-                    @click="router.back()"
-                    class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
-                >
-                    <i class="fas fa-arrow-left w-4"></i> Back
-                </div>
-                <div
-                    @click="router.push('/dashboard')"
-                    class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
-                >
-                    <i class="fas fa-dumbbell w-4"></i> Workouts
-                </div>
-            </nav>
-
-            <button
-                @click="saveChanges"
-                class="w-full py-3.5 bg-[#7ED957] text-black rounded-2xl font-bold text-sm hover:bg-[#6bc947] transition-all shadow-lg shadow-[#7ED957]/20 flex items-center justify-center gap-2"
+            <aside
+                class="w-64 bg-[#0f0f0f] border-r border-white/5 flex flex-col px-6 py-8 fixed h-full"
             >
-                <i class="fas fa-save text-xs"></i> Save Changes
-            </button>
+                <div class="flex items-center gap-3 mb-12">
+                    <img src="/logo.png" class="h-8" />
+                    <span class="font-black text-lg tracking-widest uppercase"
+                        >Myscle</span
+                    >
+                </div>
+                <nav class="space-y-1 flex-1">
+                    <div
+                        @click="router.back()"
+                        class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
+                    >
+                        <i class="fas fa-arrow-left w-4"></i> Back
+                    </div>
+                    <div
+                        @click="router.push('/dashboard')"
+                        class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
+                    >
+                        <i class="fas fa-dumbbell w-4"></i> Workouts
+                    </div>
+                    <div
+                        @click="router.push('/statistics')"
+                        class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
+                    >
+                        <i class="fas fa-chart-line w-4"></i> Statistics
+                    </div>
+                    <div
+                        @click="router.push('/friends')"
+                        class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
+                    >
+                        <i class="fas fa-users w-4"></i> Friends
+                    </div>
+                    <div
+                        @click="router.push('/messages')"
+                        class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
+                    >
+                        <i class="fas fa-comment w-4"></i> Messages
+                    </div>
+                    <div
+                        @click="router.push('/profile')"
+                        class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
+                    >
+                        <i class="fas fa-user w-4"></i> Profile
+                    </div>
+                </nav>
+                <button
+                    @click="saveChanges"
+                    class="w-full py-3.5 bg-[#7ED957] text-black rounded-2xl font-bold text-sm hover:bg-[#6bc947] transition-all shadow-lg shadow-[#7ED957]/20 flex items-center justify-center gap-2"
+                >
+                    <i class="fas fa-save text-xs"></i> Save Changes
+                </button>
+            </aside>
 
             <main class="ml-64 flex-1 overflow-y-auto">
                 <div class="max-w-3xl mx-auto px-10 py-10">
@@ -224,23 +270,24 @@ const removeExercise = (index) => {
                                     v-model="searchQueries[ex.id]"
                                     @focus="activeDropdown = ex.id"
                                     placeholder="Search or create exercise..."
-                                    class="w-full px-4 py-3 rounded-xl bg-[#0a0a0a] border border-white/5 focus:border-[#7ED957] outline-none text-sm transition-all"
+                                    class="w-full px-4 py-3 rounded-2xl bg-[#0a0a0a] border border-white/5 focus:border-[#7ED957] outline-none text-sm transition-all"
                                 />
                                 <div
                                     v-if="
                                         activeDropdown === ex.id &&
                                         searchQueries[ex.id]
                                     "
-                                    class="absolute w-full mt-2 bg-[#151515] border border-white/10 rounded-xl shadow-2xl max-h-48 overflow-y-auto z-50"
+                                    class="absolute w-full mt-2 bg-[#151515] border border-white/10 rounded-2xl shadow-2xl max-h-48 overflow-y-auto z-50"
                                 >
                                     <div
                                         v-for="item in getFilteredLibrary(ex)"
                                         :key="item.id"
                                         @click="selectExercise(ex, item)"
-                                        class="px-4 py-3 hover:bg-white/5 cursor-pointer text-sm transition-colors"
+                                        class="px-4 py-3 hover:bg-white/5 cursor-pointer text-sm"
                                     >
-                                        {{ item.name }}
-                                        <span class="text-gray-500 ml-2 text-xs"
+                                        {{ item.name
+                                        }}<span
+                                            class="text-gray-500 ml-2 text-xs"
                                             >({{ item.muscle_group }})</span
                                         >
                                     </div>
@@ -305,13 +352,6 @@ const removeExercise = (index) => {
                                 </div>
                             </div>
 
-                            <p v-if="!ex.notes" class="hidden"></p>
-                            <p
-                                v-if="ex.notes"
-                                class="mt-3 text-sm text-gray-500 bg-[#0a0a0a] rounded-xl px-3 py-2"
-                            >
-                                {{ ex.notes }}
-                            </p>
                             <textarea
                                 v-model="ex.notes"
                                 placeholder="Exercise notes..."
@@ -401,8 +441,8 @@ const removeExercise = (index) => {
                                 @click="selectExercise(ex, item)"
                                 class="px-4 py-3 hover:bg-white/5 cursor-pointer text-sm"
                             >
-                                {{ item.name }}
-                                <span class="text-gray-500 ml-2 text-xs"
+                                {{ item.name
+                                }}<span class="text-gray-500 ml-2 text-xs"
                                     >({{ item.muscle_group }})</span
                                 >
                             </div>
@@ -462,12 +502,6 @@ const removeExercise = (index) => {
                         </div>
                     </div>
 
-                    <p
-                        v-if="ex.notes && ex.notes.length > 0"
-                        class="mt-3 text-sm text-gray-500 bg-[#0a0a0a] rounded-xl px-3 py-2"
-                    >
-                        {{ ex.notes }}
-                    </p>
                     <textarea
                         v-model="ex.notes"
                         placeholder="Exercise notes..."

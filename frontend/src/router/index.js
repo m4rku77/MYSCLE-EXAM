@@ -50,7 +50,6 @@ const routes = [
         meta: { requiresAuth: true },
     },
 
-    // standalone chat routes — no layout, no bottom nav
     {
         path: "/messages/:id",
         component: MessagesChatView,

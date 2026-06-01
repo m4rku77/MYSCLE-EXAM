@@ -156,15 +156,11 @@ onUnmounted(() => {
 
 <template>
     <div class="h-[100dvh] bg-[#080808] text-white flex">
-        <!-- Desktop Sidebar (user) -->
         <UserSidebar v-if="!isTrainerRoute" />
 
-        <!-- Desktop Sidebar (trainer) -->
         <TrainerSidebar v-if="isTrainerRoute" />
 
-        <!-- Main area -->
         <div class="flex-1 md:ml-64 flex flex-col min-h-0 md:p-6">
-            <!-- Mobile: full screen chat -->
             <div class="md:hidden flex flex-col h-full">
                 <div
                     class="flex items-center gap-3 px-4 py-4 border-b border-white/5 bg-[#0f0f0f] shrink-0"
@@ -264,11 +260,9 @@ onUnmounted(() => {
                 </div>
             </div>
 
-            <!-- Desktop: contained box -->
             <div
                 class="hidden md:flex flex-col h-full w-full bg-[#0f0f0f] border border-white/5 rounded-3xl overflow-hidden"
             >
-                <!-- Header -->
                 <div
                     class="flex items-center gap-3 px-6 py-4 border-b border-white/5 shrink-0"
                 >
@@ -298,7 +292,6 @@ onUnmounted(() => {
                     </div>
                 </div>
 
-                <!-- Messages -->
                 <div
                     ref="messagesContainer"
                     class="flex-1 overflow-y-auto px-6 py-4 space-y-1"
@@ -352,7 +345,6 @@ onUnmounted(() => {
                     </template>
                 </div>
 
-                <!-- Input -->
                 <div
                     class="px-6 py-4 border-t border-white/5 shrink-0 flex gap-3"
                 >

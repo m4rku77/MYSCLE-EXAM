@@ -56,6 +56,11 @@ const hasChanges = computed(
 );
 
 const setUnit = (value) => {
+    if (value === "lbs" && unit.value === "kg" && weight.value) {
+        weight.value = Math.round(Number(weight.value) * 2.20462 * 10) / 10;
+    } else if (value === "kg" && unit.value === "lbs" && weight.value) {
+        weight.value = Math.round((Number(weight.value) / 2.20462) * 10) / 10;
+    }
     unit.value = value;
     localStorage.setItem("unit", value);
 };
@@ -70,6 +75,9 @@ const fetchProfile = async () => {
         email.value = res.data.email;
         goal.value = res.data.goal ?? "";
         weight.value = res.data.weight ?? "";
+        if (unit.value === "lbs" && weight.value) {
+            weight.value = Math.round(Number(weight.value) * 2.20462 * 10) / 10;
+        }
         height.value = res.data.height ?? "";
         age.value = res.data.age ?? "";
         gender.value = res.data.gender ?? "";
@@ -123,7 +131,10 @@ const saveProfile = async () => {
             {
                 name: name.value,
                 goal: goal.value,
-                weight: weight.value,
+                weight:
+                    unit.value === "lbs"
+                        ? Math.round((Number(weight.value) / 2.20462) * 10) / 10
+                        : weight.value,
                 height: height.value,
                 age: age.value,
                 gender: gender.value,
@@ -304,7 +315,6 @@ onMounted(() => {
         </aside>
 
         <div class="flex-1 md:ml-64 flex flex-col overflow-hidden">
-            <!-- Mobile header -->
             <div
                 class="md:hidden bg-gradient-to-b from-[#7ED957] to-[#5fcf47] text-black px-5 pt-12 pb-4 rounded-b-3xl shrink-0"
             >
@@ -332,8 +342,6 @@ onMounted(() => {
                     {{ success }}
                 </div>
             </div>
-
-            <!-- Desktop header -->
             <div
                 class="hidden md:flex bg-[#0f0f0f] border-b border-white/5 px-8 py-4 shrink-0 items-center justify-between"
             >
@@ -366,7 +374,6 @@ onMounted(() => {
             <div
                 class="flex-1 overflow-y-auto px-5 md:px-8 pt-6 pb-32 md:pb-10"
             >
-                <!-- MOBILE -->
                 <div class="md:hidden max-w-2xl mx-auto space-y-5">
                     <div
                         class="bg-[#111] border border-white/5 rounded-3xl p-6 flex flex-col items-center gap-5"
@@ -732,7 +739,6 @@ onMounted(() => {
                     </div>
                 </div>
 
-                <!-- DESKTOP -->
                 <div class="hidden md:block max-w-6xl mx-auto">
                     <div
                         v-if="

@@ -249,32 +249,33 @@ Route::middleware('auth:sanctum')->group(function () {
         return response()->json(['message' => 'Cancelled']);
     });
 
-    Route::post('/trainer/client/{clientId}/workout-logs/{id}/finish', function (Request $request, $clientId, $id) {
-        if (auth()->user()->role !== 'trainer') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+Route::post('/trainer/client/{clientId}/workout-logs/{id}/finish', function (Request $request, $clientId, $id) {
+    if (auth()->user()->role !== 'trainer') {
+        return response()->json(['error' => 'Unauthorized'], 403);
+    }
 
-        $log = WorkoutLog::where('id', $id)
-            ->where('user_id', $clientId)
-            ->firstOrFail();
+    $log = WorkoutLog::where('id', $id)
+        ->where('user_id', $clientId)
+        ->firstOrFail();
 
-        $log->update(['duration_seconds' => $request->duration_seconds]);
+    $log->update(['duration_seconds' => $request->duration_seconds]);
 
-        foreach ($request->sets as $set) {
-            WorkoutLogSet::create([
-                'workout_log_id' => $log->id,
-                'exercise_name' => $set['exercise_name'],
-                'set_number' => $set['set_number'],
-                'reps' => $set['reps'],
-                'weight' => $set['weight'],
-            ]);
-        }
+    $sets = $request->input('sets', []);
+    
+    foreach ($sets as $set) {
+        WorkoutLogSet::create([
+            'workout_log_id' => $log->id,
+            'exercise_name' => $set['exercise_name'],
+            'set_number' => $set['set_number'],
+            'reps' => $set['reps'] ?? 0,
+            'weight' => $set['weight'] ?? 0,
+        ]);
+    }
 
-        User::find($clientId)->increment('completed_workouts');
+    User::find($clientId)->increment('completed_workouts');
 
-        return response()->json(['message' => 'Workout saved']);
-    });
-
+    return response()->json(['message' => 'Workout saved']);
+});
     Route::get('/trainer/client/{id}/stats', function ($id) {
         return WorkoutLog::where('user_id', $id)
             ->with(['sets', 'trainingPlan'])

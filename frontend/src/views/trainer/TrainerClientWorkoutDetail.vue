@@ -98,6 +98,7 @@ onMounted(async () => {
 onUnmounted(() => clearInterval(timer));
 
 const startWorkout = async () => {
+    if (logId.value) return;
     try {
         const res = await axios.post(
             `http://localhost:8000/api/trainer/client/${clientId}/workout-logs/start`,
@@ -113,6 +114,22 @@ const startWorkout = async () => {
 };
 
 const finishWorkout = async () => {
+    const totalSets = exercises.value.reduce(
+        (s, ex) => s + ex.exercise_sets.length,
+        0,
+    );
+    if (totalSets === 0) {
+        alert("Add at least one set before finishing");
+        return;
+    }
+    const hasEmpty = exercises.value.some((ex) =>
+        ex.exercise_sets.some((s) => !s.reps || s.reps <= 0),
+    );
+    if (hasEmpty) {
+        alert("All sets must have at least 1 rep");
+        return;
+    }
+
     finishing.value = true;
     clearInterval(timer);
     try {

@@ -25,6 +25,8 @@ class ExerciseLogicRepository
         return $this->dbRepository->create($data);
     }
 
+    
+
     public function updateExercise(int $id, array $data)
     {
         $exercise = $this->dbRepository->getById($id);

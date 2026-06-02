@@ -31,16 +31,45 @@ class SubscriptionDbRepository
     public function update(int $id, array $data): Subscription
     {
         $subscription = $this->getById($id);
-
         $subscription->update($data);
-
         return $subscription->fresh();
     }
 
     public function delete(int $id): void
     {
-        $subscription = $this->getById($id);
+        $this->getById($id)->delete();
+    }
 
-        $subscription->delete();
+    public function getActiveForUser(int $userId): ?Subscription
+    {
+        return $this->model
+            ->where(Subscription::USER_ID, $userId)
+            ->whereIn(Subscription::STATUS, ['active', 'trialing'])
+            ->first();
+    }
+
+    public function createFromStripe(int $userId, string $customerId, string $subscriptionId, string $status, ?string $trialEndsAt): Subscription
+    {
+        return $this->model->create([
+            Subscription::USER_ID => $userId,
+            Subscription::STATUS  => $status,
+            'stripe_customer_id'     => $customerId,
+            'stripe_subscription_id' => $subscriptionId,
+            'trial_ends_at'          => $trialEndsAt,
+        ]);
+    }
+
+    public function updateByStripeId(string $stripeSubscriptionId, array $data): void
+    {
+        \DB::table('subscriptions')
+            ->where('stripe_subscription_id', $stripeSubscriptionId)
+            ->update(array_merge($data, ['updated_at' => now()]));
+    }
+
+    public function findByStripeId(string $stripeSubscriptionId): ?object
+    {
+        return \DB::table('subscriptions')
+            ->where('stripe_subscription_id', $stripeSubscriptionId)
+            ->first();
     }
 }

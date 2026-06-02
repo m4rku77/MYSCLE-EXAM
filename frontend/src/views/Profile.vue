@@ -440,6 +440,14 @@ onMounted(() => {
                                     : "Switch to Trainer"
                             }}
                         </button>
+                        <button
+                            v-if="subscription && user?.role === 'trainer'"
+                            @click="cancelSubscription"
+                            class="flex items-center gap-2 px-4 py-2.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl font-semibold text-sm hover:bg-red-500/20 transition-all"
+                        >
+                            <i class="fas fa-times-circle text-xs"></i> Cancel
+                            Subscription
+                        </button>
                     </div>
 
                     <div
@@ -928,7 +936,7 @@ onMounted(() => {
                                                     user?.role === 'trainer'
                                                 "
                                                 @click="cancelSubscription"
-                                                class="mt-2 text-xs text-red-400 hover:text-red-300 transition-all"
+                                                class="mt-2 w-full text-xs bg-red-500/10 border border-red-500/20 text-red-400 py-1.5 rounded-xl hover:bg-red-500/20 transition-all"
                                             >
                                                 Cancel subscription
                                             </button>

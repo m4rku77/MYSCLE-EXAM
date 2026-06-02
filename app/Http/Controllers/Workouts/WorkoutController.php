@@ -1,93 +1,43 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Workouts;
 
 use App\Http\Controllers\Controller;
-use App\Models\Exercise;
-use App\Models\ExerciseSet;
-use App\Models\TrainingPlan;
-use App\Models\User;
-use Illuminate\Http\Request;
+use App\Http\Requests\TrainingPlan\CreateTrainingPlanRequest;
+use App\Http\Requests\TrainingPlan\UpdateTrainingPlanRequest;
+use App\Http\Resources\TrainingPlan\TrainingPlanResource;
+use App\Repositories\TrainingPlan\TrainingPlanLogicRepository;
+use Illuminate\Http\JsonResponse;
 
 class WorkoutController extends Controller
 {
-    public function index()
+    public function __construct(
+        private readonly TrainingPlanLogicRepository $logic
+    ) {}
+
+    // POST /workouts
+    public function store(CreateTrainingPlanRequest $request): JsonResponse
     {
-        $workouts = TrainingPlan::with('exercises.sets')
-            ->where('user_id', auth()->id())
-            ->get();
-
-        return $workouts->map(function ($w) {
-
-            $sets = 0;
-            $reps = 0;
-
-            foreach ($w->exercises as $ex) {
-                foreach ($ex->sets as $set) {
-                    $sets++;
-                    $reps += $set->reps;
-                }
-            }
-
-            return [
-                'id' => $w->id,
-                'name' => $w->name,
-                'exercises_count' => $w->exercises->count(),
-                'sets' => $sets,
-                'reps' => $reps,
-            ];
-        });
-    }
-
-    public function store(Request $request)
-    {
-        $user = $request->user();
-
-        $workout = TrainingPlan::create([
-            'user_id' => $user->id,
-            'name' => $request->name,
-        ]);
-
-        foreach ($request->exercises as $exerciseData) {
-
-            $exercise = Exercise::create([
-                'training_plan_id' => $workout->id,
-                'name' => $exerciseData['name'],
-            ]);
-
-            foreach ($exerciseData['sets'] as $setData) {
-                ExerciseSet::create([
-                    'exercise_id' => $exercise->id,
-                    'set_number' => $setData['set_number'],
-                    'reps' => $setData['reps'],
-                    'weight' => $setData['weight'],
-                ]);
-            }
+        try {
+            $plan = $this->logic->create($request->validated());
+            return response()->json($plan, 201);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
         }
-
-        return response()->json([
-            'message' => 'Workout created successfully',
-        ]);
     }
 
-    public function show(Request $request, $id)
+    // PUT /workouts/{id}
+    public function update(UpdateTrainingPlanRequest $request, int $id): JsonResponse
     {
-        return TrainingPlan::with('exercises.sets')
-            ->where('id', $id)
-            ->where('user_id', $request->user()->id)
-            ->firstOrFail();
-    }
-
-    public function track(Request $request, $id)
-    {
-        return TrainingPlan::with('exercises.sets')
-            ->where('id', $id)
-            ->where('user_id', $request->user()->id)
-            ->firstOrFail();
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
+        try {
+            $plan = $this->logic->update($id, $request->validated());
+            return response()->json($plan);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
+        }
     }
 }

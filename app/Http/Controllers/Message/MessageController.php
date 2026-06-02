@@ -72,4 +72,24 @@ class MessageController
 
         return new MessageResource($message);
     }
+    // GET /messages/{userId}/last
+    public function lastMessage(int $userId)
+    {
+        $last = \App\Models\Message::where(function ($q) use ($userId) {
+            $q->where('sender_id', auth()->id())->where('receiver_id', $userId);
+        })->orWhere(function ($q) use ($userId) {
+            $q->where('sender_id', $userId)->where('receiver_id', auth()->id());
+        })
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if (!$last) return response()->json(null);
+
+        return response()->json([
+            'message' => $last->message,
+            'sender_id' => $last->sender_id,
+            'read_at' => $last->read_at,
+            'created_at' => $last->created_at,
+        ]);
+    }
 }

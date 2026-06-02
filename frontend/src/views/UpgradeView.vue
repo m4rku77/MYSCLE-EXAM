@@ -1,7 +1,9 @@
 <script setup>
 import axios from "axios";
 import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const loading = ref(true);
 const checkoutLoading = ref(false);
 const token = localStorage.getItem("token");
@@ -40,8 +42,14 @@ const checkout = async () => {
 </script>
 
 <template>
+    <button
+        @click="router.back()"
+        class="absolute top-6 left-6 flex items-center gap-2 text-gray-500 hover:text-white text-sm font-semibold transition-all"
+    >
+        <i class="fas fa-arrow-left text-xs"></i> Back
+    </button>
     <div
-        class="min-h-screen bg-[#080808] text-white flex items-center justify-center px-5"
+        class="min-h-screen bg-[#080808] text-white flex items-center justify-center px-5 rleative"
     >
         <div
             class="max-w-md w-full bg-[#111] border border-white/5 rounded-3xl p-8 text-center"

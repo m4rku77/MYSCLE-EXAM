@@ -17,9 +17,12 @@ class CreateTrainingPlanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            TrainingPlan::USER_ID => ['required', 'integer', 'exists:users,id'],
-            TrainingPlan::NAME => ['required', 'string', 'max:255'],
-            TrainingPlan::IS_FAVORITE => ['boolean'],
+            TrainingPlan::NAME        => ['required', 'string', 'max:255'],
+            'exercises'               => ['nullable', 'array'],
+            'exercises.*.name'        => ['required', 'string', 'max:255'],
+            'exercises.*.sets'        => ['nullable', 'array'],
+            'exercises.*.sets.*.reps'   => ['required', 'integer', 'min:0'],
+            'exercises.*.sets.*.weight' => ['required', 'numeric', 'min:0'],
         ];
     }
 }

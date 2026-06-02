@@ -1,90 +1,120 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\AdminUser;
 
-use App\Models\User;
+use App\Http\Controllers\Controller;
+use App\Repositories\User\UserLogicRepository;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\Admin\UpdateAdminUserRequest;
 
-class AdminUserController
+class AdminUserController extends Controller
 {
-    public function index()
+    public function __construct(
+        private readonly UserLogicRepository $logic
+    ) {}
+
+    private function checkAdmin(): void
     {
-        return User::all();
-    }
-
-    public function update(Request $request, int $id)
-    {
-        $user = User::findOrFail($id);
-
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->role = $request->role;
-
-        if ($request->hasFile('profile_photo')) {
-
-            if ($user->profile_photo) {
-                Storage::disk('public')->delete($user->profile_photo);
-            }
-
-            $path = $request->file('profile_photo')->store('profiles', 'public');
-            $user->profile_photo = $path;
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized');
         }
-
-        $user->save();
-
-        return response()->json($user);
     }
 
-    public function subscriptions()
+    // GET /admin/users
+    public function index(): JsonResponse
     {
-        $subscriptions = \App\Models\Subscription::with('user')
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        return response()->json($subscriptions);
+        $this->checkAdmin();
+        return response()->json($this->logic->getAll());
     }
-    public function workoutLogs()
-    {
-        $logs = \App\Models\WorkoutLog::with('user')
-            ->orderBy('created_at', 'desc')
-            ->get();
 
-        return response()->json($logs);
-    }
-    public function trainingPlans()
-    {
-        $plans = \App\Models\TrainingPlan::with('user')
-            ->orderBy('created_at', 'desc')
-            ->get();
+    // PUT /admin/users/{id}
 
-        return response()->json($plans);
+public function update(UpdateAdminUserRequest $request, int $id): JsonResponse
+{
+    $this->checkAdmin();
+
+    $user = $this->logic->getById($id);
+
+    $data = $request->validated();
+
+    if ($request->hasFile('profile_photo')) {
+        if ($user->profile_photo) {
+            Storage::disk('public')->delete($user->profile_photo);
+        }
+        $data['profile_photo'] = $request->file('profile_photo')->store('profiles', 'public');
     }
-    public function trainerClients()
+
+    return response()->json($this->logic->update($user, $data));
+}
+
+    // GET /admin/trainer-clients
+    public function trainerClients(): JsonResponse
     {
+        $this->checkAdmin();
+
         $relations = \App\Models\TrainerClient::with(['trainer', 'client'])
             ->orderBy('created_at', 'desc')
             ->get();
 
         return response()->json($relations);
     }
-    public function friends()
-    {
-        $friends = \DB::table('friends')
-            ->join('users as u1', 'friends.user_id', '=', 'u1.id')
-            ->join('users as u2', 'friends.friend_id', '=', 'u2.id')
-            ->select(
-                'friends.id',
-                'friends.created_at',
-                'friends.status',
-                'u1.name as user_name',
-                'u1.email as user_email',
-                'u1.profile_photo as user_photo',
-                'u2.name as friend_name'
-            )
-            ->orderBy('friends.created_at', 'desc')
-            ->get();
 
-        return response()->json($friends);
+    // GET /admin/workout-logs
+    public function workoutLogs(): JsonResponse
+    {
+        $this->checkAdmin();
+
+        return response()->json(
+            \App\Models\WorkoutLog::with('user')
+                ->orderBy('created_at', 'desc')
+                ->get()
+        );
+    }
+
+    // GET /admin/subscriptions
+    public function subscriptions(): JsonResponse
+    {
+        $this->checkAdmin();
+
+        return response()->json(
+            \App\Models\Subscription::with('user')
+                ->orderBy('created_at', 'desc')
+                ->get()
+        );
+    }
+
+    // GET /admin/training-plans
+    public function trainingPlans(): JsonResponse
+    {
+        $this->checkAdmin();
+
+        return response()->json(
+            \App\Models\TrainingPlan::with('user')
+                ->orderBy('created_at', 'desc')
+                ->get()
+        );
+    }
+
+    // GET /admin/friends
+    public function friends(): JsonResponse
+    {
+        $this->checkAdmin();
+
+        return response()->json(
+            \DB::table('friends')
+                ->join('users as u1', 'friends.user_id', '=', 'u1.id')
+                ->join('users as u2', 'friends.friend_id', '=', 'u2.id')
+                ->select(
+                    'friends.id', 'friends.created_at', 'friends.status',
+                    'u1.name as user_name', 'u1.email as user_email',
+                    'u1.profile_photo as user_photo', 'u2.name as friend_name'
+                )
+                ->orderBy('friends.created_at', 'desc')
+                ->get()
+        );
     }
 }

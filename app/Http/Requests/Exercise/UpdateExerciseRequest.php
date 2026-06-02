@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Exercise;
 
-use App\Models\Exercise;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateExerciseRequest extends FormRequest
@@ -17,11 +16,11 @@ class UpdateExerciseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            Exercise::NAME => ['sometimes', 'string', 'max:255'],
-            Exercise::SETS => ['sometimes', 'integer'],
-            Exercise::REPS => ['sometimes', 'integer'],
-            Exercise::WEIGHT => ['nullable', 'numeric'],
-            Exercise::NOTES => ['nullable', 'string'],
+            'name'               => ['required', 'string', 'max:255'],
+            'notes'              => ['nullable', 'string', 'max:1000'],
+            'sets_data'          => ['nullable', 'array'],
+            'sets_data.*.reps'   => ['nullable', 'integer', 'min:0'],
+            'sets_data.*.weight' => ['nullable', 'numeric', 'min:0'],
         ];
     }
 }

@@ -1,24 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\ExerciseLibrary;
 
 use App\Http\Controllers\Controller;
-use App\Models\ExerciseLibrary;
+use App\Repositories\ExerciseLibrary\ExerciseLibraryLogicRepository;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ExerciseLibraryController extends Controller
 {
-    public function store(Request $request)
+    public function __construct(
+        private readonly ExerciseLibraryLogicRepository $logic
+    ) {}
+
+    // GET /exercise-library
+    public function index(): JsonResponse
+    {
+        return response()->json($this->logic->getAll());
+    }
+
+    // POST /exercise-library
+    public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => ['required', 'string', 'max:255'],
         ]);
 
-        $exercise = ExerciseLibrary::create([
-            'name' => $request->name,
-            'muscle_group' => null,
-        ]);
-
-        return response()->json($exercise, 201);
+        try {
+            $exercise = $this->logic->create($request->name);
+            return response()->json($exercise, 201);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
     }
 }

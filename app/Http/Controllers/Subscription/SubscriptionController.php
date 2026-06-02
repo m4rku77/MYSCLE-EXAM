@@ -4,50 +4,66 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Subscription;
 
-use App\Http\Requests\Subscription\CreateSubscriptionRequest;
-use App\Http\Requests\Subscription\UpdateSubscriptionRequest;
-use App\Http\Resources\Subscription\SubscriptionResource;
+use App\Http\Controllers\Controller;
 use App\Repositories\Subscription\SubscriptionLogicRepository;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
-class SubscriptionController
+class SubscriptionController extends Controller
 {
     public function __construct(
         private readonly SubscriptionLogicRepository $logic
     ) {}
 
-    public function index()
+    // GET /my/subscription
+    public function show(): JsonResponse
     {
-        return SubscriptionResource::collection(
-            $this->logic->getAll()
+        return response()->json(
+            $this->logic->getActiveForUser(auth()->id())
         );
     }
 
-    public function show(int $id): SubscriptionResource
+    // DELETE /my/subscription
+    public function cancel(): JsonResponse
     {
-        return new SubscriptionResource(
-            $this->logic->getById($id)
-        );
+        try {
+            $this->logic->cancel(auth()->id());
+            return response()->json(['message' => 'Cancelled']);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['error' => $e->getMessage()], 404);
+        }
     }
 
-    public function store(CreateSubscriptionRequest $request): SubscriptionResource
+    // POST /stripe/checkout
+    public function checkout(): JsonResponse
     {
-        $subscription = $this->logic->create($request->validated());
-
-        return new SubscriptionResource($subscription);
+        $url = $this->logic->createCheckoutSession(auth()->id());
+        return response()->json(['url' => $url]);
     }
 
-    public function update(UpdateSubscriptionRequest $request, int $id): SubscriptionResource
+    // POST /stripe/webhook
+    public function webhook(Request $request): JsonResponse
     {
-        $subscription = $this->logic->update($id, $request->validated());
+        \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
 
-        return new SubscriptionResource($subscription);
-    }
+        $payload = $request->getContent();
+        $sig     = $request->header('Stripe-Signature');
 
-    public function destroy(int $id): JsonResponse
-    {
-        $this->logic->delete($id);
+        try {
+            $event = \Stripe\Webhook::constructEvent(
+                $payload, $sig, config('services.stripe.webhook_secret')
+            );
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
 
-        return response()->json([], 204);
+        match ($event->type) {
+            'checkout.session.completed'   => $this->logic->handleCheckoutCompleted($event->data->object),
+            'customer.subscription.updated' => $this->logic->handleSubscriptionUpdated($event->data->object),
+            'customer.subscription.deleted' => $this->logic->handleSubscriptionDeleted($event->data->object),
+            default => null,
+        };
+
+        return response()->json(['status' => 'ok']);
     }
 }

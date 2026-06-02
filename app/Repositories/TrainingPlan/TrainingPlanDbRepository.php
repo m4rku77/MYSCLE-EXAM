@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Repositories\TrainingPlan;
 
 use App\Models\TrainingPlan;
+use Illuminate\Database\Eloquent\Collection;
 
 class TrainingPlanDbRepository
 {
-    public function getAll()
+    public function getAll(): Collection
     {
         return TrainingPlan::with('exercises.exerciseSets')
             ->where('user_id', auth()->id())
@@ -30,17 +31,22 @@ class TrainingPlanDbRepository
 
     public function update(int $id, array $data): TrainingPlan
     {
-        $trainingPlan = TrainingPlan::findOrFail($id);
-
-        $trainingPlan->update($data);
-
-        return $trainingPlan;
+        $plan = TrainingPlan::findOrFail($id);
+        $plan->update($data);
+        return $plan->fresh();
     }
 
     public function delete(int $id): void
     {
-        $trainingPlan = TrainingPlan::findOrFail($id);
+        TrainingPlan::findOrFail($id)->delete();
+    }
 
-        $trainingPlan->delete();
+    public function updateFavorite(int $id, bool $isFavorite): TrainingPlan
+    {
+        $plan = TrainingPlan::where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+        $plan->update([TrainingPlan::IS_FAVORITE => $isFavorite]);
+        return $plan->fresh();
     }
 }

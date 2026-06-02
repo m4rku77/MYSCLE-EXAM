@@ -30,6 +30,11 @@ import TrainerClientStatistics from "../views/trainer/TrainerClientStatistics.vu
 import UpgradeView from "../views/UpgradeView.vue";
 import PaymentSuccess from "../views/PaymentSuccess.vue";
 import PaymentCancel from "../views/PaymentCancel.vue";
+import AdminLayout from "../layouts/AdminLayout.vue";
+import ActivityLogView from "../views/admin/ActivityLog.vue";
+
+import SubscriptionView from "../views/admin/SubscriptionView.vue";
+import IncomeView from "../views/admin/IncomeView.vue";
 const routes = [
     { path: "/", component: HomeView },
 
@@ -45,16 +50,15 @@ const routes = [
         meta: { requiresAuth: true },
     },
 
-    // standalone chat routes — no layout, no bottom nav
     {
         path: "/messages/:id",
         component: MessagesChatView,
-        meta: { requiresAuth: true, role: "user" },
+        meta: { requiresAuth: true },
     },
     {
         path: "/trainer/messages/:id",
         component: MessagesChatView,
-        meta: { requiresAuth: true, role: "trainer" },
+        meta: { requiresAuth: true },
     },
     {
         path: "/admin/messages/:id",
@@ -75,7 +79,7 @@ const routes = [
     {
         path: "/",
         component: UserLayout,
-        meta: { requiresAuth: true, role: "user" },
+        meta: { requiresAuth: true },
         children: [
             { path: "dashboard", component: Dashboard },
             { path: "workout/:id", component: WorkoutView },
@@ -115,7 +119,7 @@ const routes = [
     // ADMIN
     {
         path: "/admin",
-        component: MainLayout,
+        component: AdminLayout,
         meta: { requiresAuth: true, requiresAdmin: true },
         children: [
             { path: "", component: AdminDashboard },
@@ -124,6 +128,9 @@ const routes = [
             { path: "messages", component: Messages },
             { path: "statistics", component: Statistics },
             { path: "friends", component: FriendsView },
+            { path: "subscriptions", component: SubscriptionView },
+            { path: "activitylog", component: ActivityLogView },
+            { path: "income", component: IncomeView },
         ],
     },
 
@@ -152,7 +159,7 @@ router.beforeEach((to) => {
 
     if (requiredRole && requiredRole !== role) {
         if (role === "admin") return "/admin";
-        if (role === "trainer") return "/trainer";
+        if (role === "trainer" && requiredRole === "user") return true;
         return "/dashboard";
     }
 

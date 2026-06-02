@@ -1,188 +1,121 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Friends;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Http\Requests\Friend\AddFriendRequest;
+use App\Repositories\Friend\FriendLogicRepository;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class FriendController extends Controller
 {
-    public function index()
+    public function __construct(
+        private readonly FriendLogicRepository $logic
+    ) {}
+
+    public function index(): JsonResponse
     {
-        $user = Auth::user();
-
-        $friends = DB::table('friends')
-            ->join('users', 'friends.friend_id', '=', 'users.id')
-            ->where('friends.user_id', $user->id)
-            ->select('users.id', 'users.name', 'users.profile_photo')
-            ->get();
-
-        return response()->json($friends);
+        return response()->json($this->logic->getFriends(auth()->id()));
     }
 
-    public function add(Request $request)
+    public function search(Request $request): JsonResponse
     {
-        $request->validate([
-            'friend_id' => 'required|exists:users,id',
-        ]);
-
-        $user = Auth::user();
-
-        DB::table('friends')->insert([
-            'user_id' => $user->id,
-            'friend_id' => $request->friend_id,
-            'status' => 'pending',
-        ]);
-
-        return response()->json(['message' => 'Friend request sent']);
+        $query = $request->query('search', '');
+        if (!$query) return response()->json([]);
+        return response()->json($this->logic->searchUsers(auth()->id(), $query));
     }
 
-    public function remove($id)
+    public function add(AddFriendRequest $request): JsonResponse
     {
-        $user = Auth::user();
+        try {
+            $this->logic->sendRequest(auth()->id(), $request->validated()['friend_id']);
+            return response()->json(['message' => 'Friend request sent']);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+    }
 
-        DB::table('friends')
-            ->where('user_id', $user->id)
-            ->where('friend_id', $id)
-            ->delete();
-
+    public function remove(int $id): JsonResponse
+    {
+        $this->logic->remove(auth()->id(), $id);
         return response()->json(['message' => 'Friend removed']);
     }
 
-    public function search(Request $request)
+    public function requests(): JsonResponse
     {
-        $search = $request->query('search');
-        $userId = Auth::id();
+        return response()->json($this->logic->getPendingRequests(auth()->id()));
+    }
 
-        if (! $search) {
-            return response()->json([]);
+    public function accept(int $id): JsonResponse
+    {
+        try {
+            $this->logic->accept($id, auth()->id());
+            return response()->json(['message' => 'Friend added']);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         }
-
-        $friendIds = DB::table('friends')
-            ->where('user_id', $userId)
-            ->pluck('friend_id');
-
-        $users = User::where('name', 'like', '%'.$search.'%')
-            ->where('id', '!=', $userId)
-            ->whereNotIn('id', $friendIds)
-            ->select('id', 'name', 'profile_photo')
-            ->limit(10)
-            ->get();
-
-        return response()->json($users);
     }
 
-    public function me()
+    public function decline(int $id): JsonResponse
     {
-        $user = Auth::user();
-
-        return response()->json([
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'profile_photo' => $user->profile_photo,
-        ]);
-    }
-
-    public function update(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
-
-        $user = Auth::user();
-        $user->name = $request->name;
-        $user->save();
-
-        return response()->json([
-            'message' => 'Profile updated',
-            'user' => $user,
-        ]);
-    }
-
-    public function uploadPhoto(Request $request)
-    {
-        $request->validate([
-            'photo' => 'required|image|max:2048',
-        ]);
-
-        $user = Auth::user();
-
-        $path = $request->file('photo')->store('profiles', 'public');
-
-        $user->profile_photo = $path;
-        $user->save();
-
-        return response()->json([
-            'message' => 'Photo uploaded',
-            'photo' => $path,
-        ]);
-    }
-
-    public function requests()
-    {
-        $userId = Auth::id();
-
-        $requests = DB::table('friends')
-            ->join('users', 'friends.user_id', '=', 'users.id')
-            ->where('friends.friend_id', $userId)
-            ->where('friends.status', 'pending')
-            ->select('users.id', 'users.name', 'users.profile_photo')
-            ->get();
-
-        return response()->json($requests);
-    }
-
-    public function accept($id)
-    {
-        $userId = Auth::id();
-
-        DB::table('friends')
-            ->where('user_id', $id)
-            ->where('friend_id', $userId)
-            ->update(['status' => 'accepted']);
-
-        DB::table('friends')->insert([
-            'user_id' => $userId,
-            'friend_id' => $id,
-            'status' => 'accepted',
-        ]);
-
-        return response()->json(['message' => 'Friend added']);
-    }
-
-    public function decline($id)
-    {
-        $userId = Auth::id();
-
-        DB::table('friends')
-            ->where('user_id', $id)
-            ->where('friend_id', $userId)
-            ->delete();
-
+        $this->logic->decline($id, auth()->id());
         return response()->json(['message' => 'Request declined']);
     }
 
-    public function updatePassword(Request $request)
+    public function me(): JsonResponse
+    {
+        $user = auth()->user();
+        return response()->json([
+            'id' => $user->id, 'name' => $user->name, 'email' => $user->email,
+            'profile_photo' => $user->profile_photo, 'goal' => $user->goal,
+            'weight' => $user->weight, 'height' => $user->height, 'age' => $user->age,
+            'gender' => $user->gender, 'bio' => $user->bio, 'role' => $user->role,
+            'completed_workouts' => $user->completed_workouts,
+        ]);
+    }
+
+    public function update(Request $request): JsonResponse
     {
         $request->validate([
-            'current_password' => 'required',
-            'new_password' => 'required|min:6',
+            'name' => ['required', 'string', 'max:255'],
+            'goal' => ['nullable', 'string', 'max:255'],
+            'weight' => ['nullable', 'numeric', 'min:0', 'max:500'],
+            'height' => ['nullable', 'numeric', 'min:0', 'max:300'],
+            'age' => ['nullable', 'integer', 'min:0', 'max:120'],
+            'gender' => ['nullable', 'in:male,female,other'],
+            'bio' => ['nullable', 'string', 'max:1000'],
         ]);
+        $user = auth()->user();
+        $user->update($request->only(['name', 'goal', 'weight', 'height', 'age', 'gender', 'bio']));
+        return response()->json(['message' => 'Profile updated', 'user' => $user]);
+    }
 
-        $user = Auth::user();
+    public function uploadPhoto(Request $request): JsonResponse
+    {
+        $request->validate(['photo' => ['required', 'image', 'max:2048', 'mimes:jpg,jpeg,png']]);
+        $user = auth()->user();
+        $path = $request->file('photo')->store('profiles', 'public');
+        $user->profile_photo = $path;
+        $user->save();
+        return response()->json(['message' => 'Photo uploaded', 'photo' => $path]);
+    }
 
-        if (! Hash::check($request->current_password, $user->password)) {
+    public function updatePassword(Request $request): JsonResponse
+    {
+        $request->validate([
+            'current_password' => ['required', 'string'],
+            'new_password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+        $user = auth()->user();
+        if (!Hash::check($request->current_password, $user->password)) {
             return response()->json(['message' => 'Wrong current password'], 400);
         }
-
         $user->password = Hash::make($request->new_password);
         $user->save();
-
         return response()->json(['message' => 'Password updated']);
     }
 }

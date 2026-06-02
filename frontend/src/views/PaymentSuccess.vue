@@ -6,7 +6,6 @@ import axios from "axios";
 const router = useRouter();
 
 onMounted(async () => {
-    // Re-fetch user to get updated role
     const token = localStorage.getItem("token");
     const res = await axios.get("http://localhost:8000/api/user", {
         headers: { Authorization: `Bearer ${token}` },

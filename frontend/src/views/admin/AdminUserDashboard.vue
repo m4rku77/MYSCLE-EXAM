@@ -161,8 +161,6 @@ onMounted(fetchUsers);
 
 <template>
     <div class="flex min-h-screen bg-[#0f0f0f] text-white">
-        <AdminSidebar />
-
         <div class="flex-1 p-6">
             <div
                 class="bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/5"

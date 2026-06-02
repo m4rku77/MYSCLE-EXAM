@@ -1,66 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Repositories\User\UserLogicRepository;
+use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller
 {
-    public function show($id)
+    public function __construct(
+        private readonly UserLogicRepository $logic
+    ) {}
+
+    // GET /users/{id}
+    public function show(int $id): JsonResponse
     {
-        $user = User::with('trainingPlans.exercises.exerciseSets')
-            ->findOrFail($id);
-
-        $workouts = $user->trainingPlans->count();
-
-        $sets = 0;
-        $reps = 0;
-
-        foreach ($user->trainingPlans as $plan) {
-            foreach ($plan->exercises as $ex) {
-                foreach ($ex->exerciseSets as $set) {
-                    $sets++;
-                    $reps += $set->reps;
-                }
-            }
+        try {
+            return response()->json($this->logic->getWithStats($id));
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'User not found'], 404);
         }
-
-        return response()->json([
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'profile_photo' => $user->profile_photo
-                ? (str_starts_with($user->profile_photo, 'http')
-                    ? $user->profile_photo
-                    : asset('storage/'.$user->profile_photo))
-                : null,
-            'created_at' => $user->created_at,
-            'location' => $user->location ?? 'Unknown',
-            'bio' => $user->bio,
-            'goal' => $user->goal,
-            'weight' => $user->weight,
-            'height' => $user->height,
-            'age' => $user->age,
-            'gender' => $user->gender,
-            'completed_workouts' => $user->completed_workouts,
-            'stats' => [
-                'workouts' => $workouts,
-                'sets' => $sets,
-                'reps' => $reps,
-            ],
-        ]);
-
     }
 
-    public function destroy(int $id)
+    // DELETE /admin/users/{id}
+    public function destroy(int $id): JsonResponse
     {
-        $user = User::findOrFail($id);
-
-        $user->delete();
-
-        return response()->json([
-            'message' => 'User deleted successfully',
-        ]);
+        try {
+            $this->logic->delete($id);
+            return response()->json(['message' => 'User deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
     }
 }

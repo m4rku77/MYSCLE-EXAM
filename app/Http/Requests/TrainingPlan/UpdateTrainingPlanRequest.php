@@ -17,8 +17,9 @@ class UpdateTrainingPlanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            TrainingPlan::NAME => ['sometimes', 'string', 'max:255'],
+            TrainingPlan::NAME        => ['sometimes', 'string', 'max:255'],
             TrainingPlan::IS_FAVORITE => ['sometimes', 'boolean'],
+            TrainingPlan::NOTES       => ['sometimes', 'nullable', 'string', 'max:1000'],
         ];
     }
 }

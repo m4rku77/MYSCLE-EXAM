@@ -93,50 +93,104 @@ const openModal = () => {
 </script>
 
 <template>
-    <div class="h-[100dvh] bg-[#0f0f0f] text-white flex flex-col">
-        <header
-            class="hidden md:flex h-16 bg-[#151515] border-b border-gray-800 items-center justify-between px-6"
+    <div class="h-screen bg-[#080808] text-white flex">
+        <aside
+            class="hidden md:flex w-64 bg-[#0f0f0f] border-r border-white/5 flex-col px-6 py-8 fixed h-full"
         >
-            <div class="flex items-center gap-3">
-                <img src="/logo.png" class="h-10" />
-                <span class="font-semibold text-lg">MYSCLE Trainer</span>
+            <div class="flex items-center gap-3 mb-12">
+                <img src="/logo.png" class="h-8" />
+                <span class="font-black text-lg tracking-widest uppercase"
+                    >Myscle</span
+                >
             </div>
-        </header>
+            <nav class="space-y-1 flex-1">
+                <div
+                    class="flex items-center gap-3 px-4 py-3 bg-[#7ED957]/10 border border-[#7ED957]/20 rounded-2xl text-[#7ED957] font-semibold text-sm"
+                >
+                    <i class="fas fa-users w-4"></i> Clients
+                </div>
+                <div
+                    @click="router.push('/trainer/messages')"
+                    class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
+                >
+                    <i class="fas fa-comment w-4"></i> Messages
+                </div>
+                <div
+                    @click="router.push('/trainer/profile')"
+                    class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white hover:bg-white/5 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
+                >
+                    <i class="fas fa-user w-4"></i> Profile
+                </div>
+            </nav>
+            <button
+                @click="openModal"
+                class="w-full py-3.5 bg-[#7ED957] text-black rounded-2xl font-bold text-sm hover:bg-[#6bc947] transition-all shadow-lg shadow-[#7ED957]/20 flex items-center justify-center gap-2"
+            >
+                <i class="fas fa-plus text-xs"></i> Add Client
+            </button>
+        </aside>
 
-        <div class="flex-1 flex flex-col relative overflow-hidden">
+        <div class="flex-1 md:ml-64 flex flex-col overflow-hidden">
             <div
-                class="md:hidden bg-gradient-to-b from-[#7ED957] to-[#5fcf47] text-black p-6 pb-8 rounded-b-3xl"
+                class="md:hidden bg-gradient-to-b from-[#7ED957] to-[#5fcf47] text-black px-5 pt-12 pb-8 rounded-b-3xl shrink-0"
             >
                 <div class="flex items-center justify-between mb-4">
-                    <h1 class="text-4xl font-bold">Clients</h1>
-
+                    <div>
+                        <p
+                            class="text-black/50 text-xs uppercase tracking-widest font-semibold mb-1"
+                        >
+                            Trainer
+                        </p>
+                        <h1 class="text-3xl font-black">Clients</h1>
+                    </div>
                     <button
                         @click="openModal"
-                        class="bg-black text-white px-4 py-2 rounded-xl font-semibold"
+                        class="flex items-center gap-2 px-5 py-2.5 bg-[#000000] text-[#6bc947] rounded-2xl font-bold text-sm hover:bg-[#6bc947] transition-all shadow-lg shadow-[#7ED957]/20"
                     >
-                        + Add
+                        <i class="fas fa-plus text-xs"></i> Add Client
                     </button>
                 </div>
-
                 <input
                     v-model="clientSearch"
                     placeholder="Search clients..."
-                    class="w-full bg-black/20 rounded-xl px-4 py-3 outline-none placeholder-black/50 text-black"
+                    class="w-full bg-black/20 rounded-2xl px-4 py-3 outline-none placeholder-black/50 text-black text-sm"
                 />
             </div>
 
             <div
-                class="flex-1 overflow-y-auto px-5 md:px-10 pt-6 pb-28 md:pb-10 space-y-3 max-w-4xl mx-auto w-full"
+                class="hidden md:block bg-[#0f0f0f] border-b border-white/5 px-8 py-6 shrink-0"
             >
-                <div v-if="loading" class="text-center text-gray-400 mt-20">
-                    Loading clients...
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p
+                            class="text-xs text-[#7ED957] uppercase tracking-widest font-semibold mb-1"
+                        >
+                            Trainer
+                        </p>
+                        <h1 class="text-3xl font-bold">Clients</h1>
+                    </div>
+                    <input
+                        v-model="clientSearch"
+                        placeholder="Search clients..."
+                        class="bg-[#111] border border-white/5 rounded-2xl px-4 py-2.5 outline-none focus:border-[#7ED957] text-sm w-64 transition-all"
+                    />
+                </div>
+            </div>
+
+            <div
+                class="flex-1 overflow-y-auto px-5 md:px-8 pt-6 pb-32 md:pb-10 space-y-3"
+            >
+                <div v-if="loading" class="text-center text-gray-600 mt-20">
+                    <i class="fas fa-spinner fa-spin mr-2"></i> Loading
+                    clients...
                 </div>
 
                 <div
                     v-else-if="clients.length === 0"
-                    class="flex flex-col items-center justify-center text-gray-500 mt-20"
+                    class="flex flex-col items-center justify-center text-gray-600 mt-20"
                 >
-                    <p class="text-lg">No clients yet</p>
+                    <i class="fas fa-users text-4xl mb-4 opacity-20"></i>
+                    <p class="text-lg font-semibold">No clients yet</p>
                     <p class="text-sm mt-1">
                         Tap "+ Add" to add your first client
                     </p>
@@ -144,7 +198,7 @@ const openModal = () => {
 
                 <div
                     v-else-if="filteredClients.length === 0"
-                    class="flex flex-col items-center justify-center text-gray-500 mt-20"
+                    class="text-center text-gray-600 mt-20"
                 >
                     <p>No clients match "{{ clientSearch }}"</p>
                 </div>
@@ -154,33 +208,31 @@ const openModal = () => {
                         v-for="user in filteredClients"
                         :key="user.id"
                         @click="openUser(user)"
-                        class="flex items-center gap-4 border border-white/5 bg-white/5 rounded-2xl p-4 transition-transform"
+                        class="flex items-center gap-4 bg-[#111] border border-white/5 rounded-2xl p-4 hover:border-white/10 transition-all group"
                         :class="
                             user.status === 'accepted'
-                                ? 'cursor-pointer active:scale-[0.98]'
-                                : 'opacity-70'
+                                ? 'cursor-pointer'
+                                : 'opacity-60'
                         "
                     >
                         <img
                             :src="getImage(user.profile_photo, user.name)"
-                            class="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                            class="w-12 h-12 rounded-full object-cover shrink-0 ring-2 ring-white/5 group-hover:ring-[#7ED957]/20 transition-all"
                         />
-
                         <div class="flex-1 min-w-0">
-                            <p class="font-semibold truncate">
+                            <p class="font-bold text-sm truncate">
                                 {{ user.name }}
                             </p>
-                            <p class="text-sm text-gray-400 truncate">
+                            <p class="text-xs text-gray-500 truncate mt-0.5">
                                 {{ user.email }}
                             </p>
                         </div>
-
                         <span
-                            class="text-sm flex-shrink-0 font-semibold"
+                            class="text-xs font-bold shrink-0 px-3 py-1.5 rounded-xl"
                             :class="
                                 user.status === 'accepted'
-                                    ? 'text-[#7ED957]'
-                                    : 'text-yellow-500'
+                                    ? 'bg-[#7ED957]/10 text-[#7ED957]'
+                                    : 'bg-yellow-500/10 text-yellow-500'
                             "
                         >
                             {{
@@ -195,75 +247,69 @@ const openModal = () => {
 
             <div
                 v-if="showAddModal"
-                class="fixed inset-0 bg-[#0f0f0f] z-50 flex flex-col"
+                class="fixed inset-0 bg-[#080808] z-50 flex flex-col md:bg-black/70 md:items-center md:justify-center"
             >
-                <div class="p-6 pb-4">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-4xl font-bold text-white">
-                            Add Client
-                        </h2>
-
-                        <button
-                            @click="showAddModal = false"
-                            class="text-gray-400 w-9 h-9 flex items-center justify-center rounded-xl text-2xl hover:bg-white/10"
-                        >
-                            ×
-                        </button>
-                    </div>
-
-                    <input
-                        v-model="modalSearch"
-                        placeholder="Search name or surname..."
-                        class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 outline-none placeholder-gray-600 text-white"
-                        autofocus
-                    />
-                </div>
-
-                <div class="flex-1 overflow-y-auto px-5 pt-6 pb-10 space-y-3">
-                    <div
-                        v-for="user in filteredUsers"
-                        :key="user.id"
-                        class="flex items-center gap-4 bg-white/5 rounded-2xl p-4 border border-white/5"
-                    >
-                        <img
-                            :src="getImage(user.profile_photo, user.name)"
-                            class="w-12 h-12 rounded-full object-cover flex-shrink-0"
-                        />
-
-                        <div class="flex-1 min-w-0">
-                            <p class="font-semibold truncate">
-                                {{ user.name }}
-                            </p>
-                            <p class="text-sm text-gray-400 truncate">
-                                {{ user.email }}
-                            </p>
+                <div
+                    class="md:bg-[#111] md:border md:border-white/10 md:rounded-3xl md:w-full md:max-w-lg flex flex-col h-full md:h-auto md:max-h-[80vh]"
+                >
+                    <div class="p-6 pb-4 shrink-0">
+                        <div class="flex items-center justify-between mb-5">
+                            <h2 class="text-2xl font-black">Add Client</h2>
+                            <button
+                                @click="showAddModal = false"
+                                class="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 text-xl transition-all"
+                            >
+                                ×
+                            </button>
                         </div>
+                        <input
+                            v-model="modalSearch"
+                            placeholder="Search name or surname..."
+                            class="w-full bg-[#0a0a0a] border border-white/5 rounded-2xl px-4 py-3 outline-none focus:border-[#7ED957] text-sm placeholder-gray-600 transition-all"
+                            autofocus
+                        />
+                    </div>
 
-                        <button
-                            @click="addClient(user.id)"
-                            class="bg-[#7ED957] text-black px-4 py-2 rounded-xl font-semibold text-sm flex-shrink-0"
+                    <div class="flex-1 overflow-y-auto px-6 pb-8 space-y-3">
+                        <div
+                            v-for="user in filteredUsers"
+                            :key="user.id"
+                            class="flex items-center gap-4 bg-[#0a0a0a] border border-white/5 rounded-2xl p-4"
                         >
-                            Add
-                        </button>
-                    </div>
-
-                    <div
-                        v-if="modalSearch && filteredUsers.length === 0"
-                        class="text-center text-gray-500 mt-20 text-sm"
-                    >
-                        No users match "{{ modalSearch }}"
-                    </div>
-
-                    <div
-                        v-if="!modalSearch"
-                        class="text-center text-gray-600 mt-20 text-sm"
-                    >
-                        Start typing to search users
+                            <img
+                                :src="getImage(user.profile_photo, user.name)"
+                                class="w-10 h-10 rounded-full object-cover shrink-0"
+                            />
+                            <div class="flex-1 min-w-0">
+                                <p class="font-bold text-sm truncate">
+                                    {{ user.name }}
+                                </p>
+                                <p class="text-xs text-gray-500 truncate">
+                                    {{ user.email }}
+                                </p>
+                            </div>
+                            <button
+                                @click="addClient(user.id)"
+                                class="bg-[#7ED957] text-black px-4 py-2 rounded-xl font-bold text-sm shrink-0 hover:bg-[#6bc947] transition-all"
+                            >
+                                Add
+                            </button>
+                        </div>
+                        <div
+                            v-if="modalSearch && filteredUsers.length === 0"
+                            class="text-center text-gray-600 mt-10 text-sm"
+                        >
+                            No users match "{{ modalSearch }}"
+                        </div>
+                        <div
+                            v-if="!modalSearch"
+                            class="text-center text-gray-700 mt-10 text-sm"
+                        >
+                            Start typing to search users
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <TrainerBottomNav class="fixed bottom-0 left-0 w-full z-40" />
         </div>
     </div>
 </template>

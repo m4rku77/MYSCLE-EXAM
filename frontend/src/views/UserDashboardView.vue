@@ -12,6 +12,22 @@ const loading = ref(true);
 const createWorkout = () => router.push("/create-workout");
 const openWorkout = (w) => router.push(`/workout/${w.id}`);
 
+const toggleFavorite = async (w, e) => {
+    e.stopPropagation();
+    w.is_favorite = !w.is_favorite;
+    workouts.value.sort((a, b) => b.is_favorite - a.is_favorite);
+    try {
+        const token = localStorage.getItem("token");
+        await axios.put(
+            `http://localhost:8000/api/workouts/${w.id}`,
+            { is_favorite: w.is_favorite },
+            { headers: { Authorization: `Bearer ${token}` } },
+        );
+    } catch {
+        w.is_favorite = !w.is_favorite;
+    }
+};
+
 onMounted(async () => {
     try {
         const token = localStorage.getItem("token");
@@ -26,6 +42,7 @@ onMounted(async () => {
         workouts.value = data.map((w) => ({
             id: w.id,
             name: w.name,
+            is_favorite: w.is_favorite ?? false,
             exercises: w.exercises?.length || 0,
             sets:
                 w.exercises?.reduce(
@@ -41,6 +58,7 @@ onMounted(async () => {
                     0,
                 ) || 0,
         }));
+        workouts.value.sort((a, b) => b.is_favorite - a.is_favorite);
     } catch {
         workouts.value = [];
     } finally {
@@ -67,7 +85,6 @@ const filtered = computed(() =>
                         >Myscle</span
                     >
                 </div>
-
                 <nav class="space-y-1 flex-1">
                     <div
                         class="flex items-center gap-3 px-4 py-3 bg-[#7ED957]/10 border border-[#7ED957]/20 rounded-2xl text-[#7ED957] font-semibold text-sm cursor-pointer"
@@ -99,7 +116,6 @@ const filtered = computed(() =>
                         <i class="fas fa-user w-4"></i> Profile
                     </div>
                 </nav>
-
                 <button
                     @click="createWorkout"
                     class="w-full py-3 bg-[#7ED957] text-black rounded-2xl font-bold text-sm hover:bg-[#6bc947] transition-all hover:scale-[1.02] shadow-lg shadow-[#7ED957]/20"
@@ -147,6 +163,7 @@ const filtered = computed(() =>
                             :key="w.id"
                             @click="openWorkout(w)"
                             class="group bg-[#111] border border-white/5 rounded-3xl p-6 cursor-pointer hover:border-[#7ED957]/30 hover:-translate-y-1 transition-all duration-300"
+                            :class="w.is_favorite ? 'border-yellow-400/20' : ''"
                         >
                             <div class="flex items-start justify-between mb-4">
                                 <div
@@ -156,11 +173,25 @@ const filtered = computed(() =>
                                         class="fas fa-dumbbell text-[#7ED957] text-sm"
                                     ></i>
                                 </div>
-                                <i
-                                    class="fas fa-chevron-right text-gray-700 group-hover:text-[#7ED957] transition-colors"
-                                ></i>
+                                <div class="flex items-center gap-2">
+                                    <button
+                                        @click="toggleFavorite(w, $event)"
+                                        class="transition-all hover:scale-110"
+                                    >
+                                        <i
+                                            class="fas fa-star text-lg"
+                                            :class="
+                                                w.is_favorite
+                                                    ? 'text-yellow-400'
+                                                    : 'text-gray-700 hover:text-yellow-400/50'
+                                            "
+                                        ></i>
+                                    </button>
+                                    <i
+                                        class="fas fa-chevron-right text-gray-700 group-hover:text-[#7ED957] transition-colors"
+                                    ></i>
+                                </div>
                             </div>
-
                             <h3
                                 class="font-bold text-lg mb-1 group-hover:text-[#7ED957] transition-colors"
                             >
@@ -219,7 +250,6 @@ const filtered = computed(() =>
             </main>
         </div>
 
-        <!-- MOBILE VIEW -->
         <div class="md:hidden flex flex-col h-[100dvh]">
             <div
                 class="bg-gradient-to-b from-[#7ED957] to-[#5fcf47] text-black px-5 pt-12 pb-8 rounded-b-3xl"
@@ -239,7 +269,6 @@ const filtered = computed(() =>
                         <i class="fas fa-dumbbell text-black"></i>
                     </div>
                 </div>
-
                 <div class="relative">
                     <i
                         class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-black/40 text-sm"
@@ -266,12 +295,17 @@ const filtered = computed(() =>
                         :key="w.id"
                         @click="openWorkout(w)"
                         class="group bg-[#111] border border-white/5 rounded-2xl p-5 cursor-pointer active:scale-[0.98] transition-all"
+                        :class="w.is_favorite ? 'border-yellow-400/20' : ''"
                     >
                         <div class="flex items-center justify-between">
                             <div class="flex-1 min-w-0">
-                                <h3 class="font-bold text-base truncate mb-1">
-                                    {{ w.name }}
-                                </h3>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <h3
+                                        class="font-bold text-base truncate mb-1"
+                                    >
+                                        {{ w.name }}
+                                    </h3>
+                                </div>
                                 <div
                                     class="flex items-center gap-3 text-xs text-gray-500"
                                 >
@@ -304,9 +338,24 @@ const filtered = computed(() =>
                                     >
                                 </div>
                             </div>
-                            <i
-                                class="fas fa-chevron-right text-gray-700 ml-4"
-                            ></i>
+                            <div class="flex items-center gap-3 ml-4">
+                                <button
+                                    @click="toggleFavorite(w, $event)"
+                                    class="transition-all active:scale-110"
+                                >
+                                    <i
+                                        class="fas fa-star text-sm"
+                                        :class="
+                                            w.is_favorite
+                                                ? 'text-yellow-400'
+                                                : 'text-gray-700'
+                                        "
+                                    ></i>
+                                </button>
+                                <i
+                                    class="fas fa-chevron-right text-gray-700"
+                                ></i>
+                            </div>
                         </div>
                     </div>
                 </template>

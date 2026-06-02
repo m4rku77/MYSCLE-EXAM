@@ -1,53 +1,72 @@
 <script setup>
-import { useRouter, useRoute } from "vue-router"
+import { useRouter, useRoute } from "vue-router";
 
-const router = useRouter()
-const route = useRoute()
+const router = useRouter();
+const route = useRoute();
 
 const links = [
-  { name: "Dashboard", path: "/admin", icon: "fas fa-chart-line" },
-  { name: "Users", path: "/admin/users", icon: "fas fa-users" },
-  { name: "Workouts", path: "/admin/workouts", icon: "fas fa-dumbbell" },
-]
+    { name: "Dashboard", path: "/admin", icon: "fas fa-chart-line" },
+    { name: "Users", path: "/admin/users", icon: "fas fa-users" },
+    {
+        name: "Subscriptions",
+        path: "/admin/subscriptions",
+        icon: "fas fa-credit-card",
+    },
+    { name: "Income", path: "/admin/income", icon: "fas fa-dollar-sign" },
+    {
+        name: "Activity Log",
+        path: "/admin/activitylog",
+        icon: "fas fa-history",
+    },
+];
 
-const go = (path) => {
-  router.push(path)
-}
+const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    router.push("/");
+};
 </script>
 
 <template>
-  <div class="h-screen w-64 bg-[#111] border-r border-gray-800 flex flex-col">
-
-    <div class="p-6 border-b border-gray-800">
-      <h1 class="text-xl font-bold text-[#7ED957]">ADMIN</h1>
-      <p class="text-xs text-gray-400">Dashboard</p>
-    </div>
-
-    <div class="flex-1 p-4 space-y-2">
-
-      <button
-        v-for="link in links"
-        :key="link.path"
-        @click="go(link.path)"
-        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition"
-        :class="route.path === link.path
-            ? 'bg-[#7ED957] text-black font-semibold'
-            : 'text-gray-300 hover:bg-[#1f1f1f]'"
+    <aside
+        class="hidden md:flex w-64 bg-[#0f0f0f] border-r border-white/5 flex-col px-6 py-8 fixed h-full z-40"
+    >
+        <div class="flex items-center gap-3 mb-4">
+            <img src="/logo.png" class="h-8" />
+            <span class="font-black text-lg tracking-widest uppercase"
+                >Myscle</span
+            >
+        </div>
+        <p
+            class="text-xs text-[#7ED957] uppercase tracking-widest font-semibold mb-8"
         >
-        <i :class="link.icon"></i>
-        <span>{{ link.name }}</span>
-    </button>
+            Admin Panel
+        </p>
 
-    </div>
+        <nav class="space-y-1 flex-1">
+            <div
+                v-for="link in links"
+                :key="link.path"
+                @click="router.push(link.path)"
+                class="flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold text-sm cursor-pointer transition-all"
+                :class="
+                    route.path === link.path
+                        ? 'bg-[#7ED957]/10 border border-[#7ED957]/20 text-[#7ED957]'
+                        : 'text-gray-500 hover:text-white hover:bg-white/5'
+                "
+            >
+                <i :class="link.icon" class="w-4"></i>
+                <span>{{ link.name }}</span>
+            </div>
+        </nav>
 
-    <div class="p-4 border-t border-gray-800">
-      <button
-        @click="router.push('/dashboard')"
-        class="w-full text-sm text-gray-400 hover:text-white transition"
-      >
-        ← Back to App
-      </button>
-    </div>
-
-  </div>
+        <div class="border-t border-white/5 pt-4">
+            <div
+                @click="logout()"
+                class="flex items-center gap-3 px-4 py-3 rounded-2xl text-red-400 hover:text-white hover:bg-red-500/10 font-semibold text-sm cursor-pointer transition-all"
+            >
+                <i class="fas fa-sign-out-alt w-4"></i> Logout
+            </div>
+        </div>
+    </aside>
 </template>

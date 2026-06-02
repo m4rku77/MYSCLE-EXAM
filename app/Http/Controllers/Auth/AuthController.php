@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Http\Requests\Auth\LoginRequest;
 
 final class AuthController extends Controller
 {
@@ -34,24 +35,14 @@ final class AuthController extends Controller
     /**
      * @throws ValidationException
      */
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        if (! Auth::attempt($request->only('email', 'password'))) {
-            return response()->json(['message' => 'Invalid'], 401);
-        }
-
+        $request->authenticate();
         $user = Auth::user();
-
         $token = $user->createToken('auth_token')->plainTextToken;
-
         return response()->json([
             'token' => $token,
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
-            ],
+            'user' => ['id' => $user->id, 'name' => $user->name, 'email' => $user->email, 'role' => $user->role],
         ]);
     }
 

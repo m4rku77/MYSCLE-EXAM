@@ -23,11 +23,16 @@ class UserDbRepository
         return $this->model->find($id);
     }
 
-    public function findByEmail(string $email): ?User
+    public function findByIdWithStats(int $id): User
     {
         return $this->model
-            ->where(User::EMAIL, $email)
-            ->first();
+            ->with('trainingPlans.exercises.exerciseSets')
+            ->findOrFail($id);
+    }
+
+    public function findByEmail(string $email): ?User
+    {
+        return $this->model->where(User::EMAIL, $email)->first();
     }
 
     public function create(array $data): User
@@ -38,7 +43,6 @@ class UserDbRepository
     public function update(User $user, array $data): User
     {
         $user->update($data);
-
         return $user->fresh();
     }
 

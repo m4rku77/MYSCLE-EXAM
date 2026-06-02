@@ -9,6 +9,8 @@ use App\Models\Exercise;
 use App\Repositories\Exercise\ExerciseLogicRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Exercise\CreateExerciseRequest;
+use App\Http\Requests\Exercise\UpdateExerciseRequest;
 
 class ExerciseController
 {
@@ -30,30 +32,27 @@ class ExerciseController
         );
     }
 
-    public function store(Request $request)
+        
+    public function store(CreateExerciseRequest $request)
     {
-       $exercise = Exercise::create([
-        'training_plan_id' => $request->workout_id,
-        'name' => $request->name,
-        'notes' => $request->notes,
-    ]);
+        $exercise = $this->logic->create([
+            'training_plan_id' => $request->workout_id,
+            'name'             => $request->name,
+            'notes'            => $request->notes,
+        ]);
 
         return response()->json($exercise);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateExerciseRequest $request, $id)
     {
-        $id = (int) $id;
-
-        $this->logic->updateExercise($id, [
-            'name' => $request->name,
+        $this->logic->updateExercise((int) $id, [
+            'name'      => $request->name,
             'sets_data' => $request->sets_data,
-            'notes' => $request->notes,
+            'notes'     => $request->notes,
         ]);
 
-        return response()->json([
-            'message' => 'Saved successfully',
-        ]);
+        return response()->json(['message' => 'Saved successfully']);
     }
 
     public function destroy(int $id): JsonResponse

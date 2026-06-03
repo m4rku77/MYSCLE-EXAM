@@ -206,14 +206,9 @@ class TrainerClientController
     // GET /trainer/client/{id}/workouts
     public function getWorkouts(int $id): JsonResponse
     {
-        if (auth()->user()->role !== 'trainer') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
-        $workouts = TrainingPlan::with('exercises.exerciseSets')
+        $workouts = TrainingPlan::with('exercises.sets')  
             ->where('user_id', $id)
             ->get();
-
         return response()->json($workouts);
     }
 

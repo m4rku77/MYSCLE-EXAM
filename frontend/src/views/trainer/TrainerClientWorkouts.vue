@@ -160,12 +160,7 @@ const filtered = computed(() =>
                                 </div>
                                 <div class="bg-white/5 rounded-xl px-3 py-1.5">
                                     <span class="text-[#7ED957] font-bold">{{
-                                        w.exercises?.reduce(
-                                            (s, e) =>
-                                                s +
-                                                (e.exercise_sets?.length || 0),
-                                            0,
-                                        ) || 0
+                                        w.exercises?.reduce((s, e) => s + (e.sets?.length || e.exercise_sets?.length || 0), 0)
                                     }}</span>
                                     <span class="text-gray-500 ml-1">sets</span>
                                 </div>

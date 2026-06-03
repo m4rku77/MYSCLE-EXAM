@@ -11,14 +11,14 @@ class TrainingPlanDbRepository
 {
     public function getAll(): Collection
     {
-        return TrainingPlan::with('exercises.exerciseSets')
+        return TrainingPlan::with('exercises.sets')
             ->where('user_id', auth()->id())
             ->get();
     }
 
     public function getById(int $id): TrainingPlan
     {
-        return TrainingPlan::with('exercises.exerciseSets')
+        return TrainingPlan::with('exercises.sets')
             ->where('id', $id)
             ->where('user_id', auth()->id())
             ->firstOrFail();

@@ -34,15 +34,26 @@ class ExerciseController
 
         
     public function store(CreateExerciseRequest $request)
-    {
-        $exercise = $this->logic->create([
-            'training_plan_id' => $request->workout_id,
-            'name'             => $request->name,
-            'notes'            => $request->notes,
-        ]);
+{
+    $exercise = $this->logic->create([
+        'training_plan_id' => $request->workout_id,
+        'name'             => $request->name,
+        'notes'            => $request->notes,
+    ]);
 
-        return response()->json($exercise);
+    if ($request->sets_data && is_array($request->sets_data)) {
+        foreach ($request->sets_data as $index => $set) {
+            $exercise->exerciseSets()->create([
+                'exercise_id' => $exercise->id,
+                'set_number'  => $index + 1,
+                'reps'        => $set['reps'] ?? 0,
+                'weight'      => $set['weight'] ?? 0,
+            ]);
+        }
     }
+
+    return response()->json($exercise->load('exerciseSets'));
+}
 
     public function update(UpdateExerciseRequest $request, $id)
     {

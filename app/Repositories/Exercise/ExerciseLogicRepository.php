@@ -22,9 +22,25 @@ class ExerciseLogicRepository
 
     public function create(array $data)
     {
-        return $this->dbRepository->create($data);
-    }
+        $exercise = $this->dbRepository->create([
+            'training_plan_id' => $data['training_plan_id'],
+            'name'             => $data['name'],
+            'notes'            => $data['notes'] ?? null,
+        ]);
 
+        if (!empty($data['sets_data']) && is_array($data['sets_data'])) {
+            foreach ($data['sets_data'] as $index => $set) {
+                $exercise->exerciseSets()->create([
+                    'exercise_id' => $exercise->id,
+                    'set_number'  => $index + 1,
+                    'reps'        => $set['reps'] ?? 0,
+                    'weight'      => $set['weight'] ?? 0,
+                ]);
+            }
+        }
+
+        return $exercise->load('exerciseSets');
+    }
     
 
     public function updateExercise(int $id, array $data)

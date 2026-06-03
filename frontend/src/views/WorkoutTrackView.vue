@@ -55,8 +55,10 @@ onMounted(async () => {
         exercises.value.forEach((ex) => {
             searchQueries.value[ex.id] = ex.name;
             ex.notes = ex.notes ?? "";
-            ex.sets = (ex.sets ?? []).map((s) => ({
+            ex.sets = (ex.sets ?? []).map((s, i) => ({
                 ...s,
+                set_number: i + 1,
+                done: false,
                 weight: toDisplay(s.weight),
             }));
         });

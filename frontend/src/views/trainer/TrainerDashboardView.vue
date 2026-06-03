@@ -157,23 +157,25 @@ const openModal = () => {
                 />
             </div>
 
-            <div
-                class="hidden md:block bg-[#0f0f0f] border-b border-white/5 px-8 py-6 shrink-0"
-            >
+            <div class="hidden md:block bg-[#0f0f0f] border-b border-white/5 px-8 py-6 shrink-0">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p
-                            class="text-xs text-[#7ED957] uppercase tracking-widest font-semibold mb-1"
-                        >
-                            Trainer
-                        </p>
+                        <p class="text-xs text-[#7ED957] uppercase tracking-widest font-semibold mb-1">Trainer</p>
                         <h1 class="text-3xl font-bold">Clients</h1>
                     </div>
-                    <input
-                        v-model="clientSearch"
-                        placeholder="Search clients..."
-                        class="bg-[#111] border border-white/5 rounded-2xl px-4 py-2.5 outline-none focus:border-[#7ED957] text-sm w-64 transition-all"
-                    />
+                    <div class="flex items-center gap-3">
+                        <input
+                            v-model="clientSearch"
+                            placeholder="Search clients..."
+                            class="bg-[#111] border border-white/5 rounded-2xl px-4 py-2.5 outline-none focus:border-[#7ED957] text-sm w-64 transition-all"
+                        />
+                        <button
+                            @click="openModal"
+                            class="flex items-center gap-2 px-5 py-2.5 bg-[#7ED957] text-black rounded-2xl font-bold text-sm hover:bg-[#6bc947] transition-all shadow-lg shadow-[#7ED957]/20"
+                        >
+                            <i class="fas fa-plus text-xs"></i> Add Client
+                        </button>
+                    </div>
                 </div>
             </div>
 

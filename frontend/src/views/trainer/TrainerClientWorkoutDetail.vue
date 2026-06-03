@@ -76,15 +76,15 @@ onMounted(async () => {
             workout.value = found;
             exercises.value = JSON.parse(JSON.stringify(found.exercises ?? []));
             exercises.value.forEach((ex) => {
-                searchQueries.value[ex.id] = ex.name;
-                ex.notes = ex.notes ?? "";
-                ex.exercise_sets = (ex.exercise_sets ?? []).map((s, i) => ({
-                    ...s,
-                    set_number: i + 1,
-                    done: false,
-                    weight: toDisplay(s.weight),
-                }));
-            });
+    searchQueries.value[ex.id] = ex.name;
+    ex.notes = ex.notes ?? "";
+    ex.exercise_sets = (ex.sets ?? ex.exercise_sets ?? []).map((s, i) => ({
+        ...s,
+        set_number: i + 1,
+        done: false,
+        weight: toDisplay(s.weight),
+    }));
+});
         }
 
         library.value = libRes.data;
@@ -220,12 +220,17 @@ const saveWorkout = async () => {
     saving.value = true;
     try {
         for (const ex of exercises.value) {
+            const setsToSave = ex.exercise_sets.map((s) => ({
+                ...s,
+                weight: toKg(s.weight),
+            }));
+
             if (ex.id && typeof ex.id === "number" && ex.id < 1000000000) {
                 await axios.put(
                     `http://localhost:8000/api/exercises/${ex.id}`,
                     {
                         name: ex.name,
-                        sets_data: ex.exercise_sets,
+                        sets_data: setsToSave,
                         notes: ex.notes,
                     },
                     { headers },
@@ -237,10 +242,7 @@ const saveWorkout = async () => {
                         workout_id: workout.value.id,
                         name: ex.name,
                         library_id: ex.library_id,
-                        sets_data: ex.exercise_sets.map((s) => ({
-                            ...s,
-                            weight: toKg(s.weight),
-                        })),
+                        sets_data: setsToSave,
                         notes: ex.notes,
                     },
                     { headers },

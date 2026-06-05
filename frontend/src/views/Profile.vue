@@ -35,6 +35,8 @@ const headers = { Authorization: `Bearer ${token}` };
 
 const isTrainerMode = computed(() => route.path.startsWith("/trainer"));
 
+
+
 const switchMode = () => {
     if (isTrainerMode.value) {
         router.push("/dashboard");
@@ -243,14 +245,17 @@ const fetchSubscription = async () => {
     } catch {}
 };
 
+const showCancelPopup = ref(false);
+
 const cancelSubscription = async () => {
-    if (!confirm("Are you sure you want to cancel your subscription?")) return;
     try {
-        await axios.delete("http://localhost:8000/api/my/subscription", {
-            headers,
-        });
+        await axios.delete("http://localhost:8000/api/my/subscription", { headers });
         subscription.value = null;
+        user.value.role = 'user';
+        localStorage.setItem('role', 'user');
+        showCancelPopup.value = false;
         success.value = "Subscription cancelled";
+        setTimeout(() => router.push('/dashboard'), 1500);
     } catch (err) {
         console.error(err);
     }
@@ -1170,4 +1175,32 @@ onMounted(() => {
             </div>
         </div>
     </div>
+
+    <!-- pop up -->
+
+    <div v-if="showCancelPopup"
+    class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center px-5"
+    @click.self="showCancelPopup = false">
+    <div class="w-full max-w-md bg-[#111] border border-white/10 rounded-3xl p-6">
+        <div class="w-12 h-12 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-times-circle text-red-400 text-xl"></i>
+        </div>
+        <h3 class="text-xl font-bold text-center mb-2">Cancel Subscription</h3>
+        <p class="text-gray-400 text-sm text-center mb-6">
+            Are you sure you want to cancel your trainer subscription? You will lose access to all trainer features immediately.
+        </p>
+        <div class="flex gap-3">
+            <button
+                @click="showCancelPopup = false"
+                class="flex-1 py-3 bg-white/5 border border-white/10 rounded-2xl text-sm font-semibold hover:bg-white/10 transition-all">
+                Keep Subscription
+            </button>
+            <button
+                @click="cancelSubscription"
+                class="flex-1 py-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl text-sm font-semibold hover:bg-red-500/20 transition-all">
+                Yes, Cancel
+            </button>
+        </div>
+    </div>
+</div>
 </template>

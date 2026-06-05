@@ -49,14 +49,17 @@ class SubscriptionLogicRepository
     {
         $sub = $this->db->getActiveForUser($userId);
 
-        if (!$sub) {
-            throw new \InvalidArgumentException('No active subscription found');
+        if ($sub) {
+            if ($sub->stripe_subscription_id && str_starts_with($sub->stripe_subscription_id, 'sub_')) {
+                \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
+                try {
+                    \Stripe\Subscription::retrieve($sub->stripe_subscription_id)->cancel();
+                } catch (\Exception $e) {
+                }
+            }
+            $sub->update(['status' => 'cancelled']);
         }
 
-        \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
-        \Stripe\Subscription::retrieve($sub->stripe_subscription_id)->cancel();
-
-        $sub->update(['status' => 'cancelled']);
         User::find($userId)->update(['role' => 'user']);
     }
 
@@ -89,7 +92,7 @@ class SubscriptionLogicRepository
     {
         \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
 
-        $userId         = $data->metadata->user_id;
+        $userId         = (int) $data->metadata->user_id; 
         $subscriptionId = $data->subscription;
         $customerId     = $data->customer;
         $subscription   = \Stripe\Subscription::retrieve($subscriptionId);

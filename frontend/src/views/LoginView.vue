@@ -130,23 +130,13 @@ const register = async () => {
             ></div>
 
             <div class="relative z-10 max-w-md">
-                <router-link
-                    to="/"
-                    class="inline-flex items-center gap-3 mb-16 group"
-                >
-                    <div
-                        class="w-9 h-9 rounded-xl bg-[#7ED957]/10 border border-[#7ED957]/20 flex items-center justify-center group-hover:bg-[#7ED957]/20 transition-all"
-                    >
-                        <img src="/logo.png" class="h-5" />
+                <router-link to="/" class="inline-flex items-center gap-4 mb-16 group">
+                    <div class="flex items-center gap-2.5 bg-white/5 border border-white/10 rounded-full px-4 py-2.5 group-hover:border-[#7ED957]/30 group-hover:bg-[#7ED957]/5 transition-all">
+                        <img src="/logo.png" class="h-4" />
+                        <span style="font-family: 'Bebas Neue', sans-serif;" class="text-lg tracking-widest text-white group-hover:text-[#7ED957] transition-colors">MYSCLE</span>
+                        <span class="w-px h-3 bg-white/10"></span>
+                        <span class="text-gray-600 text-xs group-hover:text-gray-400 transition-colors">← home</span>
                     </div>
-                    <span
-                        class="font-black text-xl tracking-widest uppercase group-hover:text-[#7ED957] transition-colors"
-                        >Myscle</span
-                    >
-                    <span
-                        class="text-gray-600 text-xs group-hover:text-gray-400 transition-colors"
-                        >← Back to home</span
-                    >
                 </router-link>
 
                 <h2 class="text-5xl font-black leading-tight mb-6">

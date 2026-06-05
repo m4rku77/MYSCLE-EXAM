@@ -32,7 +32,7 @@ class FriendController extends Controller
     public function add(AddFriendRequest $request): JsonResponse
     {
         try {
-            $this->logic->sendRequest(auth()->id(), $request->validated()['friend_id']);
+            $this->logic->sendRequest(auth()->id(), (int) $request->validated()['friend_id']);
             return response()->json(['message' => 'Friend request sent']);
         } catch (\InvalidArgumentException $e) {
             return response()->json(['message' => $e->getMessage()], 422);

@@ -78,7 +78,7 @@ class TrainingPlanLogicRepository
 
     public function delete(int $id): void
     {
-        $existing = $this->db->getById($id);
+        $existing = $this->db->getByIdWithoutUserCheck($id);
 
         if (!$existing) {
             throw new \Exception('Training plan not found.');

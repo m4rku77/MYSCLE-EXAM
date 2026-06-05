@@ -21,7 +21,6 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::get('/home', [StatsController::class, 'home']);
 Route::get('/stats', [StatsController::class, 'index']);
 Route::post('/stripe/webhook', [SubscriptionController::class, 'webhook']);
-
 Route::middleware('auth:sanctum')->group(function () {
 
     // Auth
@@ -49,6 +48,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/workouts/{id}', [TrainingPlanController::class, 'show']);
     Route::post('/workouts', [WorkoutController::class, 'store']);
     Route::put('/workouts/{id}', [WorkoutController::class, 'update']);
+    Route::delete('/workouts/{id}', [WorkoutController::class, 'destroy']);
+
 
     // Exercises
     Route::post('/exercises', [ExerciseController::class, 'store']);

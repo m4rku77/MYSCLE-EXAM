@@ -53,4 +53,5 @@ class TrainingPlan extends Model
     {
         return $this->hasMany(Exercise::class);
     }
+    
 }

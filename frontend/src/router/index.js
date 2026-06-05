@@ -75,6 +75,19 @@ const routes = [
     { path: "/payment/success", component: PaymentSuccess },
     { path: "/payment/cancel", component: PaymentCancel },
 
+
+// Pievieno PIRMS UserLayout bloka:
+{
+    path: "/workout/:id",
+    component: WorkoutView,
+    meta: { requiresAuth: true },
+},
+{
+    path: "/workout/:id/track",
+    component: WorkoutTrackView,
+    meta: { requiresAuth: true },
+},
+
     // USER
     {
         path: "/",
@@ -82,8 +95,7 @@ const routes = [
         meta: { requiresAuth: true },
         children: [
             { path: "dashboard", component: Dashboard },
-            { path: "workout/:id", component: WorkoutView },
-            { path: "workout/:id/track", component: WorkoutTrackView },
+            
             { path: "friends", component: FriendsView },
             { path: "statistics", component: Statistics },
             { path: "profile", component: Profile },
@@ -91,6 +103,14 @@ const routes = [
             { path: "user/:id", component: UserProfile },
             { path: "messages", component: Messages },
         ],
+    },
+
+
+   // Pirms TrainerLayout:
+    {
+        path: "/trainer/client/:id/workouts/:workoutId",
+        component: TrainerClientWorkoutDetail,
+        meta: { requiresAuth: true },
     },
 
     // TRAINER
@@ -105,14 +125,7 @@ const routes = [
             { path: "user/:id", component: UserProfile },
             { path: "client/:id", component: TrainerClient },
             { path: "client/:id/workouts", component: TrainerClientWorkouts },
-            {
-                path: "client/:id/workouts/:workoutId",
-                component: TrainerClientWorkoutDetail,
-            },
-            {
-                path: "client/:id/statistics",
-                component: TrainerClientStatistics,
-            },
+            { path: "client/:id/statistics", component: TrainerClientStatistics },
         ],
     },
 

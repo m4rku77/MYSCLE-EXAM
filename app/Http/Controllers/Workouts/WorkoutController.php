@@ -40,4 +40,13 @@ class WorkoutController extends Controller
             return response()->json(['message' => $e->getMessage()], 404);
         }
     }
+    public function destroy(int $id): JsonResponse
+    {
+        try {
+            $this->logic->delete($id);
+            return response()->json(['message' => 'Workout deleted']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Workout not found'], 404);
+        }
+    }
 }

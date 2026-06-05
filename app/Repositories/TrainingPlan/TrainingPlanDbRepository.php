@@ -24,6 +24,13 @@ class TrainingPlanDbRepository
             ->firstOrFail();
     }
 
+    public function getByIdWithoutUserCheck(int $id): TrainingPlan
+    {
+        return TrainingPlan::with('exercises.sets')
+            ->where('id', $id)
+            ->firstOrFail();
+    }
+
     public function create(array $data): TrainingPlan
     {
         return TrainingPlan::create($data);

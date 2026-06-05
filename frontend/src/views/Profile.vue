@@ -1176,7 +1176,6 @@ onMounted(() => {
         </div>
     </div>
 
-    <!-- pop up -->
 
     <div v-if="showCancelPopup"
     class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center px-5"

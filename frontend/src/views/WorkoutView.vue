@@ -23,13 +23,27 @@ const isEditing = ref(false);
 const isStarted = ref(false);
 const finishing = ref(false);
 const showSuccess = ref(false);
-
+const showFinished = ref(false);
 const searchQueries = ref({});
 const activeDropdown = ref(null);
 
 const logId = ref(null);
 const seconds = ref(0);
 let timer = null;
+
+const showDeleteConfirm = ref(false);
+
+const deleteWorkout = async () => {
+    try {
+        await axios.delete(
+            `http://localhost:8000/api/workouts/${workoutId}`,
+            { headers },
+        );
+        router.push('/dashboard');
+    } catch (err) {
+        console.error(err);
+    }
+};
 
 const formatTime = (s) => {
     const m = Math.floor(s / 60)
@@ -156,7 +170,7 @@ const finishWorkout = async () => {
             { duration_seconds: seconds.value, sets },
             { headers },
         );
-        router.push("/dashboard");
+        showFinished.value = true;
     } catch (err) {
         finishing.value = false;
     }
@@ -853,4 +867,59 @@ const removeExercise = (index) => {
             </div>
         </div>
     </transition>
+    <div v-if="showFinished" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 px-5">
+    <div class="bg-[#111] border border-[#7ED957]/30 rounded-3xl p-10 w-full max-w-md text-center">
+        <div class="w-16 h-16 bg-[#7ED957]/10 border border-[#7ED957]/20 rounded-full flex items-center justify-center mx-auto mb-5">
+            <i class="fas fa-flag-checkered text-[#7ED957] text-2xl"></i>
+        </div>
+        <h2 class="text-3xl font-black text-white mb-2">Workout Done!</h2>
+        <p class="text-gray-500 mb-6">{{ workout.name }}</p>
+        <div class="flex items-center justify-center gap-6 bg-white/5 rounded-2xl p-5 mb-8">
+            <div class="text-center">
+                <p class="text-2xl font-black text-[#7ED957]">{{ formatTime(seconds) }}</p>
+                <p class="text-xs text-gray-500 uppercase tracking-widest mt-1">Duration</p>
+            </div>
+            <div class="w-px h-8 bg-white/10"></div>
+            <div class="text-center">
+                <p class="text-2xl font-black text-[#7ED957]">{{ exercises.reduce((s, ex) => s + ex.sets.length, 0) }}</p>
+                <p class="text-xs text-gray-500 uppercase tracking-widest mt-1">Sets</p>
+            </div>
+            <div class="w-px h-8 bg-white/10"></div>
+            <div class="text-center">
+                <p class="text-2xl font-black text-[#7ED957]">{{ exercises.length }}</p>
+                <p class="text-xs text-gray-500 uppercase tracking-widest mt-1">Exercises</p>
+            </div>
+        </div>
+        <div class="flex gap-3">
+            <button @click="showDeleteConfirm = true"
+                class="flex-1 py-3.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl font-semibold text-sm hover:bg-red-500/20 transition-all">
+                Don't save
+            </button>
+            <button @click="showFinished = false; isStarted = false; logId = null;"
+                class="flex-1 py-3.5 bg-[#7ED957] text-black rounded-2xl font-bold text-sm hover:bg-[#6bc947] transition-all">
+                Save & Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<div v-if="showDeleteConfirm" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-5">
+    <div class="bg-[#111] border border-red-500/20 rounded-3xl p-8 w-full max-w-sm text-center">
+        <div class="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-trash text-red-400 text-lg"></i>
+        </div>
+        <h3 class="text-xl font-black text-white mb-2">Delete Workout?</h3>
+        <p class="text-gray-500 text-sm mb-6">This will permanently delete <span class="text-white font-semibold">{{ workout.name }}</span> and all its exercises.</p>
+        <div class="flex gap-3">
+            <button @click="router.back()"
+                class="flex-1 py-3.5 bg-white/5 border border-white/10 text-white rounded-2xl font-semibold text-sm hover:bg-white/10 transition-all">
+                Don't Save
+            </button>
+            <button @click="showFinished = false; isStarted = false; logId = null;"
+                class="flex-1 py-3.5 bg-[#7ED957] text-black rounded-2xl font-bold text-sm hover:bg-[#6bc947] transition-all">
+                Save & Close
+            </button>
+        </div>
+    </div>
+</div>
 </template>

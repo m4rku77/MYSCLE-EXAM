@@ -29,7 +29,7 @@ class WorkoutLogController extends Controller
     {
         $log = $this->logic->start(
             auth()->id(),
-            $request->validated()['training_plan_id']
+            (int) $request->validated()['training_plan_id']
         );
 
         return response()->json($log);

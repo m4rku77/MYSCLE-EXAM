@@ -128,47 +128,21 @@ const fetchFriendRequests = async () => {
 
 const saveProfile = async () => {
     try {
-        await axios.put(
-            "http://localhost:8000/api/me",
-            {
-                name: name.value,
-                goal: goal.value,
-                weight:
-                    unit.value === "lbs"
-                        ? Math.round((Number(weight.value) / 2.20462) * 10) / 10
-                        : weight.value,
-                height: height.value,
-                age: age.value,
-                gender: gender.value,
-                bio: bio.value,
-            },
-            { headers },
-        );
-        if (file.value) {
-            const formData = new FormData();
-            formData.append("photo", file.value);
-            const res = await axios.post(
-                "http://localhost:8000/api/me/photo",
-                formData,
-                { headers },
-            );
-            user.value.profile_photo = res.data.photo;
-            preview.value = null;
-            file.value = null;
-        }
-        original.value = {
+        await axios.put("http://localhost:8000/api/me", {
             name: name.value,
-            goal: goal.value,
-            weight: weight.value,
-            height: height.value,
-            age: age.value,
-            gender: gender.value,
-            bio: bio.value,
-        };
+            email: email.value,
+            goal: goal.value || null,
+            weight: weight.value ? Number(String(weight.value).replace(/[^0-9.]/g, '')) : null,
+            height: height.value ? Number(String(height.value).replace(/[^0-9.]/g, '')) : null,
+            age: age.value ? Number(age.value) : null,
+            gender: gender.value || null,
+            bio: bio.value || null,
+        }, { headers });
+        original.value = { name: name.value, goal: goal.value, weight: weight.value, height: height.value, age: age.value, gender: gender.value, bio: bio.value };
         success.value = "Profile updated";
         setTimeout(() => (success.value = ""), 3000);
     } catch (err) {
-        console.log(err.response?.data || err.message);
+        console.log(err.response?.data?.errors);
     }
 };
 
@@ -179,13 +153,14 @@ const updatePassword = async () => {
     }
     try {
         await axios.put(
-            "http://localhost:8000/api/me/password",
-            {
-                current_password: currentPassword.value,
-                new_password: newPassword.value,
-            },
-            { headers },
-        );
+        "http://localhost:8000/api/me/password",
+        {
+            current_password: currentPassword.value,
+            new_password: newPassword.value,
+            new_password_confirmation: confirmPassword.value,
+        },
+        { headers }
+    );
         success.value = "Password updated";
         passwordError.value = "";
         showPassword.value = false;
@@ -194,9 +169,22 @@ const updatePassword = async () => {
     }
 };
 
-const handleFile = (e) => {
+const handleFile = async (e) => {
     file.value = e.target.files[0];
     preview.value = URL.createObjectURL(file.value);
+    
+    try {
+        const formData = new FormData();
+        formData.append("photo", file.value);
+        const res = await axios.post("http://localhost:8000/api/me/photo", formData, { headers });
+        user.value.profile_photo = res.data.photo;
+        preview.value = null;
+        file.value = null;
+        success.value = "Photo updated";
+        setTimeout(() => (success.value = ""), 3000);
+    } catch (err) {
+        console.error(err.response?.data);
+    }
 };
 
 const acceptFriend = async (id) => {
@@ -568,6 +556,7 @@ onMounted(() => {
                                 >Name</label
                             ><input
                                 v-model="name"
+                                
                                 class="w-full px-4 py-3 bg-[#0a0a0a] border border-white/5 rounded-2xl text-sm outline-none focus:border-[#7ED957] transition-all"
                             />
                         </div>
@@ -576,6 +565,7 @@ onMounted(() => {
                                 >Email</label
                             ><input
                                 v-model="email"
+                                min="0"
                                 disabled
                                 class="w-full px-4 py-3 bg-[#0a0a0a] border border-white/5 rounded-2xl text-sm opacity-50 cursor-not-allowed"
                             />
@@ -647,6 +637,7 @@ onMounted(() => {
                                     >Weight ({{ unit }})</label
                                 ><input
                                     v-model="weight"
+                                    min="0"
                                     type="number"
                                     placeholder="e.g. 75"
                                     class="w-full px-4 py-3 bg-[#0a0a0a] border border-white/5 rounded-2xl text-sm outline-none focus:border-[#7ED957] transition-all"
@@ -658,6 +649,7 @@ onMounted(() => {
                                     >Height (cm)</label
                                 ><input
                                     v-model="height"
+                                    min="0"
                                     type="number"
                                     placeholder="e.g. 180"
                                     class="w-full px-4 py-3 bg-[#0a0a0a] border border-white/5 rounded-2xl text-sm outline-none focus:border-[#7ED957] transition-all"
@@ -671,6 +663,7 @@ onMounted(() => {
                                     >Age</label
                                 ><input
                                     v-model="age"
+                                    min="0"
                                     type="number"
                                     placeholder="e.g. 25"
                                     class="w-full px-4 py-3 bg-[#0a0a0a] border border-white/5 rounded-2xl text-sm outline-none focus:border-[#7ED957] transition-all"
@@ -1119,6 +1112,7 @@ onMounted(() => {
                                             >Weight ({{ unit }})</label
                                         ><input
                                             v-model="weight"
+                                            min="0"
                                             type="number"
                                             placeholder="e.g. 75"
                                             class="w-full px-4 py-3 bg-[#0a0a0a] border border-white/5 rounded-2xl text-sm outline-none focus:border-[#7ED957] transition-all"
@@ -1130,6 +1124,7 @@ onMounted(() => {
                                             >Height (cm)</label
                                         ><input
                                             v-model="height"
+                                            min="0"
                                             type="number"
                                             placeholder="e.g. 180"
                                             class="w-full px-4 py-3 bg-[#0a0a0a] border border-white/5 rounded-2xl text-sm outline-none focus:border-[#7ED957] transition-all"
@@ -1143,6 +1138,7 @@ onMounted(() => {
                                             >Age</label
                                         ><input
                                             v-model="age"
+                                            min="0"
                                             type="number"
                                             placeholder="e.g. 25"
                                             class="w-full px-4 py-3 bg-[#0a0a0a] border border-white/5 rounded-2xl text-sm outline-none focus:border-[#7ED957] transition-all"

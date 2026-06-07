@@ -258,7 +258,7 @@ onMounted(async () => {
                         Your transformation<br/><span class="text-[#7ED957]">starts today.</span>
                     </h2>
                     <div class="flex flex-col gap-4 md:items-end shrink-0">
-                        <p class="text-gray-500 text-sm max-w-xs leading-relaxed md:text-right">Join thousands of athletes already using Myscle to reach their peak.</p>
+                        <p class="text-gray-500 text-sm max-w-xs leading-relaxed md:text-right">Use Myscle to reach your peak.</p>
                         <button @click="goRegister" class="bg-[#7ED957] text-black px-10 py-4 font-bold text-base hover:bg-[#6bc947] transition-all rounded-2xl shadow-xl shadow-[#7ED957]/20 hover:scale-105 w-full md:w-auto">
                             Create Free Account →
                         </button>

@@ -9,6 +9,7 @@ use App\Http\Requests\WorkoutLog\CreateWorkoutLogRequest;
 use App\Http\Requests\WorkoutLog\FinishWorkoutLogRequest;
 use App\Repositories\WorkoutLog\WorkoutLogLogicRepository;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class WorkoutLogController extends Controller
 {
@@ -47,4 +48,22 @@ class WorkoutLogController extends Controller
 
         return response()->json(['message' => 'Workout saved']);
     }
+
+    // PUT /workout-logs/{id}
+   public function update(Request $request, int $id): JsonResponse
+    {
+        $this->logic->update(
+            $id,
+            $request->input('duration_seconds'),
+            $request->input('sets', [])
+        );
+        return response()->json(['message' => 'Workout updated']);
+    }
+
+    public function destroy(int $id): JsonResponse
+    {
+        $this->logic->delete($id);
+        return response()->json(['message' => 'Workout deleted']);
+    }
+
 }

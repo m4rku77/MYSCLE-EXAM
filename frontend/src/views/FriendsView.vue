@@ -86,7 +86,6 @@ const filteredFriends = () =>
 <template>
     <div class="h-screen bg-[#080808] text-white flex">
 
-        <!-- Sidebar -->
         <aside class="hidden md:flex w-64 bg-[#0f0f0f] border-r border-white/5 flex-col px-6 py-8 fixed h-full">
             <div class="flex items-center gap-3 mb-12">
                 <img src="/logo.png" class="h-8" />
@@ -113,19 +112,16 @@ const filteredFriends = () =>
 
         <div class="flex-1 md:ml-64 flex flex-col overflow-hidden">
 
-            <!-- Mobile header -->
             <div class="md:hidden bg-gradient-to-b from-[#7ED957] to-[#5fcf47] text-black px-5 pt-12 pb-8 rounded-b-3xl shrink-0">
                 <p class="text-black/50 text-xs uppercase tracking-widest font-semibold mb-1">My Network</p>
                 <h1 class="text-3xl font-black">Friends</h1>
             </div>
 
-            <!-- Desktop page header -->
             <div class="hidden md:block bg-[#0f0f0f] border-b border-white/5 px-8 py-6 shrink-0">
                 <p class="text-xs text-[#7ED957] uppercase tracking-widest font-semibold mb-1">My Network</p>
                 <h1 class="text-3xl font-bold">Friends</h1>
             </div>
 
-            <!-- MOBILE layout -->
             <div class="md:hidden flex-1 overflow-y-auto px-5 pt-5 pb-32 space-y-4">
                 <div class="relative">
                     <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm"></i>
@@ -182,13 +178,10 @@ const filteredFriends = () =>
                 </div>
             </div>
 
-            <!-- DESKTOP two column layout -->
             <div class="hidden md:flex flex-1 overflow-hidden">
 
-                <!-- Left column: search + requests -->
                 <div class="w-80 shrink-0 border-r border-white/5 flex flex-col overflow-hidden">
 
-                    <!-- Aligned header -->
                     <div class="h-[65px] flex items-center px-6 border-b border-white/5">
                         <div class="relative w-full">
                             <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm"></i>

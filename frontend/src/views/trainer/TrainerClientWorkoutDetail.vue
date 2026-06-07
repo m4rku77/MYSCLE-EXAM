@@ -289,9 +289,9 @@ const saveWorkout = async () => {
                                         :class="isStarted ? set.done ? 'bg-[#7ED957]/10 border border-[#7ED957]/20 cursor-pointer' : 'bg-[#0a0a0a] border border-white/5 cursor-pointer hover:border-white/10' : 'bg-[#0a0a0a]'"
                                         @click="isStarted ? toggleSet(set) : null">
                                         <span class="col-span-1 text-sm font-semibold" :class="set.done ? 'text-[#7ED957]' : 'text-gray-600'">{{ setIndex + 1 }}</span>
-                                        <input v-model.number="set.reps" type="number" placeholder="0" :disabled="!isEditing && !isStarted" @click.stop class="col-span-4 bg-transparent outline-none text-center text-sm font-medium" :class="set.done ? 'text-[#7ED957]' : 'text-white'" />
+                                        <input v-model.number="set.reps" type="number" min="0"  placeholder="0" :disabled="!isEditing && !isStarted" @click.stop class="col-span-4 bg-transparent outline-none text-center text-sm font-medium" :class="set.done ? 'text-[#7ED957]' : 'text-white'" />
                                         <span class="col-span-1 text-gray-700 text-xs text-center">×</span>
-                                        <input v-model.number="set.weight" type="number" placeholder="0" :disabled="!isEditing && !isStarted" @click.stop class="col-span-4 bg-transparent outline-none text-center text-sm font-medium" :class="set.done ? 'text-[#7ED957]' : 'text-white'" />
+                                        <input v-model.number="set.weight" type="number" min="0"  placeholder="0" :disabled="!isEditing && !isStarted" @click.stop class="col-span-4 bg-transparent outline-none text-center text-sm font-medium" :class="set.done ? 'text-[#7ED957]' : 'text-white'" />
                                         <div class="col-span-2 flex justify-end items-center gap-2">
                                             <i v-if="isStarted" class="fas fa-check text-xs" :class="set.done ? 'text-[#7ED957]' : 'text-gray-800'"></i>
                                             <button v-if="isEditing" @click.stop="removeSet(ex, setIndex)" class="text-red-500 text-xs">✕</button>
@@ -357,9 +357,9 @@ const saveWorkout = async () => {
                                 :class="isStarted ? set.done ? 'bg-[#7ED957]/15 border border-[#7ED957]/30 cursor-pointer' : 'bg-[#0a0a0a] border border-white/5 cursor-pointer' : 'bg-[#0a0a0a]'"
                                 @click="isStarted ? toggleSet(set) : null">
                                 <span class="col-span-1 text-sm" :class="set.done ? 'text-[#7ED957] font-bold' : 'text-gray-600'">{{ setIndex + 1 }}</span>
-                                <input v-model.number="set.reps" type="number" placeholder="0" :disabled="!isEditing && !isStarted" @click.stop class="col-span-4 bg-transparent outline-none text-center text-sm" :class="set.done ? 'text-[#7ED957]' : 'text-white'" />
+                                <input v-model.number="set.reps" type="number" min="0"  placeholder="0" :disabled="!isEditing && !isStarted" @click.stop class="col-span-4 bg-transparent outline-none text-center text-sm" :class="set.done ? 'text-[#7ED957]' : 'text-white'" />
                                 <span class="col-span-1 text-gray-700 text-xs text-center">×</span>
-                                <input v-model.number="set.weight" type="number" placeholder="0" :disabled="!isEditing && !isStarted" @click.stop class="col-span-4 bg-transparent outline-none text-center text-sm" :class="set.done ? 'text-[#7ED957]' : 'text-white'" />
+                                <input v-model.number="set.weight" type="number" min="0" placeholder="0" :disabled="!isEditing && !isStarted" @click.stop class="col-span-4 bg-transparent outline-none text-center text-sm" :class="set.done ? 'text-[#7ED957]' : 'text-white'" />
                                 <div class="col-span-2 flex justify-end">
                                     <i v-if="isStarted" class="fas fa-check text-xs" :class="set.done ? 'text-[#7ED957]' : 'text-gray-800'"></i>
                                     <button v-if="isEditing" @click.stop="removeSet(ex, setIndex)" class="text-red-500 text-xs">✕</button>

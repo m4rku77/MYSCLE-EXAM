@@ -50,6 +50,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/workouts/{id}', [WorkoutController::class, 'update']);
     Route::delete('/workouts/{id}', [WorkoutController::class, 'destroy']);
 
+    //workout-logs
+    Route::put('/workout-logs/{id}', [WorkoutLogController::class, 'update']);
+    Route::delete('/workout-logs/{id}', [WorkoutLogController::class, 'destroy']);
 
     // Exercises
     Route::post('/exercises', [ExerciseController::class, 'store']);

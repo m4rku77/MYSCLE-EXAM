@@ -7,6 +7,7 @@ namespace App\Repositories\WorkoutLog;
 use App\Models\User;
 use App\Models\WorkoutLog;
 use Illuminate\Database\Eloquent\Collection;
+use App\Models\WorkoutSet;
 
 class WorkoutLogLogicRepository
 {
@@ -38,5 +39,26 @@ class WorkoutLogLogicRepository
         }
 
         User::find($userId)->increment('completed_workouts');
+    }
+
+    public function update(int $id, ?int $durationSeconds, array $sets): void
+    {
+        $log = WorkoutLog::where('id', $id)->firstOrFail();
+
+        if ($durationSeconds !== null) {
+            $log->update(['duration_seconds' => $durationSeconds]);
+        }
+
+        foreach ($sets as $setData) {
+            WorkoutSet::where('id', $setData['id'])->update([
+                'reps'   => $setData['reps'],
+                'weight' => $setData['weight'],
+            ]);
+        }
+    }
+
+    public function delete(int $id): void
+    {
+        WorkoutLog::where('id', $id)->delete();
     }
 }

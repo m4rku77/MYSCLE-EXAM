@@ -81,16 +81,18 @@ class FriendController extends Controller
     public function update(Request $request): JsonResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'goal' => ['nullable', 'string', 'max:255'],
-            'weight' => ['nullable', 'numeric', 'min:0', 'max:500'],
-            'height' => ['nullable', 'numeric', 'min:0', 'max:300'],
-            'age' => ['nullable', 'integer', 'min:0', 'max:120'],
-            'gender' => ['nullable', 'in:male,female,other'],
-            'bio' => ['nullable', 'string', 'max:1000'],
+            'name'   => ['sometimes', 'string', 'max:255'],
+            'goal'   => ['sometimes', 'nullable', 'string', 'max:255'],
+            'weight' => ['sometimes', 'nullable', 'numeric', 'min:0', 'max:500'],
+            'height' => ['sometimes', 'nullable', 'numeric', 'min:0', 'max:300'],
+            'age'    => ['sometimes', 'nullable', 'integer', 'min:0', 'max:120'],
+            'gender' => ['sometimes', 'nullable', 'in:male,female,other'],
+            'bio'    => ['sometimes', 'nullable', 'string', 'max:1000'],
         ]);
+
         $user = auth()->user();
         $user->update($request->only(['name', 'goal', 'weight', 'height', 'age', 'gender', 'bio']));
+
         return response()->json(['message' => 'Profile updated', 'user' => $user]);
     }
 

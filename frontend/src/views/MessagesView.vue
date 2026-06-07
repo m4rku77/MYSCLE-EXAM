@@ -168,7 +168,7 @@ const newChats = computed(() => chats.value.filter((c) => !c.last_message));
                 <h1 class="text-3xl font-bold">Messages</h1>
             </div>
 
-            <div class="px-5 md:px-8 pt-4 shrink-0">
+            <div class="px-5 md:px-8 pt-4 shrink-0 max-w-2xl mx-auto w-full">
                 <div
                     class="flex bg-[#111] border border-white/5 rounded-2xl p-1 w-full md:w-fit md:min-w-64 md:mx-auto"
                 >
@@ -197,9 +197,8 @@ const newChats = computed(() => chats.value.filter((c) => !c.last_message));
                 </div>
             </div>
 
-            <div
-                class="flex-1 overflow-y-auto px-5 md:px-8 pt-4 pb-32 md:pb-8 space-y-2"
-            >
+           <div class="flex-1 overflow-y-auto pt-4 pb-32 md:pb-8">
+            <div class="max-w-2xl mx-auto px-5 md:px-8 space-y-2">
                 <div v-if="loading" class="text-gray-600 text-center py-10">
                     <i class="fas fa-spinner fa-spin mr-2"></i> Loading chats...
                 </div>
@@ -284,6 +283,7 @@ const newChats = computed(() => chats.value.filter((c) => !c.last_message));
                         ></div>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
     </div>

@@ -41,7 +41,8 @@ const deleteWorkout = async () => {
         );
         router.push('/dashboard');
     } catch (err) {
-        console.error(err);
+    console.error("Status:", err.response?.status);
+    console.error("Data:", err.response?.data);
     }
 };
 
@@ -510,6 +511,7 @@ const removeExercise = (index) => {
                                     <input
                                         v-model.number="set.reps"
                                         type="number"
+                                        min="0"
                                         placeholder="0"
                                         :disabled="!isEditing && !isStarted"
                                         @click.stop
@@ -527,6 +529,7 @@ const removeExercise = (index) => {
                                     <input
                                         v-model.number="set.weight"
                                         type="number"
+                                        min="0"
                                         placeholder="0"
                                         :disabled="!isEditing && !isStarted"
                                         @click.stop
@@ -742,6 +745,7 @@ const removeExercise = (index) => {
                             <input
                                 v-model.number="set.reps"
                                 type="number"
+                                min="0"
                                 placeholder="0"
                                 :disabled="!isEditing && !isStarted"
                                 @click.stop
@@ -757,6 +761,7 @@ const removeExercise = (index) => {
                             <input
                                 v-model.number="set.weight"
                                 type="number"
+                                min="0"
                                 placeholder="0"
                                 :disabled="!isEditing && !isStarted"
                                 @click.stop

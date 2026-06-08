@@ -19,8 +19,11 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:5173'],
-
+    'allowed_origins' => [
+        'http://localhost:5173',
+        'https://myscle-exam-amhj.vercel.app',
+    ],
+    
     'allowed_origins_patterns' => [],
 
     'allowed_headers' => ['*'],

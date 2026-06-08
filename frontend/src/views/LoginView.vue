@@ -61,7 +61,7 @@ const login = async () => {
     if (!validate()) return;
     loading.value = true;
     try {
-        const response = await axios.post("http://127.0.0.1:8000/api/login", {
+        const response = await axios.post("https://myscle-exam-production.up.railway.app/api/login", {
             email: email.value,
             password: password.value,
         });
@@ -90,7 +90,7 @@ const register = async () => {
     loading.value = true;
     try {
         const response = await axios.post(
-            "http://127.0.0.1:8000/api/register",
+            "https://myscle-exam-production.up.railway.app/api/register",
             {
                 first_name: firstName.value,
                 last_name: lastName.value,

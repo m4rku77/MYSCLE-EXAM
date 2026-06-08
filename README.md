@@ -15,7 +15,7 @@ As the project continues to develop, it is planned to evolve into a more complet
 ## 📸 Application Screenshots
 
 ### 🏠 Home View
-<img width="840" height="500" alt="image" src="https://github.com/user-attachments/assets/cbb9b4f9-f338-419f-ba11-1c315da34a9c" />
+<img width="840" height="450" alt="image" src="https://github.com/user-attachments/assets/27503ac9-1b3f-41f7-880f-26f4e2c27dd0" />
 
 
 The landing page introduces MYSCLE and provides access to authentication and core platform features.
@@ -23,7 +23,7 @@ The landing page introduces MYSCLE and provides access to authentication and cor
 ---
 
 ### 👤 User Dashboard
-<img width="840" height="500" alt="image" src="https://github.com/user-attachments/assets/8d077b30-6b60-41fc-a30c-a809ab2ad758" />
+<img width="840" height="450" alt="image" src="https://github.com/user-attachments/assets/d723961e-d01a-4e83-9123-24a099ed4e2a" />
 
 
 Users can view their workouts, training plans, and fitness progress from a centralized dashboard.
@@ -31,7 +31,7 @@ Users can view their workouts, training plans, and fitness progress from a centr
 ---
 
 ### 🏋️ Trainer View
-<img width="840" height="500" alt="image" src="https://github.com/user-attachments/assets/16151caa-a33b-4e95-a551-e309b1654e11" />
+<img width="840" height="450" alt="image" src="https://github.com/user-attachments/assets/f780833a-3af7-4ed1-922b-dde57f12ff07" />
 
 
 Trainers can create and manage workout plans, organize exercises, and oversee their clients' training programs.
@@ -39,7 +39,7 @@ Trainers can create and manage workout plans, organize exercises, and oversee th
 ---
 
 ### ⚙️ Admin View
-<img width="840" height="500" alt="image" src="https://github.com/user-attachments/assets/a82c84e4-fd62-4627-9eb8-081401f03287" />
+<img width="840" height="450" alt="image" src="https://github.com/user-attachments/assets/0f586e06-a6a3-482c-be6e-22834de5e599" />
 
 
 Administrators can manage platform data, users, and system-wide functionality.

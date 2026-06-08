@@ -9,13 +9,11 @@ WORKDIR /app
 
 COPY . .
 
-RUN useradd -ms /bin/bash sail
-
 RUN curl -sS https://getcomposer.org/installer | php -- \
     --install-dir=/usr/local/bin --filename=composer
 
 RUN composer install
 
-EXPOSE 8000
+EXPOSE 8080
 
-CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
+CMD php artisan config:clear && php artisan migrate --force && php -S 0.0.0.0:${PORT:-8080} -t public

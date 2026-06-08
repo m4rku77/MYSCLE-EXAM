@@ -44,8 +44,8 @@ const months = ["January","February","March","April","May","June","July","August
 onMounted(async () => {
     try {
         const [clientRes, statsRes] = await Promise.all([
-            axios.get(`http://localhost:8000/api/users/${clientId}`, { headers }),
-            axios.get(`http://localhost:8000/api/trainer/client/${clientId}/stats`, { headers }),
+            axios.get(`https://myscle-exam-production.up.railway.app/api/users/${clientId}`, { headers }),
+            axios.get(`https://myscle-exam-production.up.railway.app/api/trainer/client/${clientId}/stats`, { headers }),
         ]);
         client.value = clientRes.data.data ?? clientRes.data;
         logs.value = statsRes.data.data ?? statsRes.data;
@@ -249,7 +249,7 @@ const confirmDelete = (log) => {
 
 const deleteLog = async () => {
     try {
-        await axios.delete(`http://localhost:8000/api/workout-logs/${deletingLog.value.id}`, { headers });
+        await axios.delete(`https://myscle-exam-production.up.railway.app/api/workout-logs/${deletingLog.value.id}`, { headers });
         logs.value = logs.value.filter(l => l.id !== deletingLog.value.id);
         showDeleteConfirm.value = false;
         deletingLog.value = null;
@@ -263,7 +263,7 @@ const saveLog = async () => {
             sets: editingLog.value.sets,
             duration_seconds: Math.max(0, editingLog.value.duration_seconds || 0),
         });
-        const res = await axios.put(`http://localhost:8000/api/workout-logs/${editingLog.value.id}`, {
+        const res = await axios.put(`https://myscle-exam-production.up.railway.app/api/workout-logs/${editingLog.value.id}`, {
             sets: editingLog.value.sets,
             duration_seconds: Math.max(0, editingLog.value.duration_seconds || 0),
         }, { headers });

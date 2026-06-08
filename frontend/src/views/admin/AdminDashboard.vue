@@ -15,15 +15,15 @@ const headers = { Authorization: `Bearer ${token}` };
 const avatarUrl = (user) => {
     if (!user?.profile_photo) return `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name ?? "U")}&background=1a1a1a&color=7ED957`;
     if (user.profile_photo.startsWith("http")) return user.profile_photo;
-    return `http://localhost:8000/storage/${user.profile_photo}`;
+    return `https://myscle-exam-production.up.railway.app/storage/${user.profile_photo}`;
 };
 
 const fetchData = async () => {
     try {
         const [usersRes, logsRes, subsRes] = await Promise.all([
-            axios.get("http://localhost:8000/api/admin/users", { headers }),
-            axios.get("http://localhost:8000/api/admin/workout-logs", { headers }),
-            axios.get("http://localhost:8000/api/admin/subscriptions", { headers }),
+            axios.get("https://myscle-exam-production.up.railway.app/api/admin/users", { headers }),
+            axios.get("https://myscle-exam-production.up.railway.app/api/admin/workout-logs", { headers }),
+            axios.get("https://myscle-exam-production.up.railway.app/api/admin/subscriptions", { headers }),
         ]);
         users.value = usersRes.data.data ?? usersRes.data;
         workoutLogs.value = logsRes.data.data ?? logsRes.data;

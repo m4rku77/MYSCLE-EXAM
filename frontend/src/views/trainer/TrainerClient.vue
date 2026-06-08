@@ -28,7 +28,7 @@ const showRemovePopup = ref(false);
 const removeClient = async () => {
     try {
         await axios.delete(
-            `http://localhost:8000/api/trainer/client/${client.value.id}`,
+            `https://myscle-exam-production.up.railway.app/api/trainer/client/${client.value.id}`,
             { headers },
         );
         showRemovePopup.value = false;
@@ -49,12 +49,12 @@ const getImage = (path, name) => {
     if (!path)
         return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`;
     if (path.startsWith("http")) return path;
-    return `http://localhost:8000/storage/${path.replace("storage/", "")}`;
+    return `https://myscle-exam-production.up.railway.app/storage/${path.replace("storage/", "")}`;
 };
 
 const fetchClient = async () => {
     const res = await axios.get(
-        `http://localhost:8000/api/users/${route.params.id}`,
+        `https://myscle-exam-production.up.railway.app/api/users/${route.params.id}`,
         { headers },
     );
     client.value = res.data.data ?? res.data;
@@ -81,7 +81,7 @@ const formatDate = (date) => {
 const fetchNotes = async () => {
     try {
         const res = await axios.get(
-            `http://localhost:8000/api/trainer/client/${route.params.id}/notes`,
+            `https://myscle-exam-production.up.railway.app/api/trainer/client/${route.params.id}/notes`,
             { headers },
         );
         notes.value = res.data.data ?? res.data;
@@ -100,7 +100,7 @@ const saveClientInfo = async () => {
     try {
         saving.value = true;
         await axios.put(
-            `http://localhost:8000/api/trainer/client/${route.params.id}`,
+            `https://myscle-exam-production.up.railway.app/api/trainer/client/${route.params.id}`,
             {
                 weight: stats.value.weight,
                 goal: stats.value.goal,
@@ -127,7 +127,7 @@ const addNote = async () => {
     if (!newNote.value.trim()) return;
     try {
         const res = await axios.post(
-            `http://localhost:8000/api/trainer/client/${route.params.id}/notes`,
+            `https://myscle-exam-production.up.railway.app/api/trainer/client/${route.params.id}/notes`,
             { note: newNote.value },
             { headers },
         );
@@ -141,7 +141,7 @@ const addNote = async () => {
 const deleteNote = async (id) => {
     try {
         await axios.delete(
-            `http://localhost:8000/api/trainer/client/notes/${id}`,
+            `https://myscle-exam-production.up.railway.app/api/trainer/client/notes/${id}`,
             { headers },
         );
         notes.value = notes.value.filter((n) => n.id !== id);

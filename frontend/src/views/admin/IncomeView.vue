@@ -32,7 +32,7 @@ const months = [
 onMounted(async () => {
     try {
         const res = await axios.get(
-            "http://localhost:8000/api/admin/subscriptions",
+            "https://myscle-exam-production.up.railway.app/api/admin/subscriptions",
             { headers },
         );
         subscriptions.value = res.data.data ?? res.data;

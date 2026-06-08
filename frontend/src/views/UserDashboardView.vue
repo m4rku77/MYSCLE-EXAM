@@ -19,7 +19,7 @@ const toggleFavorite = async (w, e) => {
     try {
         const token = localStorage.getItem("token");
         await axios.put(
-            `http://localhost:8000/api/workouts/${w.id}`,
+            `https://myscle-exam-production.up.railway.app/api/workouts/${w.id}`,
             { is_favorite: w.is_favorite },
             { headers: { Authorization: `Bearer ${token}` } },
         );
@@ -32,7 +32,7 @@ onMounted(async () => {
     try {
         const token = localStorage.getItem("token");
         if (!token) return;
-        const res = await axios.get("http://localhost:8000/api/workouts", {
+        const res = await axios.get("https://myscle-exam-production.up.railway.app/api/workouts", {
             headers: {
                 Authorization: `Bearer ${token}`,
                 Accept: "application/json",

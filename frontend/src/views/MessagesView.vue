@@ -17,7 +17,7 @@ const getImage = (path, name) => {
     if (!path)
         return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1a1a1a&color=7ED957`;
     if (path.startsWith("http")) return path;
-    return `http://localhost:8000/storage/${path.replace("storage/", "")}`;
+    return `https://myscle-exam-production.up.railway.app/storage/${path.replace("storage/", "")}`;
 };
 
 const formatTime = (date) => {
@@ -39,7 +39,7 @@ const openChat = (id) => {
 const getLastMessage = async (userId) => {
     try {
         const res = await axios.get(
-            `http://localhost:8000/api/messages/${userId}/last`,
+            `https://myscle-exam-production.up.railway.app/api/messages/${userId}/last`,
             { headers },
         );
         if (!res.data)
@@ -67,7 +67,7 @@ const getLastMessage = async (userId) => {
 
 onMounted(async () => {
     try {
-        const meRes = await axios.get("http://localhost:8000/api/user", {
+        const meRes = await axios.get("https://myscle-exam-production.up.railway.app/api/user", {
             headers,
         });
         me.value = meRes.data;
@@ -76,7 +76,7 @@ onMounted(async () => {
 
         if (me.value.role === "trainer") {
             const clientsRes = await axios.get(
-                "http://localhost:8000/api/trainer/clients",
+                "https://myscle-exam-production.up.railway.app/api/trainer/clients",
                 { headers },
             );
             const raw = clientsRes.data.data ?? clientsRes.data;
@@ -87,13 +87,13 @@ onMounted(async () => {
             }));
         } else {
             const friendsRes = await axios.get(
-                "http://localhost:8000/api/friends",
+                "https://myscle-exam-production.up.railway.app/api/friends",
                 { headers },
             );
             contacts = friendsRes.data;
             try {
                 const trainerRes = await axios.get(
-                    "http://localhost:8000/api/my/trainer",
+                    "https://myscle-exam-production.up.railway.app/api/my/trainer",
                     { headers },
                 );
                 const trainerData = trainerRes.data?.data ?? trainerRes.data;

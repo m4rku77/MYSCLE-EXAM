@@ -36,7 +36,7 @@ const showDeleteConfirm = ref(false);
 const deleteWorkout = async () => {
     try {
         await axios.delete(
-            `http://localhost:8000/api/workouts/${workoutId}`,
+            `https://myscle-exam-production.up.railway.app/api/workouts/${workoutId}`,
             { headers },
         );
         router.push('/dashboard');
@@ -75,7 +75,7 @@ onMounted(async () => {
     }
     try {
         const res = await axios.get(
-            `http://localhost:8000/api/workouts/${workoutId}`,
+            `https://myscle-exam-production.up.railway.app/api/workouts/${workoutId}`,
             { headers },
         );
         const data = res.data.data ?? res.data;
@@ -93,7 +93,7 @@ onMounted(async () => {
             }));
         });
         const libRes = await axios.get(
-            "http://localhost:8000/api/exercise-library",
+            "https://myscle-exam-production.up.railway.app/api/exercise-library",
             { headers },
         );
         library.value = libRes.data;
@@ -111,7 +111,7 @@ const toggleFavorite = async () => {
     try {
         isFavorite.value = !isFavorite.value;
         await axios.put(
-            `http://localhost:8000/api/workouts/${workoutId}`,
+            `https://myscle-exam-production.up.railway.app/api/workouts/${workoutId}`,
             { is_favorite: isFavorite.value },
             { headers },
         );
@@ -126,7 +126,7 @@ const startWorkout = async () => {
     if (logId.value) return;
     try {
         const res = await axios.post(
-            "http://localhost:8000/api/workout-logs/start",
+            "https://myscle-exam-production.up.railway.app/api/workout-logs/start",
             { training_plan_id: workoutId },
             { headers },
         );
@@ -167,7 +167,7 @@ const finishWorkout = async () => {
             });
         });
         await axios.post(
-            `http://localhost:8000/api/workout-logs/${logId.value}/finish`,
+            `https://myscle-exam-production.up.railway.app/api/workout-logs/${logId.value}/finish`,
             { duration_seconds: seconds.value, sets },
             { headers },
         );
@@ -198,7 +198,7 @@ const selectExercise = (ex, item) => {
 const addCustomExercise = async (ex) => {
     try {
         const res = await axios.post(
-            "http://localhost:8000/api/exercise-library",
+            "https://myscle-exam-production.up.railway.app/api/exercise-library",
             { name: searchQueries.value[ex.id] },
             { headers },
         );
@@ -220,7 +220,7 @@ const saveChanges = async () => {
             }));
             if (ex.id && typeof ex.id === "number" && ex.id < 1000000000) {
                 await axios.put(
-                    `http://localhost:8000/api/exercises/${ex.id}`,
+                    `https://myscle-exam-production.up.railway.app/api/exercises/${ex.id}`,
                     {
                         name: ex.name,
                         library_id: ex.library_id,
@@ -231,7 +231,7 @@ const saveChanges = async () => {
                 );
             } else {
                 await axios.post(
-                    `http://localhost:8000/api/exercises`,
+                    `https://myscle-exam-production.up.railway.app/api/exercises`,
                     {
                         workout_id: workout.value.id,
                         name: ex.name,

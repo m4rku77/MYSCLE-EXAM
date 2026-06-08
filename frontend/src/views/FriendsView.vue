@@ -21,12 +21,12 @@ const headers = {
 const getImage = (path, name) => {
     if (!path) return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1a1a1a&color=7ED957`;
     if (path.startsWith("http")) return path;
-    return `http://localhost:8000/storage/${path}`;
+    return `https://myscle-exam-production.up.railway.app/storage/${path}`;
 };
 
 const fetchFriends = async () => {
     try {
-        const res = await axios.get("http://localhost:8000/api/friends", { headers });
+        const res = await axios.get("https://myscle-exam-production.up.railway.app/api/friends", { headers });
         let data = Array.isArray(res.data) ? res.data : res.data.data || [];
         friends.value = data.map((u) => ({
             id: u.id, name: u.name, workouts: u.workouts_count ?? 0, profile_photo: u.profile_photo,
@@ -36,7 +36,7 @@ const fetchFriends = async () => {
 
 const fetchRequests = async () => {
     try {
-        const res = await axios.get("http://localhost:8000/api/friends/requests", { headers });
+        const res = await axios.get("https://myscle-exam-production.up.railway.app/api/friends/requests", { headers });
         requests.value = Array.isArray(res.data) ? res.data : res.data.data || [];
     } catch (err) { console.error(err); }
 };
@@ -44,14 +44,14 @@ const fetchRequests = async () => {
 const searchUsers = async () => {
     if (!search.value.trim()) { users.value = []; return; }
     try {
-        const res = await axios.get(`http://localhost:8000/api/users?search=${encodeURIComponent(search.value)}`, { headers });
+        const res = await axios.get(`https://myscle-exam-production.up.railway.app/api/users?search=${encodeURIComponent(search.value)}`, { headers });
         users.value = res.data.map((u) => ({ id: u.id, name: u.name, profile_photo: u.profile_photo }));
     } catch (err) { console.error(err); }
 };
 
 const addFriend = async (id) => {
     try {
-        await axios.post("http://localhost:8000/api/friends/add", { friend_id: id }, { headers });
+        await axios.post("https://myscle-exam-production.up.railway.app/api/friends/add", { friend_id: id }, { headers });
         pendingSent.value.push(id);
         users.value = users.value.filter((u) => u.id !== id);
     } catch (err) { console.error(err.response?.data || err.message); }
@@ -59,7 +59,7 @@ const addFriend = async (id) => {
 
 const acceptRequest = async (id) => {
     try {
-        await axios.post(`http://localhost:8000/api/friends/accept/${id}`, {}, { headers });
+        await axios.post(`https://myscle-exam-production.up.railway.app/api/friends/accept/${id}`, {}, { headers });
         requests.value = requests.value.filter((r) => r.id !== id);
         await fetchFriends();
     } catch (err) { console.error(err); }
@@ -67,7 +67,7 @@ const acceptRequest = async (id) => {
 
 const declineRequest = async (id) => {
     try {
-        await axios.delete(`http://localhost:8000/api/friends/decline/${id}`, { headers });
+        await axios.delete(`https://myscle-exam-production.up.railway.app/api/friends/decline/${id}`, { headers });
         requests.value = requests.value.filter((r) => r.id !== id);
     } catch (err) { console.error(err); }
 };

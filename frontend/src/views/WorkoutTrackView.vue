@@ -41,7 +41,7 @@ onMounted(async () => {
     }
     try {
         const res = await axios.get(
-            `http://localhost:8000/api/workouts/${workoutId}`,
+            `https://myscle-exam-production.up.railway.app/api/workouts/${workoutId}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -63,7 +63,7 @@ onMounted(async () => {
             }));
         });
         const libRes = await axios.get(
-            "http://localhost:8000/api/exercise-library",
+            "https://myscle-exam-production.up.railway.app/api/exercise-library",
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -100,7 +100,7 @@ const addCustomExercise = async (ex) => {
     try {
         const token = localStorage.getItem("token");
         const res = await axios.post(
-            "http://localhost:8000/api/exercise-library",
+            "https://myscle-exam-production.up.railway.app/api/exercise-library",
             { name: searchQueries.value[ex.id] },
             { headers: { Authorization: `Bearer ${token}` } },
         );
@@ -123,7 +123,7 @@ const saveChanges = async () => {
             }));
             if (ex.id && typeof ex.id === "number" && ex.id < 1000000000) {
                 await axios.put(
-                    `http://localhost:8000/api/exercises/${ex.id}`,
+                    `https://myscle-exam-production.up.railway.app/api/exercises/${ex.id}`,
                     {
                         name: ex.name,
                         library_id: ex.library_id,
@@ -134,7 +134,7 @@ const saveChanges = async () => {
                 );
             } else {
                 await axios.post(
-                    `http://localhost:8000/api/exercises`,
+                    `https://myscle-exam-production.up.railway.app/api/exercises`,
                     {
                         workout_id: workout.value.id,
                         name: ex.name,

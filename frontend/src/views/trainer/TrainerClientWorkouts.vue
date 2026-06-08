@@ -22,11 +22,11 @@ const creating = ref(false);
 onMounted(async () => {
     try {
         const [clientRes, workoutsRes] = await Promise.all([
-            axios.get(`http://localhost:8000/api/users/${clientId}`, {
+            axios.get(`https://myscle-exam-production.up.railway.app/api/users/${clientId}`, {
                 headers,
             }),
             axios.get(
-                `http://localhost:8000/api/trainer/client/${clientId}/workouts`,
+                `https://myscle-exam-production.up.railway.app/api/trainer/client/${clientId}/workouts`,
                 { headers },
             ),
         ]);
@@ -48,7 +48,7 @@ const createWorkout = async () => {
     creating.value = true;
     try {
         const res = await axios.post(
-            `http://localhost:8000/api/trainer/client/${clientId}/workouts`,
+            `https://myscle-exam-production.up.railway.app/api/trainer/client/${clientId}/workouts`,
             { name: newWorkoutName.value },
             { headers },
         );

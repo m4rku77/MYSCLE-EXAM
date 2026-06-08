@@ -14,7 +14,7 @@ const getImage = (path, name) => {
     if (!path)
         return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1a1a1a&color=7ED957`;
     if (path.startsWith("http")) return path;
-    return `http://localhost:8000/storage/${path.replace("storage/", "")}`;
+    return `https://myscle-exam-production.up.railway.app/storage/${path.replace("storage/", "")}`;
 };
 
 const formatDate = (date) => {
@@ -29,7 +29,7 @@ const formatDate = (date) => {
 onMounted(async () => {
     try {
         const res = await axios.get(
-            "http://localhost:8000/api/admin/subscriptions",
+            "https://myscle-exam-production.up.railway.app/api/admin/subscriptions",
             { headers },
         );
         subscriptions.value = res.data.data ?? res.data;

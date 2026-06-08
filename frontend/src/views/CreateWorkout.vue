@@ -19,7 +19,7 @@ onMounted(async () => {
     try {
         const token = localStorage.getItem("token");
         const res = await axios.get(
-            "http://localhost:8000/api/exercise-library",
+            "https://myscle-exam-production.up.railway.app/api/exercise-library",
             {
                 headers: { Authorization: `Bearer ${token}` },
             },
@@ -72,7 +72,7 @@ const addCustomExercise = async (ex) => {
     try {
         const token = localStorage.getItem("token");
         const res = await axios.post(
-            "http://localhost:8000/api/exercise-library",
+            "https://myscle-exam-production.up.railway.app/api/exercise-library",
             { name: searchQueries.value[ex.id] },
             { headers: { Authorization: `Bearer ${token}` } },
         );
@@ -95,7 +95,7 @@ const saveWorkout = async () => {
         loading.value = true;
         const token = localStorage.getItem("token");
         await axios.post(
-            "http://localhost:8000/api/workouts",
+            "https://myscle-exam-production.up.railway.app/api/workouts",
             {
                 name: name.value,
                 exercises: exercises.value.map((ex) => ({

@@ -30,7 +30,7 @@ onMounted(async () => {
     });
     setTimeout(() => { visible.value = true; }, 100);
     try {
-        const res = await axios.get("http://127.0.0.1:8000/api/stats");
+        const res = await axios.get("https://myscle-exam-production.up.railway.app/api/stats");
         stats.value = res.data;
     } catch (e) {}
     finally { loading.value = false; }

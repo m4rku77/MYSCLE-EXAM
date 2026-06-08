@@ -43,7 +43,7 @@ const getImage = (path, name) => {
     if (!path)
         return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1a1a1a&color=7ED957`;
     if (path.startsWith("http")) return path;
-    return `http://localhost:8000/storage/${path.replace("storage/", "")}`;
+    return `https://myscle-exam-production.up.railway.app/storage/${path.replace("storage/", "")}`;
 };
 
 const formatTime = (date) => {
@@ -87,7 +87,7 @@ const loadMessages = async () => {
     try {
         const token = localStorage.getItem("token");
         const res = await axios.get(
-            `http://localhost:8000/api/messages/${userId}`,
+            `https://myscle-exam-production.up.railway.app/api/messages/${userId}`,
             {
                 headers: { Authorization: `Bearer ${token}` },
             },
@@ -110,7 +110,7 @@ const sendMessage = async () => {
     try {
         const token = localStorage.getItem("token");
         const res = await axios.post(
-            "http://localhost:8000/api/messages",
+            "https://myscle-exam-production.up.railway.app/api/messages",
             { receiver_id: userId, message: newMessage.value },
             { headers: { Authorization: `Bearer ${token}` } },
         );
@@ -131,12 +131,12 @@ const sendMessage = async () => {
 onMounted(async () => {
     try {
         const token = localStorage.getItem("token");
-        const meRes = await axios.get("http://localhost:8000/api/user", {
+        const meRes = await axios.get("https://myscle-exam-production.up.railway.app/api/user", {
             headers: { Authorization: `Bearer ${token}` },
         });
         me.value = meRes.data;
         const res = await axios.get(
-            `http://localhost:8000/api/users/${userId}`,
+            `https://myscle-exam-production.up.railway.app/api/users/${userId}`,
             { headers: { Authorization: `Bearer ${token}` } },
         );
         user.value = res.data;

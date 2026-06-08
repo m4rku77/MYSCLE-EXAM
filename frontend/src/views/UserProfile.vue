@@ -11,13 +11,13 @@ const fetchFriendStatus = async () => {
         const token = localStorage.getItem("token");
         const headers = { Authorization: `Bearer ${token}` };
 
-        const meRes = await axios.get("http://localhost:8000/api/me", {
+        const meRes = await axios.get("https://myscle-exam-production.up.railway.app/api/me", {
             headers,
         });
         currentUserId.value = meRes.data.id;
 
         const friendsRes = await axios.get(
-            "http://localhost:8000/api/friends",
+            "https://myscle-exam-production.up.railway.app/api/friends",
             { headers },
         );
         const friends = friendsRes.data;
@@ -26,7 +26,7 @@ const fetchFriendStatus = async () => {
             return;
         }
 
-        const sentRes = await axios.get("http://localhost:8000/api/friends", {
+        const sentRes = await axios.get("https://myscle-exam-production.up.railway.app/api/friends", {
             headers,
         });
     } catch (err) {
@@ -38,7 +38,7 @@ const addFriend = async () => {
     try {
         const token = localStorage.getItem("token");
         await axios.post(
-            "http://localhost:8000/api/friends/add",
+            "https://myscle-exam-production.up.railway.app/api/friends/add",
             { friend_id: route.params.id },
             { headers: { Authorization: `Bearer ${token}` } },
         );
@@ -61,7 +61,7 @@ const fetchUser = async () => {
         const token = localStorage.getItem("token");
 
         const res = await axios.get(
-            `http://localhost:8000/api/users/${route.params.id}`,
+            `https://myscle-exam-production.up.railway.app/api/users/${route.params.id}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,

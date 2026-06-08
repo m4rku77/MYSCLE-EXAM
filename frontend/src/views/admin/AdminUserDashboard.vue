@@ -33,7 +33,7 @@ const headers = { Authorization: `Bearer ${token}` };
 
 const fetchUsers = async () => {
     try {
-        const res = await axios.get("http://localhost:8000/api/admin/users", { headers });
+        const res = await axios.get("https://myscle-exam-production.up.railway.app/api/admin/users", { headers });
         users.value = res.data;
     } catch (err) {
         console.error(err);
@@ -78,7 +78,7 @@ const updateUser = async () => {
         if (selectedFile.value) formData.append("profile_photo", selectedFile.value);
         formData.append("_method", "PUT");
 
-        const res = await axios.post(`http://localhost:8000/api/admin/users/${editUser.value.id}`, formData, { headers });
+        const res = await axios.post(`https://myscle-exam-production.up.railway.app/api/admin/users/${editUser.value.id}`, formData, { headers });
         const index = users.value.findIndex((u) => u.id === editUser.value.id);
         if (index !== -1) users.value[index] = res.data;
         showEditModal.value = false;
@@ -101,7 +101,7 @@ const openDeleteModal = (id) => {
 
 const confirmDelete = async () => {
     try {
-        await axios.delete(`http://localhost:8000/api/admin/users/${selectedUserId.value}`, { headers });
+        await axios.delete(`https://myscle-exam-production.up.railway.app/api/admin/users/${selectedUserId.value}`, { headers });
         users.value = users.value.filter((u) => u.id !== selectedUserId.value);
         showModal.value = false;
         toastMessage.value = "User deleted";
@@ -127,7 +127,7 @@ const filteredUsers = computed(() => {
 const avatarUrl = (user) => {
     if (!user.profile_photo) return `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=1a1a1a&color=7ED957`;
     if (user.profile_photo.startsWith("http")) return user.profile_photo;
-    return `http://localhost:8000/storage/${user.profile_photo}`;
+    return `https://myscle-exam-production.up.railway.app/storage/${user.profile_photo}`;
 };
 
 onMounted(fetchUsers);

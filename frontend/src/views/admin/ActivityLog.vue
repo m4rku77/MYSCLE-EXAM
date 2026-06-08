@@ -19,7 +19,7 @@ const getImage = (path, name) => {
     const safeName = name ?? "Unknown";
     if (!path) return `https://ui-avatars.com/api/?name=${encodeURIComponent(safeName)}&background=1a1a1a&color=7ED957`;
     if (path.startsWith("http")) return path;
-    return `http://localhost:8000/storage/${path.replace("storage/", "")}`;
+    return `https://myscle-exam-production.up.railway.app/storage/${path.replace("storage/", "")}`;
 };
 
 const formatDate = (date) => {
@@ -73,12 +73,12 @@ const fetchActivity = async (silent = false) => {
     else refreshing.value = true;
     try {
         const [usersRes, workoutsRes, subscriptionsRes, plansRes, clientsRes, friendsRes] = await Promise.all([
-            axios.get("http://localhost:8000/api/admin/users", { headers }),
-            axios.get("http://localhost:8000/api/admin/workout-logs", { headers }),
-            axios.get("http://localhost:8000/api/admin/subscriptions", { headers }),
-            axios.get("http://localhost:8000/api/admin/training-plans", { headers }),
-            axios.get("http://localhost:8000/api/admin/trainer-clients", { headers }),
-            axios.get("http://localhost:8000/api/admin/friends", { headers }),
+            axios.get("https://myscle-exam-production.up.railway.app/api/admin/users", { headers }),
+            axios.get("https://myscle-exam-production.up.railway.app/api/admin/workout-logs", { headers }),
+            axios.get("https://myscle-exam-production.up.railway.app/api/admin/subscriptions", { headers }),
+            axios.get("https://myscle-exam-production.up.railway.app/api/admin/training-plans", { headers }),
+            axios.get("https://myscle-exam-production.up.railway.app/api/admin/trainer-clients", { headers }),
+            axios.get("https://myscle-exam-production.up.railway.app/api/admin/friends", { headers }),
         ]);
 
         const users = (usersRes.data.data ?? usersRes.data).map((u) => ({

@@ -12,7 +12,7 @@ const hadTrial = ref(false);
 onMounted(async () => {
     try {
         const res = await axios.get(
-            "http://localhost:8000/api/my/subscription",
+            "https://myscle-exam-production.up.railway.app/api/my/subscription",
             {
                 headers: { Authorization: `Bearer ${token}` },
             },
@@ -29,7 +29,7 @@ const checkout = async () => {
     checkoutLoading.value = true;
     try {
         const res = await axios.post(
-            "http://localhost:8000/api/stripe/checkout",
+            "https://myscle-exam-production.up.railway.app/api/stripe/checkout",
             {},
             { headers: { Authorization: `Bearer ${token}` } },
         );

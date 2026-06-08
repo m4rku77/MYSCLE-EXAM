@@ -13,7 +13,7 @@ const fetchUser = async () => {
     try {
         const token = localStorage.getItem("token");
 
-        const res = await axios.get("http://localhost:8000/api/me", {
+        const res = await axios.get("https://myscle-exam-production.up.railway.app/api/me", {
             headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -125,7 +125,7 @@ const isActive = (type) => {
             <img
                 :src="
                     user?.profile_photo
-                        ? 'http://localhost:8000/storage/' + user.profile_photo
+                        ? 'https://myscle-exam-production.up.railway.app/storage/' + user.profile_photo
                         : `https://ui-avatars.com/api/?name=${user?.name || 'User'}`
                 "
                 class="w-6 h-6 rounded-full object-cover"

@@ -7,7 +7,7 @@ const router = useRouter();
 
 onMounted(async () => {
     const token = localStorage.getItem("token");
-    const res = await axios.get("http://localhost:8000/api/user", {
+    const res = await axios.get("https://myscle-exam-production.up.railway.app/api/user", {
         headers: { Authorization: `Bearer ${token}` },
     });
     localStorage.setItem("role", res.data.role);

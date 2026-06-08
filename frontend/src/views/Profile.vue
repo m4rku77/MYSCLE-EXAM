@@ -69,7 +69,7 @@ const setUnit = (value) => {
 
 const fetchProfile = async () => {
     try {
-        const res = await axios.get("http://localhost:8000/api/me", {
+        const res = await axios.get("https://myscle-exam-production.up.railway.app/api/me", {
             headers,
         });
         user.value = res.data;
@@ -103,7 +103,7 @@ const fetchProfile = async () => {
 const fetchTrainerRequests = async () => {
     try {
         const res = await axios.get(
-            "http://localhost:8000/api/my/trainer-requests",
+            "https://myscle-exam-production.up.railway.app/api/my/trainer-requests",
             { headers },
         );
         trainerRequests.value = res.data;
@@ -115,7 +115,7 @@ const fetchTrainerRequests = async () => {
 const fetchFriendRequests = async () => {
     try {
         const res = await axios.get(
-            "http://localhost:8000/api/friends/requests",
+            "https://myscle-exam-production.up.railway.app/api/friends/requests",
             { headers },
         );
         friendRequests.value = Array.isArray(res.data)
@@ -128,7 +128,7 @@ const fetchFriendRequests = async () => {
 
 const saveProfile = async () => {
     try {
-        await axios.put("http://localhost:8000/api/me", {
+        await axios.put("https://myscle-exam-production.up.railway.app/api/me", {
             name: name.value,
             email: email.value,
             goal: goal.value || null,
@@ -153,7 +153,7 @@ const updatePassword = async () => {
     }
     try {
         await axios.put(
-        "http://localhost:8000/api/me/password",
+        "https://myscle-exam-production.up.railway.app/api/me/password",
         {
             current_password: currentPassword.value,
             new_password: newPassword.value,
@@ -176,7 +176,7 @@ const handleFile = async (e) => {
     try {
         const formData = new FormData();
         formData.append("photo", file.value);
-        const res = await axios.post("http://localhost:8000/api/me/photo", formData, { headers });
+        const res = await axios.post("https://myscle-exam-production.up.railway.app/api/me/photo", formData, { headers });
         user.value.profile_photo = res.data.photo;
         preview.value = null;
         file.value = null;
@@ -189,21 +189,21 @@ const handleFile = async (e) => {
 
 const acceptFriend = async (id) => {
     await axios.post(
-        `http://localhost:8000/api/friends/accept/${id}`,
+        `https://myscle-exam-production.up.railway.app/api/friends/accept/${id}`,
         {},
         { headers },
     );
     fetchFriendRequests();
 };
 const declineFriend = async (id) => {
-    await axios.delete(`http://localhost:8000/api/friends/decline/${id}`, {
+    await axios.delete(`https://myscle-exam-production.up.railway.app/api/friends/decline/${id}`, {
         headers,
     });
     fetchFriendRequests();
 };
 const acceptTrainer = async (id) => {
     await axios.post(
-        `http://localhost:8000/api/my/trainer-requests/accept/${id}`,
+        `https://myscle-exam-production.up.railway.app/api/my/trainer-requests/accept/${id}`,
         {},
         { headers },
     );
@@ -211,7 +211,7 @@ const acceptTrainer = async (id) => {
 };
 const declineTrainer = async (id) => {
     await axios.delete(
-        `http://localhost:8000/api/my/trainer-requests/decline/${id}`,
+        `https://myscle-exam-production.up.railway.app/api/my/trainer-requests/decline/${id}`,
         { headers },
     );
     fetchTrainerRequests();
@@ -226,7 +226,7 @@ const subscription = ref(null);
 const fetchSubscription = async () => {
     try {
         const res = await axios.get(
-            "http://localhost:8000/api/my/subscription",
+            "https://myscle-exam-production.up.railway.app/api/my/subscription",
             { headers },
         );
         subscription.value = res.data;
@@ -237,7 +237,7 @@ const showCancelPopup = ref(false);
 
 const cancelSubscription = async () => {
     try {
-        await axios.delete("http://localhost:8000/api/my/subscription", { headers });
+        await axios.delete("https://myscle-exam-production.up.railway.app/api/my/subscription", { headers });
         subscription.value = null;
         user.value.role = 'user';
         localStorage.setItem('role', 'user');
@@ -377,7 +377,7 @@ onMounted(() => {
                                     preview
                                         ? preview
                                         : user?.profile_photo
-                                          ? 'http://localhost:8000/storage/' +
+                                          ? 'https://myscle-exam-production.up.railway.app/storage/' +
                                             user.profile_photo
                                           : `https://ui-avatars.com/api/?name=${user?.name}&background=1a1a1a&color=7ED957`
                                 "
@@ -464,7 +464,7 @@ onMounted(() => {
                             <img
                                 :src="
                                     req.profile_photo
-                                        ? 'http://localhost:8000/storage/' +
+                                        ? 'https://myscle-exam-production.up.railway.app/storage/' +
                                           req.profile_photo
                                         : `https://ui-avatars.com/api/?name=${req.name}&background=1a1a1a&color=7ED957`
                                 "
@@ -512,7 +512,7 @@ onMounted(() => {
                             <img
                                 :src="
                                     trainer.profile_photo
-                                        ? 'http://localhost:8000/storage/' +
+                                        ? 'https://myscle-exam-production.up.railway.app/storage/' +
                                           trainer.profile_photo
                                         : `https://ui-avatars.com/api/?name=${trainer.name}&background=1a1a1a&color=7ED957`
                                 "
@@ -774,7 +774,7 @@ onMounted(() => {
                                 <img
                                     :src="
                                         req.profile_photo
-                                            ? 'http://localhost:8000/storage/' +
+                                            ? 'https://myscle-exam-production.up.railway.app/storage/' +
                                               req.profile_photo
                                             : `https://ui-avatars.com/api/?name=${req.name}&background=1a1a1a&color=7ED957`
                                     "
@@ -821,7 +821,7 @@ onMounted(() => {
                                 <img
                                     :src="
                                         trainer.profile_photo
-                                            ? 'http://localhost:8000/storage/' +
+                                            ? 'https://myscle-exam-production.up.railway.app/storage/' +
                                               trainer.profile_photo
                                             : `https://ui-avatars.com/api/?name=${trainer.name}&background=1a1a1a&color=7ED957`
                                     "
@@ -864,7 +864,7 @@ onMounted(() => {
                                             preview
                                                 ? preview
                                                 : user?.profile_photo
-                                                  ? 'http://localhost:8000/storage/' +
+                                                  ? 'https://myscle-exam-production.up.railway.app/storage/' +
                                                     user.profile_photo
                                                   : `https://ui-avatars.com/api/?name=${user?.name}&background=1a1a1a&color=7ED957`
                                         "

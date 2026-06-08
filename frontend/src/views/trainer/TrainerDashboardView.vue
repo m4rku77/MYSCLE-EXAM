@@ -18,15 +18,15 @@ const filterTab = ref("all");
 const getImage = (path, name) => {
     if (!path) return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1a1a1a&color=7ED957`;
     if (path.startsWith("http")) return path;
-    return `http://localhost:8000/storage/${path.replace("storage/", "")}`;
+    return `https://myscle-exam-production.up.railway.app/storage/${path.replace("storage/", "")}`;
 };
 
 onMounted(async () => {
     try {
         const token = localStorage.getItem("token");
-        const usersRes = await axios.get("http://localhost:8000/api/trainer/users", { headers: { Authorization: `Bearer ${token}` } });
+        const usersRes = await axios.get("https://myscle-exam-production.up.railway.app/api/trainer/users", { headers: { Authorization: `Bearer ${token}` } });
         users.value = usersRes.data.data ?? usersRes.data;
-        const clientsRes = await axios.get("http://localhost:8000/api/trainer/clients-all", { headers: { Authorization: `Bearer ${token}` } });
+        const clientsRes = await axios.get("https://myscle-exam-production.up.railway.app/api/trainer/clients-all", { headers: { Authorization: `Bearer ${token}` } });
         clients.value = clientsRes.data.data ?? clientsRes.data;
     } catch (err) {
         console.error(err);
@@ -62,7 +62,7 @@ const filteredUsers = computed(() => {
 const addClient = async (id) => {
     try {
         const token = localStorage.getItem("token");
-        await axios.post(`http://localhost:8000/api/trainer/add-client/${id}`, {}, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.post(`https://myscle-exam-production.up.railway.app/api/trainer/add-client/${id}`, {}, { headers: { Authorization: `Bearer ${token}` } });
         const addedUser = users.value.find((u) => u.id === id);
         if (addedUser) clients.value.push({ ...addedUser, status: "pending" });
         showAddModal.value = false;

@@ -1,5 +1,7 @@
 # 💪 MYSCLE – Training & Fitness App
 
+https://myscle-exam-amhj.vercel.app/
+
 MYSCLE is a web application designed to help users plan their workouts, stay consistent, and improve their fitness over time.
 
 The platform aims to provide a simple and intuitive environment where individuals can create and manage their own training routines, while trainers can organize, structure, and oversee workout plans for their clients.

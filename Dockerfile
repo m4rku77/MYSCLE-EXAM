@@ -16,4 +16,4 @@ RUN composer install
 
 EXPOSE 8080
 
-CMD php artisan config:clear && php artisan migrate --force && php -S 0.0.0.0:${PORT:-8080} -t public
+CMD ["sh", "-c", "php artisan config:clear && php artisan migrate --force && php artisan storage:link && php -S 0.0.0.0:${PORT:-8080} -t public"]

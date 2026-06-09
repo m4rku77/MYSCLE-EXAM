@@ -43,7 +43,7 @@ const months = ["January","February","March","April","May","June","July","August
 
 onMounted(async () => {
     try {
-        const res = await axios.get("https://myscle-exam-production.up.railway.app/api/workout-logs", { headers });
+        const res = await axios.get("http://localhost:8000/api/workout-logs", { headers });
         logs.value = res.data.data ?? res.data;
         if (exerciseList.value.length) {
             selectedExercise.value = exerciseList.value[0];
@@ -246,7 +246,7 @@ const confirmDelete = (log) => {
 
 const deleteLog = async () => {
     try {
-        await axios.delete(`https://myscle-exam-production.up.railway.app/api/workout-logs/${deletingLog.value.id}`, { headers });
+        await axios.delete(`http://localhost:8000/api/workout-logs/${deletingLog.value.id}`, { headers });
         logs.value = logs.value.filter(l => l.id !== deletingLog.value.id);
         showDeleteConfirm.value = false;
         deletingLog.value = null;
@@ -256,15 +256,15 @@ const deleteLog = async () => {
 const saveLog = async () => {
     try {
         savingLog.value = true;
-        await axios.put(`https://myscle-exam-production.up.railway.app/api/workout-logs/${editingLog.value.id}`, {
+        await axios.put(`http://localhost:8000/api/workout-logs/${editingLog.value.id}`, {
             sets: editingLog.value.sets,
-            duration_seconds: Math.max(0, editingLog.value.duration_seconds || 0),
+            duration_seconds: editingLog.value.duration_seconds,
         }, { headers });
         const index = logs.value.findIndex(l => l.id === editingLog.value.id);
         if (index !== -1) logs.value[index] = {
             ...logs.value[index],
             sets: editingLog.value.sets,
-            duration_seconds: Math.max(0, editingLog.value.duration_seconds || 0),
+            duration_seconds: editingLog.value.duration_seconds,
         };
         showEditModal.value = false;
     } catch (err) {
@@ -531,6 +531,7 @@ watch(activeTab, async (val) => {
         </div>
     </div>
 
+    <!-- Edit Log Modal -->
     <div v-if="showEditModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 px-5" @click.self="showEditModal = false">
         <div class="bg-[#111] border border-white/10 rounded-3xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden">
             <div class="p-6 border-b border-white/5 flex items-center justify-between shrink-0">
@@ -547,8 +548,8 @@ watch(activeTab, async (val) => {
                         <p class="text-xs text-gray-600 mt-0.5">{{ formatDuration(editingLog?.duration_seconds) }} current</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <input v-model="editDurationMinutes" type="number" placeholder="0" min="0"
-                        class="bg-[#111] border border-white/10 rounded-xl px-3 py-1.5 text-sm text-center outline-none focus:border-[#7ED957] transition-all text-white w-24" />
+                        <input v-model="editDurationMinutes" type="number" placeholder="0"
+                            class="bg-[#111] border border-white/10 rounded-xl px-3 py-1.5 text-sm text-center outline-none focus:border-[#7ED957] transition-all text-white w-24" />
                         <span class="text-xs text-gray-500">min</span>
                     </div>
                 </div>
@@ -560,12 +561,8 @@ watch(activeTab, async (val) => {
                     </div>
                     <div v-for="(set, i) in editingLog.sets" :key="i" class="grid grid-cols-4 gap-2 items-center bg-[#0a0a0a] border border-white/5 rounded-2xl px-4 py-3">
                         <p class="text-sm font-medium col-span-2 truncate text-gray-300">{{ set.exercise_name }}</p>
-                        <input v-model="set.reps" type="number" min="0"
-                            @input="set.reps = Math.max(0, Number(set.reps))"
-                            class="bg-[#111] border border-white/10 rounded-xl px-2 py-1.5 text-sm text-center outline-none focus:border-[#7ED957] transition-all text-white" />
-                        <input v-model="set.weight" type="number" min="0"
-                            @input="set.weight = Math.max(0, Number(set.weight))"
-                            class="bg-[#111] border border-white/10 rounded-xl px-2 py-1.5 text-sm text-center outline-none focus:border-[#7ED957] transition-all text-white" />
+                        <input v-model="set.reps" type="number" class="bg-[#111] border border-white/10 rounded-xl px-2 py-1.5 text-sm text-center outline-none focus:border-[#7ED957] transition-all text-white" />
+                        <input v-model="set.weight" type="number" class="bg-[#111] border border-white/10 rounded-xl px-2 py-1.5 text-sm text-center outline-none focus:border-[#7ED957] transition-all text-white" />
                     </div>
                     <div v-if="!editingLog.sets?.length" class="text-center text-gray-600 py-6 text-sm">No sets recorded</div>
                 </div>
@@ -579,6 +576,7 @@ watch(activeTab, async (val) => {
         </div>
     </div>
 
+    <!-- Delete confirm -->
     <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 px-5" @click.self="showDeleteConfirm = false">
         <div class="bg-[#111] border border-red-500/20 rounded-3xl p-8 w-full max-w-sm text-center">
             <div class="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -595,6 +593,7 @@ watch(activeTab, async (val) => {
         </div>
     </div>
 
+    <!-- Day Modal -->
     <div v-if="showDayModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-5" @click.self="showDayModal = false">
         <div class="bg-[#111] border border-white/10 w-full max-w-md rounded-2xl p-6">
             <div class="flex justify-between items-center mb-4">

@@ -176,14 +176,24 @@ const handleFile = async (e) => {
     try {
         const formData = new FormData();
         formData.append("photo", file.value);
-        const res = await axios.post("https://myscle-exam-production.up.railway.app/api/me/photo", formData, { headers });
+        const res = await axios.post(
+            "https://myscle-exam-production.up.railway.app/api/me/photo", 
+            formData, 
+            { 
+                headers: {
+                    ...headers,
+                    'Content-Type': 'multipart/form-data'
+                }
+            }
+        );
         user.value.profile_photo = res.data.photo;
         preview.value = null;
         file.value = null;
         success.value = "Photo updated";
         setTimeout(() => (success.value = ""), 3000);
     } catch (err) {
-        console.error(err.response?.data);
+        console.error("Photo error:", err.response?.data);
+        console.error("Status:", err.response?.status);
     }
 };
 

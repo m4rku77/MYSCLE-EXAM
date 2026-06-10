@@ -80,8 +80,8 @@ class SubscriptionLogicRepository
             ]],
             'mode'              => 'subscription',
             'subscription_data' => ['trial_period_days' => 30],
-            'success_url'       => 'http://localhost:5173/payment/success',
-            'cancel_url'        => 'http://localhost:5173/payment/cancel',
+            'success_url' => 'https://myscle-exam-amhj.vercel.app/payment/success',
+            'cancel_url'  => 'https://myscle-exam-amhj.vercel.app/payment/cancel',
             'metadata'          => ['user_id' => $userId],
         ]);
 

@@ -43,7 +43,7 @@ const months = ["January","February","March","April","May","June","July","August
 
 onMounted(async () => {
     try {
-        const res = await axios.get("http://localhost:8000/api/workout-logs", { headers });
+        const res = await axios.get("https://myscle-exam-production.up.railway.app/api/workout-logs", { headers });
         logs.value = res.data.data ?? res.data;
         if (exerciseList.value.length) {
             selectedExercise.value = exerciseList.value[0];
@@ -246,7 +246,7 @@ const confirmDelete = (log) => {
 
 const deleteLog = async () => {
     try {
-        await axios.delete(`http://localhost:8000/api/workout-logs/${deletingLog.value.id}`, { headers });
+        await axios.delete(`https://myscle-exam-production.up.railway.app/api/workout-logs/${deletingLog.value.id}`, { headers });
         logs.value = logs.value.filter(l => l.id !== deletingLog.value.id);
         showDeleteConfirm.value = false;
         deletingLog.value = null;
@@ -256,7 +256,7 @@ const deleteLog = async () => {
 const saveLog = async () => {
     try {
         savingLog.value = true;
-        await axios.put(`http://localhost:8000/api/workout-logs/${editingLog.value.id}`, {
+        await axios.put(`https://myscle-exam-production.up.railway.app/api/workout-logs/${editingLog.value.id}`, {
             sets: editingLog.value.sets,
             duration_seconds: editingLog.value.duration_seconds,
         }, { headers });

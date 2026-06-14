@@ -46,6 +46,13 @@ Administrators can manage platform data, users, and system-wide functionality.
 
 ---
 
+### 📱 Mobile Views
+<img width="195" height="422" alt="image" src="https://github.com/user-attachments/assets/562b854b-a3d6-4c2b-a61b-0a3faba099cc" />
+<img width="195" height="422" alt="image" src="https://github.com/user-attachments/assets/b0db9482-0754-482e-b081-ebac657b1736" />
+<img width="195" height="422" alt="image" src="https://github.com/user-attachments/assets/bda36eb7-5881-499c-a493-3e73ccd71b21" />
+<img width="195" height="422" alt="image" src="https://github.com/user-attachments/assets/05a12f3c-fb63-43ea-ae65-93ca7545fe9a" />
+
+
 ## 🚀 Vision
 
 The goal of MYSCLE is to become a useful everyday tool for:

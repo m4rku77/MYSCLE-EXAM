@@ -22,7 +22,8 @@ const saving = ref(false);
 const finishing = ref(false);
 const showSuccess = ref(false);
 const showFinished = ref(false);
-const showDeleteConfirm = ref(false);
+const showDontSaveConfirm = ref(false);
+const showWorkoutDeleteConfirm = ref(false);
 
 const unit = ref(localStorage.getItem("unit") || "kg");
 
@@ -197,7 +198,6 @@ const saveWorkout = async () => {
         <template v-else-if="workout">
 
             <div class="hidden md:flex h-full">
-
                 <aside class="w-64 bg-[#0f0f0f] border-r border-white/5 flex flex-col px-6 py-8 fixed h-full z-40">
                     <div class="flex items-center gap-3 mb-12">
                         <img src="/logo.png" class="h-8" />
@@ -248,6 +248,10 @@ const saveWorkout = async () => {
                             <span v-if="isStarted" class="font-mono text-xl font-bold text-[#7ED957] bg-[#7ED957]/10 border border-[#7ED957]/20 px-4 py-2 rounded-xl">
                                 {{ formatTime(seconds) }}
                             </span>
+                            <button v-if="isEditing" @click="showWorkoutDeleteConfirm = true"
+                                class="px-4 py-2.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl font-semibold text-sm hover:bg-red-500/20 transition-all">
+                                Delete
+                            </button>
                             <button v-if="!isEditing" @click="isEditing = true"
                                 class="px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl font-semibold text-sm hover:bg-white/10 transition-all">
                                 Edit
@@ -289,9 +293,9 @@ const saveWorkout = async () => {
                                         :class="isStarted ? set.done ? 'bg-[#7ED957]/10 border border-[#7ED957]/20 cursor-pointer' : 'bg-[#0a0a0a] border border-white/5 cursor-pointer hover:border-white/10' : 'bg-[#0a0a0a]'"
                                         @click="isStarted ? toggleSet(set) : null">
                                         <span class="col-span-1 text-sm font-semibold" :class="set.done ? 'text-[#7ED957]' : 'text-gray-600'">{{ setIndex + 1 }}</span>
-                                        <input v-model.number="set.reps" type="number" min="0"  placeholder="0" :disabled="!isEditing && !isStarted" @click.stop class="col-span-4 bg-transparent outline-none text-center text-sm font-medium" :class="set.done ? 'text-[#7ED957]' : 'text-white'" />
+                                        <input v-model.number="set.reps" type="number" min="0" placeholder="0" :disabled="!isEditing && !isStarted" @click.stop class="col-span-4 bg-transparent outline-none text-center text-sm font-medium" :class="set.done ? 'text-[#7ED957]' : 'text-white'" />
                                         <span class="col-span-1 text-gray-700 text-xs text-center">×</span>
-                                        <input v-model.number="set.weight" type="number" min="0"  placeholder="0" :disabled="!isEditing && !isStarted" @click.stop class="col-span-4 bg-transparent outline-none text-center text-sm font-medium" :class="set.done ? 'text-[#7ED957]' : 'text-white'" />
+                                        <input v-model.number="set.weight" type="number" min="0" placeholder="0" :disabled="!isEditing && !isStarted" @click.stop class="col-span-4 bg-transparent outline-none text-center text-sm font-medium" :class="set.done ? 'text-[#7ED957]' : 'text-white'" />
                                         <div class="col-span-2 flex justify-end items-center gap-2">
                                             <i v-if="isStarted" class="fas fa-check text-xs" :class="set.done ? 'text-[#7ED957]' : 'text-gray-800'"></i>
                                             <button v-if="isEditing" @click.stop="removeSet(ex, setIndex)" class="text-red-500 text-xs">✕</button>
@@ -321,8 +325,11 @@ const saveWorkout = async () => {
                     <div class="flex items-center justify-between mb-4">
                         <button @click="router.back()" class="w-10 h-10 flex items-center justify-center bg-black/15 rounded-xl text-black text-lg font-bold">←</button>
                         <span v-if="isStarted" class="text-2xl font-mono font-bold tracking-widest">{{ formatTime(seconds) }}</span>
-                        <button v-if="!isEditing" @click="isEditing = true" class="bg-black/15 text-black px-4 py-2 rounded-xl text-sm font-bold">Edit</button>
-                        <button v-else @click="saveWorkout" :disabled="saving" class="bg-black text-[#7ED957] px-4 py-2 rounded-xl text-sm font-bold">{{ saving ? "Saving..." : "Save" }}</button>
+                        <div class="flex gap-2">
+                            <button v-if="isEditing" @click="showWorkoutDeleteConfirm = true" class="bg-red-500/20 text-red-600 px-3 py-2 rounded-xl text-sm font-bold">Delete</button>
+                            <button v-if="!isEditing" @click="isEditing = true" class="bg-black/15 text-black px-4 py-2 rounded-xl text-sm font-bold">Edit</button>
+                            <button v-else @click="saveWorkout" :disabled="saving" class="bg-black text-[#7ED957] px-4 py-2 rounded-xl text-sm font-bold">{{ saving ? "Saving..." : "Save" }}</button>
+                        </div>
                     </div>
                     <h1 class="text-3xl font-black tracking-tight">{{ workout.name }}</h1>
                     <p class="text-black/60 text-sm mt-1">{{ exercises.length }} exercises</p>
@@ -357,7 +364,7 @@ const saveWorkout = async () => {
                                 :class="isStarted ? set.done ? 'bg-[#7ED957]/15 border border-[#7ED957]/30 cursor-pointer' : 'bg-[#0a0a0a] border border-white/5 cursor-pointer' : 'bg-[#0a0a0a]'"
                                 @click="isStarted ? toggleSet(set) : null">
                                 <span class="col-span-1 text-sm" :class="set.done ? 'text-[#7ED957] font-bold' : 'text-gray-600'">{{ setIndex + 1 }}</span>
-                                <input v-model.number="set.reps" type="number" min="0"  placeholder="0" :disabled="!isEditing && !isStarted" @click.stop class="col-span-4 bg-transparent outline-none text-center text-sm" :class="set.done ? 'text-[#7ED957]' : 'text-white'" />
+                                <input v-model.number="set.reps" type="number" min="0" placeholder="0" :disabled="!isEditing && !isStarted" @click.stop class="col-span-4 bg-transparent outline-none text-center text-sm" :class="set.done ? 'text-[#7ED957]' : 'text-white'" />
                                 <span class="col-span-1 text-gray-700 text-xs text-center">×</span>
                                 <input v-model.number="set.weight" type="number" min="0" placeholder="0" :disabled="!isEditing && !isStarted" @click.stop class="col-span-4 bg-transparent outline-none text-center text-sm" :class="set.done ? 'text-[#7ED957]' : 'text-white'" />
                                 <div class="col-span-2 flex justify-end">
@@ -425,27 +432,47 @@ const saveWorkout = async () => {
                     </div>
                 </div>
                 <div class="flex gap-3">
-                    <button @click="showDeleteConfirm = true" class="flex-1 py-3.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl font-semibold text-sm hover:bg-red-500/20 transition-all">Don't save</button>
-                    <button @click="showFinished = false; isStarted = false; logId = null;" class="flex-1 py-3.5 bg-[#7ED957] text-black rounded-2xl font-bold text-sm hover:bg-[#6bc947] transition-all">Save & Close</button>
+                    <button @click="showDontSaveConfirm = true" class="flex-1 py-3.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl font-semibold text-sm hover:bg-red-500/20 transition-all">Don't save</button>
+                    <button @click="showFinished = false; isStarted = false; logId = null; seconds = 0;" class="flex-1 py-3.5 bg-[#7ED957] text-black rounded-2xl font-bold text-sm hover:bg-[#6bc947] transition-all">Save & Close</button>
                 </div>
             </div>
         </div>
 
-        <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-5">
+        <div v-if="showDontSaveConfirm" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-5">
+            <div class="bg-[#111] border border-white/20 rounded-3xl p-8 w-full max-w-sm text-center">
+                <div class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-times text-gray-400 text-lg"></i>
+                </div>
+                <h3 class="text-xl font-black text-white mb-2">Don't save?</h3>
+                <p class="text-gray-500 text-sm mb-6">Workout session data will not be saved.</p>
+                <div class="flex gap-3">
+                    <button @click="showDontSaveConfirm = false"
+                        class="flex-1 py-3.5 bg-white/5 border border-white/10 text-white rounded-2xl font-semibold text-sm hover:bg-white/10 transition-all">
+                        Cancel
+                    </button>
+                    <button @click="showDontSaveConfirm = false; showFinished = false; isStarted = false; logId = null; seconds = 0;"
+                        class="flex-1 py-3.5 bg-red-500 text-white rounded-2xl font-bold text-sm hover:bg-red-600 transition-all">
+                        Don't Save
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="showWorkoutDeleteConfirm" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-5">
             <div class="bg-[#111] border border-red-500/20 rounded-3xl p-8 w-full max-w-sm text-center">
                 <div class="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="fas fa-trash text-red-400 text-lg"></i>
                 </div>
-                <h3 class="text-xl font-black text-white mb-2">Don't save?</h3>
-                <p class="text-gray-500 text-sm mb-6">This will not save the workout <span class="text-white font-semibold">{{ workout.name }}</span> and all its exercises.</p>
+                <h3 class="text-xl font-black text-white mb-2">Delete Workout?</h3>
+                <p class="text-gray-500 text-sm mb-6">This will permanently delete <span class="text-white font-semibold">{{ workout.name }}</span> and all its exercises.</p>
                 <div class="flex gap-3">
-                    <button @click="router.back()"
+                    <button @click="showWorkoutDeleteConfirm = false"
                         class="flex-1 py-3.5 bg-white/5 border border-white/10 text-white rounded-2xl font-semibold text-sm hover:bg-white/10 transition-all">
-                        Don't Save
+                        Cancel
                     </button>
-                    <button @click="showFinished = false; isStarted = false; logId = null;"
-                        class="flex-1 py-3.5 bg-[#7ED957] text-black rounded-2xl font-bold text-sm hover:bg-[#6bc947] transition-all">
-                        Save & Close
+                    <button @click="deleteWorkout"
+                        class="flex-1 py-3.5 bg-red-500 text-white rounded-2xl font-bold text-sm hover:bg-red-600 transition-all">
+                        Delete
                     </button>
                 </div>
             </div>

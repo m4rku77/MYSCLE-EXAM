@@ -256,16 +256,27 @@ const deleteLog = async () => {
 const saveLog = async () => {
     try {
         savingLog.value = true;
+        const sanitizedSets = editingLog.value.sets.map(s => ({
+            ...s,
+            reps: Math.max(0, Number(s.reps) || 0),
+            weight: Math.max(0, Number(s.weight) || 0),
+        }));
+        
         await axios.put(`https://myscle-exam-production.up.railway.app/api/workout-logs/${editingLog.value.id}`, {
-            sets: editingLog.value.sets,
-            duration_seconds: editingLog.value.duration_seconds,
+            sets: sanitizedSets,
+            duration_seconds: Math.max(0, editingLog.value.duration_seconds || 0),
         }, { headers });
+        
         const index = logs.value.findIndex(l => l.id === editingLog.value.id);
-        if (index !== -1) logs.value[index] = {
-            ...logs.value[index],
-            sets: editingLog.value.sets,
-            duration_seconds: editingLog.value.duration_seconds,
-        };
+        if (index !== -1) {
+            logs.value[index] = {
+                ...logs.value[index],
+                sets: sanitizedSets,
+                duration_seconds: Math.max(0, editingLog.value.duration_seconds || 0),
+            };
+            logs.value = [...logs.value];
+        }
+        
         showEditModal.value = false;
     } catch (err) {
         console.error(err.response?.data);

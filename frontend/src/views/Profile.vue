@@ -916,41 +916,15 @@ onMounted(() => {
                                             {{ user?.completed_workouts ?? 0 }}
                                         </p>
                                     </div>
-                                    <div
-                                        class="bg-[#0a0a0a] rounded-2xl p-3 border border-white/5"
-                                    >
-                                        <p class="text-xs text-gray-500 mb-1">
-                                            Role
-                                        </p>
-                                        <p class="text-sm font-bold capitalize">
-                                            {{ user?.role ?? "—" }}
-                                        </p>
-                                        <div
-                                            class="bg-[#0a0a0a] rounded-2xl p-3 border border-white/5"
-                                        >
-                                            <p
-                                                class="text-xs text-gray-500 mb-1"
-                                            >
-                                                Role
-                                            </p>
-                                            <p
-                                                class="text-sm font-bold capitalize"
-                                            >
-                                                {{ user?.role ?? "—" }}
-                                            </p>
-                                            <button
-                                                v-if="
-                                                    subscription &&
-                                                    user?.role === 'trainer'
-                                                "
-                                                @click="cancelSubscription"
-                                                class="mt-2 w-full text-xs bg-red-500/10 border border-red-500/20 text-red-400 py-1.5 rounded-xl hover:bg-red-500/20 transition-all"
-                                            >
-                                                Cancel subscription
-                                            </button>
-                                        </div>
-                                    </div>
+                                <div class="bg-[#0a0a0a] rounded-2xl p-3 border border-white/5">
+                                    <p class="text-xs text-gray-500 mb-1">Role</p>
+                                    <p class="text-sm font-bold capitalize">{{ user?.role ?? "—" }}</p>
+                                    <button v-if="subscription && user?.role === 'trainer'" @click="showCancelPopup = true"
+                                        class="mt-2 w-full text-xs bg-red-500/10 border border-red-500/20 text-red-400 py-1.5 rounded-xl hover:bg-red-500/20 transition-all">
+                                        Cancel subscription
+                                    </button>
                                 </div>
+                            </div>
                             </div>
                             <div class="border-t border-white/5 pt-5 space-y-3">
                                 <p

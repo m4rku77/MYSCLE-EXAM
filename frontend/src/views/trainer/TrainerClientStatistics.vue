@@ -259,33 +259,34 @@ const deleteLog = async () => {
 const saveLog = async () => {
     try {
         savingLog.value = true;
-        console.log("Sending:", {
-            sets: editingLog.value.sets,
-            duration_seconds: Math.max(0, editingLog.value.duration_seconds || 0),
-        });
-        const res = await axios.put(`https://myscle-exam-production.up.railway.app/api/workout-logs/${editingLog.value.id}`, {
-            sets: editingLog.value.sets,
+        const sanitizedSets = editingLog.value.sets.map(s => ({
+            ...s,
+            reps: Math.max(0, Number(s.reps) || 0),
+            weight: Math.max(0, Number(s.weight) || 0),
+        }));
+
+        await axios.put(`https://myscle-exam-production.up.railway.app/api/workout-logs/${editingLog.value.id}`, {
+            sets: sanitizedSets,
             duration_seconds: Math.max(0, editingLog.value.duration_seconds || 0),
         }, { headers });
-        console.log("Response:", res.data);
+
         const index = logs.value.findIndex(l => l.id === editingLog.value.id);
-        if (index !== -1) logs.value[index] = {
-            ...logs.value[index],
-            sets: editingLog.value.sets,
-            duration_seconds: Math.max(0, editingLog.value.duration_seconds || 0),
-        };
+        if (index !== -1) {
+            logs.value[index] = {
+                ...logs.value[index],
+                sets: sanitizedSets,
+                duration_seconds: Math.max(0, editingLog.value.duration_seconds || 0),
+            };
+            logs.value = [...logs.value]; 
+        }
+
         showEditModal.value = false;
     } catch (err) {
-        console.error("Status:", err.response?.status);
-        console.error("Data:", err.response?.data);
-        console.error("Message:", err.response?.data?.message);
-        console.error("Exception:", err.response?.data?.exception);
-        console.error("Trace:", err.response?.data?.trace?.[0]);
+        console.error(err.response?.data);
     } finally {
         savingLog.value = false;
     }
 };
-
 watch(selectedYear, async () => { await nextTick(); createChart(); });
 watch(selectedExercise, async () => { await createStrengthChart(); await createMonthlyWeightChart(); });
 watch(activeTab, async (val) => {
